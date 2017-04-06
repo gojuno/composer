@@ -26,7 +26,9 @@ fun exit(exit: Exit) {
 fun main(rawArgs: Array<String>) {
     val args = parseArgs(rawArgs)
 
-    log("$args")
+    if (args.verboseOutput) {
+        log("$args")
+    }
 
     val startTime = System.nanoTime()
 
@@ -65,7 +67,8 @@ fun main(rawArgs: Array<String>) {
                                                 testPackageName = args.testPackage,
                                                 testRunnerClass = args.testRunner,
                                                 instrumentationArguments = shardOptions + args.instrumentationArguments,
-                                                outputDir = File(args.outputDirectory)
+                                                outputDir = File(args.outputDirectory),
+                                                verboseOutput = args.verboseOutput
                                         )
                                         .flatMap { testRunResult ->
                                             writeJunit4Report(
