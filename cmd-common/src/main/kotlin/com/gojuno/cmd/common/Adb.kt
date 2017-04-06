@@ -83,7 +83,7 @@ fun AdbDevice.installApk(pathToApk: String): Observable<Unit> {
             .doOnError { adbDevice.log("Error during installing apk: $it, pathToApk = $pathToApk") }
 }
 
-fun AdbDevice.pullFolder(folderOnDevice: String, folderOnHostMachine: File): Single<Boolean> {
+fun AdbDevice.pullFolder(folderOnDevice: String, folderOnHostMachine: File, logErrors: Boolean): Single<Boolean> {
     val adbDevice = this
     val pullFiles = process(
             commandAndArgs = listOf(adb, "-s", adbDevice.id, "pull", folderOnDevice, folderOnHostMachine.absolutePath),
@@ -94,8 +94,7 @@ fun AdbDevice.pullFolder(folderOnDevice: String, folderOnHostMachine: File): Sin
     return pullFiles
             .ofType(Notification.Exit::class.java)
             .retry(3)
-            // TODO don't print error if folder does not exist on device, this could be ok in case if test did not create any screenshots.
-            .doOnError { error -> log("Failed to pull files from $folderOnDevice to $folderOnHostMachine failed: $error") }
+            .doOnError { error -> if (logErrors) log("Failed to pull files from $folderOnDevice to $folderOnHostMachine failed: $error") }
             .map { true }
             .onErrorReturn { false }
             .toSingle()

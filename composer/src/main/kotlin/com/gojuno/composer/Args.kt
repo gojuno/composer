@@ -12,7 +12,8 @@ data class Args(
         val testRunner: String,
         val shard: Boolean,
         val outputDirectory: String,
-        val instrumentationArguments: List<Pair<String, String>>
+        val instrumentationArguments: List<Pair<String, String>>,
+        val verboseOutput: Boolean
 )
 
 // No way to share array both for runtime and annotation without reflection.
@@ -58,9 +59,10 @@ private class JCommanderArgs {
     @Parameter(
             names = arrayOf("--shard"),
             required = false,
+            arity = 1,
             description = "Either `true` or `false` to enable/disable test sharding which runs tests in parallel on available devices/emulators. `true` by default."
     )
-    var shard: String? = null
+    var shard: Boolean? = null
 
     @Parameter(
             names = arrayOf("--output-directory"),
@@ -76,6 +78,14 @@ private class JCommanderArgs {
             description = "Key-value pairs to pass to Instrumentation Runner. Usage example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`."
     )
     var instrumentationArguments: List<String>? = null
+
+    @Parameter(
+            names = arrayOf("--verbose-output"),
+            required = false,
+            arity = 1,
+            description = "Either `true` or `false` to enable/disable verbose output for Swarmer. `false` by default."
+    )
+    var verboseOutput: Boolean? = null
 }
 
 fun parseArgs(rawArgs: Array<String>): Args {
@@ -94,7 +104,7 @@ fun parseArgs(rawArgs: Array<String>): Args {
                 testApkPath = jCommanderArgs.testApkPath,
                 testPackage = jCommanderArgs.testPackage,
                 testRunner = jCommanderArgs.testRunner,
-                shard = jCommanderArgs.shard?.equals("true", ignoreCase = true) ?: true, // True by default.
+                shard = jCommanderArgs.shard ?: true,
                 outputDirectory = jCommanderArgs.outputDirectory ?: "composer-output",
                 instrumentationArguments = mutableListOf<Pair<String, String>>().apply {
                     var pairIndex = 0
@@ -108,7 +118,8 @@ fun parseArgs(rawArgs: Array<String>): Args {
                             }
                         }
                     }
-                }
+                },
+                verboseOutput = jCommanderArgs.verboseOutput ?: false
         )
     }
 }
