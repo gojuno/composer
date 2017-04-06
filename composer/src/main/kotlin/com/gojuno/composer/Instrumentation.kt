@@ -1,5 +1,6 @@
 package com.gojuno.composer
 
+import com.gojuno.composer.Test.Result.*
 import rx.Observable
 import java.io.File
 
@@ -12,8 +13,20 @@ data class Test(
 
     sealed class Result {
         object Passed : Result()
+        object Ignored : Result()
         data class Failed(val stacktrace: String) : Result()
     }
+}
+
+/**
+ * @see android.support.test.internal.runner.listener.InstrumentationResultPrinter
+ */
+enum class StatusCode(val code: Int) {
+    Start(1),
+    Ok(0),
+    Failure(-2),
+    Ignored(-3),
+    AssumptionFailure(-4)
 }
 
 data class InstrumentationEntry(
@@ -24,7 +37,7 @@ data class InstrumentationEntry(
         val clazz: String,
         val current: Int,
         val stack: String,
-        val statusCode: Int,
+        val statusCode: StatusCode,
         val timestampNanos: Long
 )
 
@@ -53,7 +66,18 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
                 test = str.parseInstrumentationStatusValue("test"),
                 clazz = str.parseInstrumentationStatusValue("class"),
                 current = str.parseInstrumentationStatusValue("current").toInt(),
-                statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS").trim().toInt(),
+                statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS")
+                        .trim()
+                        .toInt()
+                        .let { code ->
+                            StatusCode.values().firstOrNull { it.code == code }
+                        }
+                        .let { statusCode ->
+                            when (statusCode) {
+                                null -> throw IllegalStateException("Unknown test result status code, please report that to Composer maintainers $str")
+                                else -> statusCode
+                            }
+                        },
                 timestampNanos = System.nanoTime()
         )
 
@@ -95,9 +119,11 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                             Test(
                                     className = first.clazz,
                                     testName = first.test,
-                                    result = when (first.statusCode == 1 && second.statusCode == 0) {
-                                        true -> Test.Result.Passed
-                                        false -> Test.Result.Failed(stacktrace = second.stack)
+                                    result = when (second.statusCode) {
+                                        StatusCode.Ok -> Passed
+                                        StatusCode.Ignored -> Ignored
+                                        StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
+                                        StatusCode.Start -> throw IllegalStateException("Unexpected Start code in second entry, please report that to Composer maintainers ($first, $second)")
                                     },
                                     durationNanos = second.timestampNanos - first.timestampNanos
                             )
