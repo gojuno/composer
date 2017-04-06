@@ -1,9 +1,5 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_ASSUMPTION_FAILURE
-import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_FAILURE
-import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_IGNORED
-import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_OK
 import com.gojuno.composer.Test.Result.*
 import rx.Observable
 import java.io.File
@@ -22,6 +18,17 @@ data class Test(
     }
 }
 
+/**
+ * @see android.support.test.internal.runner.listener.InstrumentationResultPrinter
+ */
+enum class StatusCode(val code: Int) {
+    Start(1),
+    Ok(0),
+    Failure(-2),
+    Ignored(-3),
+    AssumptionFailure(-4)
+}
+
 data class InstrumentationEntry(
         val numTests: Int,
         val stream: String,
@@ -30,20 +37,9 @@ data class InstrumentationEntry(
         val clazz: String,
         val current: Int,
         val stack: String,
-        val statusCode: Int,
+        val statusCode: StatusCode,
         val timestampNanos: Long
-) {
-    companion object {
-
-        // See `android.support.test.internal.runner.listener.InstrumentationResultPrinter`.
-
-        const val REPORT_VALUE_RESULT_START = 1
-        const val REPORT_VALUE_RESULT_OK = 0
-        const val REPORT_VALUE_RESULT_FAILURE = -2
-        const val REPORT_VALUE_RESULT_IGNORED = -3
-        const val REPORT_VALUE_RESULT_ASSUMPTION_FAILURE = -4
-    }
-}
+)
 
 private fun String.substringBetween(first: String, second: String): String {
     val indexOfFirst = indexOf(first)
@@ -70,7 +66,18 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
                 test = str.parseInstrumentationStatusValue("test"),
                 clazz = str.parseInstrumentationStatusValue("class"),
                 current = str.parseInstrumentationStatusValue("current").toInt(),
-                statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS").trim().toInt(),
+                statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS")
+                        .trim()
+                        .toInt()
+                        .let { code ->
+                            StatusCode.values().firstOrNull { it.code == code }
+                        }
+                        .let { statusCode ->
+                            when (statusCode) {
+                                null -> throw IllegalStateException("Unknown test result status code, please report that to Composer maintainers $str")
+                                else -> statusCode
+                            }
+                        },
                 timestampNanos = System.nanoTime()
         )
 
@@ -113,10 +120,10 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                                     className = first.clazz,
                                     testName = first.test,
                                     result = when (second.statusCode) {
-                                        REPORT_VALUE_RESULT_OK -> Passed
-                                        REPORT_VALUE_RESULT_IGNORED -> Ignored
-                                        REPORT_VALUE_RESULT_FAILURE, REPORT_VALUE_RESULT_ASSUMPTION_FAILURE -> Failed(stacktrace = second.stack)
-                                        else -> throw IllegalStateException("Unknown test result status code, please report that to Composer maintainers $second")
+                                        StatusCode.Ok -> Passed
+                                        StatusCode.Ignored -> Ignored
+                                        StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
+                                        StatusCode.Start -> throw IllegalStateException("Unexpected Start code in second entry, please report that to Composer maintainers ($first, $second)")
                                     },
                                     durationNanos = second.timestampNanos - first.timestampNanos
                             )
