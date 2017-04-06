@@ -2,7 +2,7 @@
 
 Composer is a modern reactive replacement for [square/spoon][spoon] with following feature set:
 
-* Parallel test execution on multiple emulators/devices with [test sharding](https://developer.android.com/topic/libraries/testing-support-library/index.html#ajur-sharding) support.
+* Parallel test execution on multiple emulators/devices with [test sharding][test sharding] support.
 * Logcat output capturing per test and for whole test run as well.
 * Screenshots and files pulling for each test reactively (with support for [square/spoon][spoon] folder structure).
 * JUnit4 report generation. 
@@ -42,33 +42,32 @@ For now you can inspect test run results by looking at build log, screenshots/fi
 
 Composer shipped as jar, to run it you need JVM 1.8+: java -jar composer-latest-version.jar options. 
 
-#### Supported options:
+#### Supported options
+
+##### Required
+
+* `--apk`
+  * Path to application apk that needs to be tested.
+* `--test-apk`
+  * Path to apk with tests.
+* `--test-package`
+  * Android package name of the test apk (Could be parsed from `--test-apk`, PR welcome).
+* `--test-runner`
+  * Full qualified name of test runner class you're using (Could be parsed from `--test-apk`, PR welcome).
+
+##### Optional
 
 * `--help, -help, help, -h`
   * Print help and exit.
-  * Required: no.
-* `--apk`
-  * Path to application apk that needs to be tested.
-  * Required: **yes**.
-* `--test-apk`
-  * Path to apk with tests.
-  * Required: **yes**.
-* `--test-package`
-  * Android package name of the test apk.
-  * Required: **yes** (Could be parsed from `--test-apk`, PR welcome).  
-* `--test-runner`
-  * Full qualified name of test runner class you're using.
-  * Required: **yes** (Could be parsed from `--test-apk`, PR welcome).
 * `--shard`
-  * Either `true` or `false` to enable/disable test sharding which runs tests in parallel on available devices/emulators. True by default.
-  * Required: no.
+  * Either `true` or `false` to enable/disable [test sharding][test sharding] which runs shards tests to available devices/emulators. True by default.
 * `--output-directory`
   * Either relative or absolute path to directory for output: reports, files from devices and so on. `composer-output` by default.
-  * Required: no.
 * `--instrumentation-arguments`
   * Key-value pairs to pass to Instrumentation Runner. Usage example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`.
-  * Required: no.
-  
+* `--verbose-output`
+  * Either `true` or `false` to enable/disable verbose output for Swarmer. `false` by default.
+
 ##### Example
 
 ```console
@@ -78,7 +77,8 @@ java -jar composer-latest-version.jar \
 --test-package com.example.test \
 --test-runner com.example.test.ExampleTestRunner \
 --output-directory artifacts/composer-output \
---instrumentation-arguments key1 value1 key2 value2
+--instrumentation-arguments key1 value1 key2 value2 \
+--verbose-output false
 ```
 
 ### How to build
@@ -108,3 +108,4 @@ limitations under the License.
 ```
 
 [spoon]: https://github.com/square/spoon
+[test sharding]: https://developer.android.com/topic/libraries/testing-support-library/index.html#ajur-sharding

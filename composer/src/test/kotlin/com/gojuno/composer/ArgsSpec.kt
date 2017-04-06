@@ -28,7 +28,8 @@ class ArgsSpec : Spek({
                     testRunner = "test_runner",
                     shard = true,
                     outputDirectory = "composer-output",
-                    instrumentationArguments = emptyList()
+                    instrumentationArguments = emptyList(),
+                    verboseOutput = false
             ))
         }
     }
@@ -41,6 +42,40 @@ class ArgsSpec : Spek({
 
         it("converts instrumentation arguments to list of key-value pairs") {
             assertThat(args.instrumentationArguments).isEqualTo(listOf("key1" to "value1", "key2" to "value2"))
+        }
+    }
+
+    context("parse args with explicitly passed --shard") {
+
+        listOf(true, false).forEach { shard ->
+
+            context("--shard $shard") {
+
+                val args by memoized {
+                    parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--shard", "$shard"))
+                }
+
+                it("parses --shard correctly") {
+                    assertThat(args.shard).isEqualTo(shard)
+                }
+            }
+        }
+    }
+
+    context("parse args with explicitly passed --verbose-output") {
+
+        listOf(true, false).forEach { verboseOutput ->
+
+            context("--verbose--output $verboseOutput") {
+
+                val args by memoized {
+                    parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--verbose-output", "$verboseOutput"))
+                }
+
+                it("parses --verbose-output correctly") {
+                    assertThat(args.verboseOutput).isEqualTo(verboseOutput)
+                }
+            }
         }
     }
 })
