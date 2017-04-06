@@ -27,14 +27,14 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
   
 **Problem 5:** Html report can be very slow to load if you have lots of screenshots (which we do) since it displays all the screenshots of tests that were run on a particular device on a single page — it can take up to minutes to finish while you effectively unable to scroll page since scroll is jumping up and down each time new screenshot loaded.
 
-**Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will not display screenshots until you explicitly ask it for that meaning fast page load times.
+**Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will not display screenshots until you explicitly ask it for that → fast page load.
 
 >With Composer we were able to make UI tests required part of CI for Pull Requests.
 >It's fast, reliable and uses RxJava which means that it's relatively easy to add more features combining complex async transformations. 
 
 ### HTML Report
 
-Composer already have all the info to generate it, but HTML, CSS and JS are not technologies we love and good at in our Android team, so some help from the community will be great!
+Composer already have all the info to generate it, we're working on it with our Web Frontend team.
 
 For now you can inspect test run results by looking at build log, screenshots/files, captured logcat output (it's not hard, but HTML report would be very nice).  
 
