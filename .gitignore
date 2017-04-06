@@ -1,0 +1,13 @@
+.gradle
+/local.properties
+/.idea/
+*.iml
+.DS_Store
+build/
+artifacts/
+/captures
+gradle/local.properties
+/docs
+
+# Share code style.
+!.idea/codeStyleSettings.xml

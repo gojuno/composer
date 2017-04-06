@@ -1,0 +1,341 @@
+adb shell am instrument -w -r -e numShards 20 -e shardIndex 1 -e reportFailuresToCrashlytics true com.gojuno.rider.dev.test/android.support.test.runner.JunoAndroidRunner
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+Error in on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError(net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest):
+java.net.UnknownHostException: Artem test
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:245)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:44)
+	at net.juno.rd.functional_tests.screens.AddCreditCardScreen.Companion.invoke(AddCreditCardScreen.kt:23)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError(AddCreditCardForUserWithNoPaymentsTest.kt:238)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at org.junit.runners.model.FrameworkMethod.1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.rules.ExpectedException.ExpectedExceptionStatement.evaluate(ExpectedException.java:239)
+	at net.juno.rd.functional_tests.utils.LaunchAppRule.apply.1.evaluate(LaunchAppRule.kt:36)
+	at com.gojuno.mockserver1.ServerImpl.apply.1.evaluate(ServerImpl.kt:112)
+	at net.juno.rd.functional_tests.utils.RetryRule.runTest(RetryRule.kt:43)
+	at net.juno.rd.functional_tests.utils.RetryRule.access.runTest(RetryRule.kt:14)
+	at net.juno.rd.functional_tests.utils.RetryRule.apply.1.evaluate(RetryRule.kt:29)
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:27)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+	at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+	at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:107)
+	at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)
+
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest
+INSTRUMENTATION_STATUS: stack=java.net.UnknownHostException: Artem test
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:245)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:44)
+	at net.juno.rd.functional_tests.screens.AddCreditCardScreen.Companion.invoke(AddCreditCardScreen.kt:23)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError(AddCreditCardForUserWithNoPaymentsTest.kt:238)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at org.junit.runners.model.FrameworkMethod.1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.rules.ExpectedException.ExpectedExceptionStatement.evaluate(ExpectedException.java:239)
+	at net.juno.rd.functional_tests.utils.LaunchAppRule.apply.1.evaluate(LaunchAppRule.kt:36)
+	at com.gojuno.mockserver1.ServerImpl.apply.1.evaluate(ServerImpl.kt:112)
+	at net.juno.rd.functional_tests.utils.RetryRule.runTest(RetryRule.kt:43)
+	at net.juno.rd.functional_tests.utils.RetryRule.access.runTest(RetryRule.kt:14)
+	at net.juno.rd.functional_tests.utils.RetryRule.apply.1.evaluate(RetryRule.kt:29)
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:27)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+	at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+	at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:107)
+	at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)
+
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: -2
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onMastercardCreditCardFirst2NumbersEnteredDisplaysMasterCardIcon
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onMastercardCreditCardFirst2NumbersEnteredDisplaysMasterCardIcon
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.AddCreditCardForUserWithPaymentMethod:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=successfullyAddsAmericanExpressCardShowsNumberForItAndItIsNotDefault
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithPaymentMethod
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=successfullyAddsAmericanExpressCardShowsNumberForItAndItIsNotDefault
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithPaymentMethod
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=successfullyAddsMasterCardShowsNumberForItAndItIsNotDefault
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithPaymentMethod
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=successfullyAddsMasterCardShowsNumberForItAndItIsNotDefault
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.AddCreditCardForUserWithPaymentMethod
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.ConfirmationWithUserWithNoPaymentMethodTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onAddPaymentButtonTappedOpensAddCreditCardScreen
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ConfirmationWithUserWithNoPaymentMethodTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onAddPaymentButtonTappedOpensAddCreditCardScreen
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ConfirmationWithUserWithNoPaymentMethodTest
+INSTRUMENTATION_STATUS: current=5
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.ForgotPasswordTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onEmailAddressFieldInvalidTextEnteredEmailMeAResetLinkButtonIsNotActive
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ForgotPasswordTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onEmailAddressFieldInvalidTextEnteredEmailMeAResetLinkButtonIsNotActive
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ForgotPasswordTest
+INSTRUMENTATION_STATUS: current=6
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.ForgotPasswordWithPredefinedEmailTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=tapOnResetLinkShowsAlert
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ForgotPasswordWithPredefinedEmailTest
+INSTRUMENTATION_STATUS: current=7
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=tapOnResetLinkShowsAlert
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.ForgotPasswordWithPredefinedEmailTest
+INSTRUMENTATION_STATUS: current=7
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.LoginTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onEmailEnteredAndLoginButtonTappedShowsPasswordCannotBeEmpty
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.LoginTest
+INSTRUMENTATION_STATUS: current=8
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onEmailEnteredAndLoginButtonTappedShowsPasswordCannotBeEmpty
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.LoginTest
+INSTRUMENTATION_STATUS: current=8
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onLoginWithUnsettledDebtDisplaysYourPaymentMethodDeclinedAlert
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.LoginTest
+INSTRUMENTATION_STATUS: current=9
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onLoginWithUnsettledDebtDisplaysYourPaymentMethodDeclinedAlert
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.LoginTest
+INSTRUMENTATION_STATUS: current=9
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.SignUpFirstNameTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onPhotoIconTappedShowsChoosePhotoOptionInAppropriatePanel
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpFirstNameTest
+INSTRUMENTATION_STATUS: current=10
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onPhotoIconTappedShowsChoosePhotoOptionInAppropriatePanel
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpFirstNameTest
+INSTRUMENTATION_STATUS: current=10
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onBackButtonTappedNavigatesToSignUpPasswordScreenWithEnteredPassword
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpFirstNameTest
+INSTRUMENTATION_STATUS: current=11
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onBackButtonTappedNavigatesToSignUpPasswordScreenWithEnteredPassword
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpFirstNameTest
+INSTRUMENTATION_STATUS: current=11
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.SignUpLastNameTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onOkTappedClosesWeCannotVerifyYourNumberAlertAndNavigatesToSignUpPhoneScreenWithEnteredEarlierPhoneNumber
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpLastNameTest
+INSTRUMENTATION_STATUS: current=12
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onOkTappedClosesWeCannotVerifyYourNumberAlertAndNavigatesToSignUpPhoneScreenWithEnteredEarlierPhoneNumber
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpLastNameTest
+INSTRUMENTATION_STATUS: current=12
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+net.juno.rd.functional_tests.tests.SignUpPhoneTest:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onCloseButtonTappedNavigatesToOnboardingScreen
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpPhoneTest
+INSTRUMENTATION_STATUS: current=13
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onCloseButtonTappedNavigatesToOnboardingScreen
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpPhoneTest
+INSTRUMENTATION_STATUS: current=13
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onPhoneNumberEnteredDisplaysClearButton
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpPhoneTest
+INSTRUMENTATION_STATUS: current=14
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: numtests=14
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=onPhoneNumberEnteredDisplaysClearButton
+INSTRUMENTATION_STATUS: class=net.juno.rd.functional_tests.tests.SignUpPhoneTest
+INSTRUMENTATION_STATUS: current=14
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 96.641
+There was 1 failure:
+1) on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError(net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest)
+java.net.UnknownHostException: Artem test
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:245)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError.1.invoke(AddCreditCardForUserWithNoPaymentsTest.kt:44)
+	at net.juno.rd.functional_tests.screens.AddCreditCardScreen.Companion.invoke(AddCreditCardScreen.kt:23)
+	at net.juno.rd.functional_tests.tests.AddCreditCardForUserWithNoPaymentsTest.on400WithUnknownErrorReceivedOnAddPaymentMethodShowsGenericServerError(AddCreditCardForUserWithNoPaymentsTest.kt:238)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at org.junit.runners.model.FrameworkMethod.1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.rules.ExpectedException.ExpectedExceptionStatement.evaluate(ExpectedException.java:239)
+	at net.juno.rd.functional_tests.utils.LaunchAppRule.apply.1.evaluate(LaunchAppRule.kt:36)
+	at com.gojuno.mockserver1.ServerImpl.apply.1.evaluate(ServerImpl.kt:112)
+	at net.juno.rd.functional_tests.utils.RetryRule.runTest(RetryRule.kt:43)
+	at net.juno.rd.functional_tests.utils.RetryRule.access.runTest(RetryRule.kt:14)
+	at net.juno.rd.functional_tests.utils.RetryRule.apply.1.evaluate(RetryRule.kt:29)
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runners.Suite.runChild(Suite.java:128)
+	at org.junit.runners.Suite.runChild(Suite.java:27)
+	at org.junit.runners.ParentRunner.3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner.1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access.000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner.2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+	at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+	at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:59)
+	at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:107)
+	at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)
+
+FAILURES!!!
+Tests run: 14,  Failures: 1
+
+
+INSTRUMENTATION_CODE: -1
+

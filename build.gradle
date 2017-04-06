@@ -1,0 +1,25 @@
+apply from: 'dependencies.gradle'
+
+buildscript {
+	// Gradle will not find vars defined in an external file when referring to them
+    // in the buildscript block, unless you link it from the buildscript block, too.
+    apply from: 'dependencies.gradle'
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin"
+      	classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
+        classpath "org.junit.platform:junit-platform-gradle-plugin:$versions.junitPlatform"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+
+    apply plugin: 'com.github.ben-manes.versions'
+}
