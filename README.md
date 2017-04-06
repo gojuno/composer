@@ -10,18 +10,23 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 ### Why we've decided to replace [square/spoon][spoon]
  
 **Problem 1:** Our UI tests are stable, but we saw a lot of UI tests build failures. About ~50% of our CI builds were failing. All such failures of UI tests came from Spoon not being able to run tests on one or more emulators (device is red in the report and error message is `…work/emulator-5554/result.json (No such file or directory)`, basically it timed out on installing the apk on a device, increasing adb timeout did not help, all emulators responded to adb commands and mouse/keyboard interactions, we suppose problem is in in ddmlib used by Spoon.
+
 **Solution:** Composer does not use ddmlib and talks to emulators/devices by invoking `adb` binary.  
 
 **Problem 2:** Pretty often when test run finished, Spoon freezed on moving screenshots from one of the emulators/devices. Again, we blame ddmlib used in Spoon for that.
+
 **Solution:** Composer invokes `adb` binary to pull files from emulators/devices, we haven't seen problems with that in more than 700 builds on CI.
 
 **Problem 3:** Spoon pulled screenshots/files *after* finish of the whole test run on a device which slows down builds: `test_run_time + pull_files_time`.
+
 **Solution:** Composer pulls screenshots/files *reactively* after each test which basically leads to: `~test_run_time`.
 
 **Problem 4:** If test sharding is enabled (which we do all the time), Spoon HTML report is very hard to look at, especially if you want to find some particular test(s) and it's not failed. You have to either hover mouse over each test to find out its name or go into html/xml source and find on which emulator/device test was sharded in order to click on correct device and then find test by CMD+F on the page.
+
 **Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will be easier to look at and inspect.
   
 **Problem 5:** Html report can be very slow to load if you have lots of screenshots (which we do) since it displays all the screenshots of tests that were run on a particular device on a single page — it can take up to minutes to finish while you effectively unable to scroll page since scroll is jumping up and down each time new screenshot loaded.
+
 **Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will not display screenshots until you explicitly ask it for that meaning fast page load times.
 
 >With Composer we were able to make UI tests required part of CI for Pull Requests.
