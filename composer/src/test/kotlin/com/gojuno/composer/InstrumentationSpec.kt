@@ -1,7 +1,6 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.Test.Result.Failed
-import com.gojuno.composer.Test.Result.Passed
+import com.gojuno.composer.Test.Result.*
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
@@ -226,6 +225,40 @@ class InstrumentationSpec : Spek({
                             className = "com.example.functional_tests.tests.TestClass2",
                             testName = "test3",
                             result = Passed,
+                            durationNanos = 0L
+                    )
+            ))
+        }
+    }
+
+    context("read output with ignored test") {
+
+        val subscriber by memoized { TestSubscriber<Test>() }
+        val tests by memoized { mutableListOf<Test>() }
+
+        perform {
+            readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-ignored-test.txt"))
+                    .asTests()
+                    .subscribe(subscriber)
+
+            subscriber.awaitTerminalEvent()
+            subscriber.onNextEvents.forEach { test ->
+                tests.add(test.copy(durationNanos = 0)) // We have no control over system time in tests.
+            }
+        }
+
+        it("emits expected tests") {
+            assertThat(tests).isEqualTo(listOf(
+                    Test(
+                            className = "com.example.functional_tests.TestClass",
+                            testName = "test1",
+                            result = Passed,
+                            durationNanos = 0L
+                    ),
+                    Test(
+                            className = "com.example.functional_tests.TestClass",
+                            testName = "test2",
+                            result = Ignored,
                             durationNanos = 0L
                     )
             ))

@@ -1,5 +1,6 @@
 package com.gojuno.composer
 
+import com.gojuno.composer.Test.Result.*
 import org.apache.commons.lang3.StringEscapeUtils
 import rx.Completable
 import rx.Single
@@ -24,11 +25,11 @@ fun writeJunit4Report(testRunResult: TestRunResult, outputFile: File): Completab
 
                     // We can try to parse logcat output to get this info. See `android.support.test.internal.runner.listener.LogRunListener`.
                     append("""errors="0" """)
-                    append("""skipped="0" """)
+                    append("""skipped="${testRunResult.ignoredCount}" """)
 
                     append("""time="${testRunResult.durationNanos.toJunitSeconds()}" """)
                     append("""timestamp="${SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }.format(Date(testRunResult.timestampMillis))}" """)
-                    append("""hostname="localhost" """)
+                    append("""hostname="localhost"""")
                 }
                 appendln(">")
 
@@ -38,13 +39,18 @@ fun writeJunit4Report(testRunResult: TestRunResult, outputFile: File): Completab
                         append("<testcase ")
                         append("""classname="${test.className}" """)
                         append("""name="${test.testName}" """)
-                        append("""time="${test.durationNanos.toJunitSeconds()}" """)
+                        append("""time="${test.durationNanos.toJunitSeconds()}"""")
 
                         when (test.result) {
-                            Test.Result.Passed -> {
+                            Passed -> {
                                 appendln("/>")
                             }
-                            is Test.Result.Failed -> {
+                            Ignored -> {
+                                appendln(">")
+                                appendln("<skipped/>")
+                                appendln("</testcase>")
+                            }
+                            is Failed -> {
                                 appendln(">")
 
                                 appendln("<failure>")

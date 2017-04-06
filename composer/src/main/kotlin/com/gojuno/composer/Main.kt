@@ -84,10 +84,12 @@ fun main(rawArgs: Array<String>) {
             .first()
 
     val duration = (System.nanoTime() - startTime)
+
     val totalPassed = testRunResults.sumBy { it.passedCount }
     val totalFailed = testRunResults.sumBy { it.failedCount }
+    val totalIgnored = testRunResults.sumBy { it.ignoredCount }
 
-    log("Test run finished, total passed = $totalPassed, total failed = $totalFailed, took ${duration.nanosToHumanReadableTime()}.")
+    log("Test run finished, total passed = $totalPassed, total failed = $totalFailed, total ignored = $totalIgnored, took ${duration.nanosToHumanReadableTime()}.")
 
     when {
         totalPassed > 0 && totalFailed == 0 -> exit(Exit.Ok)

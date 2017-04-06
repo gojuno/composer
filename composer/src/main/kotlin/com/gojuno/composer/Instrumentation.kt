@@ -1,5 +1,10 @@
 package com.gojuno.composer
 
+import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_ASSUMPTION_FAILURE
+import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_FAILURE
+import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_IGNORED
+import com.gojuno.composer.InstrumentationEntry.Companion.REPORT_VALUE_RESULT_OK
+import com.gojuno.composer.Test.Result.*
 import rx.Observable
 import java.io.File
 
@@ -12,6 +17,7 @@ data class Test(
 
     sealed class Result {
         object Passed : Result()
+        object Ignored : Result()
         data class Failed(val stacktrace: String) : Result()
     }
 }
@@ -26,7 +32,18 @@ data class InstrumentationEntry(
         val stack: String,
         val statusCode: Int,
         val timestampNanos: Long
-)
+) {
+    companion object {
+
+        // See `android.support.test.internal.runner.listener.InstrumentationResultPrinter`.
+
+        const val REPORT_VALUE_RESULT_START = 1
+        const val REPORT_VALUE_RESULT_OK = 0
+        const val REPORT_VALUE_RESULT_FAILURE = -2
+        const val REPORT_VALUE_RESULT_IGNORED = -3
+        const val REPORT_VALUE_RESULT_ASSUMPTION_FAILURE = -4
+    }
+}
 
 private fun String.substringBetween(first: String, second: String): String {
     val indexOfFirst = indexOf(first)
@@ -95,9 +112,11 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                             Test(
                                     className = first.clazz,
                                     testName = first.test,
-                                    result = when (first.statusCode == 1 && second.statusCode == 0) {
-                                        true -> Test.Result.Passed
-                                        false -> Test.Result.Failed(stacktrace = second.stack)
+                                    result = when (second.statusCode) {
+                                        REPORT_VALUE_RESULT_OK -> Passed
+                                        REPORT_VALUE_RESULT_IGNORED -> Ignored
+                                        REPORT_VALUE_RESULT_FAILURE, REPORT_VALUE_RESULT_ASSUMPTION_FAILURE -> Failed(stacktrace = second.stack)
+                                        else -> throw IllegalStateException("Unknown test result status code, please report that to Composer maintainers $second")
                                     },
                                     durationNanos = second.timestampNanos - first.timestampNanos
                             )

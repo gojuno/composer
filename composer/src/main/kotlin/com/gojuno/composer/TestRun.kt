@@ -10,6 +10,7 @@ data class TestRunResult(
         val testPackageName: String,
         val tests: List<Test>,
         val passedCount: Int,
+        val ignoredCount: Int,
         val failedCount: Int,
         val durationNanos: Long,
         val timestampMillis: Long
@@ -46,8 +47,13 @@ fun AdbDevice.runTests(
 
     val tests = runningTests
             .doOnNext { test ->
-                val passed = test.result is Test.Result.Passed
-                adbDevice.log("Test ${if (passed) "passed" else "failed"} in ${test.durationNanos.nanosToHumanReadableTime()}: ${test.className}.${test.testName}")
+                val status = when (test.result) {
+                    Test.Result.Passed -> "passed"
+                    Test.Result.Ignored -> "ignored"
+                    is Test.Result.Failed -> "failed"
+                }
+
+                adbDevice.log("Test $status in ${test.durationNanos.nanosToHumanReadableTime()}: ${test.className}.${test.testName}")
             }
             .flatMap { test ->
                 pullTestFiles(adbDevice, test, outputDir)
@@ -78,6 +84,7 @@ fun AdbDevice.runTests(
                         testPackageName = testPackageName,
                         tests = tests,
                         passedCount = tests.count { it.result is Test.Result.Passed },
+                        ignoredCount = tests.count { it.result is Test.Result.Ignored },
                         failedCount = tests.count { it.result is Test.Result.Failed },
                         durationNanos = System.nanoTime() - startTimeNanos,
                         timestampMillis = System.currentTimeMillis()
