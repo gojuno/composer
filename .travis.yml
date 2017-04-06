@@ -1,0 +1,11 @@
+# We use Docker → we need sudo.
+sudo: required
+
+services:
+  - docker
+
+script:
+  - bash ci/build.sh
+
+notifications:
+  email: false

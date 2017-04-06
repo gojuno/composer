@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.TimeoutException
 
-val home: String = System.getenv("HOME")
-val androidHome: String = System.getenv("ANDROID_HOME")
-val adb: String = "$androidHome/platform-tools/adb"
+val home: String by lazy { System.getenv("HOME") }
+val androidHome: String by lazy { System.getenv("ANDROID_HOME") }
+val adb: String by lazy { "$androidHome/platform-tools/adb" }
 
 fun log(message: String): Unit = println("[${Date()}]: $message")
 
