@@ -81,6 +81,14 @@ java -jar composer-latest-version.jar \
 --instrumentation-arguments key1 value1 key2 value2
 ```
 
+### How to build
+
+Dependencies: you only need `docker` and `bash` installed on your machine.
+
+```console
+bash ci/build.sh
+```
+
 ## License
 
 ```
