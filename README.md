@@ -34,7 +34,7 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 
 ### HTML Report
 
-Composer already have all the info to generate it, we're working on it with our Web Frontend team.
+Composer already have all the info to generate it, [we're working on it](https://github.com/gojuno/composer/issues/11) with our Web Frontend team.
 
 For now you can inspect test run results by looking at build log, screenshots/files, captured logcat output (it's not hard, but HTML report would be very nice).  
 
