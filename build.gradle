@@ -26,7 +26,7 @@ allprojects {
 }
 
 def gitTag() {
-    def tag = 'git tag -l --points-at HEAD'.execute((List) null, rootProject.projectDir).text.trim()
+    def tag = 'git tag --list --points-at HEAD'.execute((List) null, rootProject.projectDir).text.trim()
 
     if (tag.split(System.lineSeparator()).length > 1) {
         throw new IllegalStateException("gitTag is accessed but commit has multiple tags: $tag")
