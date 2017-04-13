@@ -81,6 +81,14 @@ java -jar composer-latest-version.jar \
 --verbose-output false
 ```
 
+### Download
+
+Composer is [available on jcenter](https://jcenter.bintray.com/com/gojuno/composer).
+
+>You can download it in your CI scripts or store it in your version control system (not recommended).
+
+All the releases and changelogs can be found on [Releases Page](https://github.com/gojuno/composer/releases).
+
 ### How to build
 
 Dependencies: you only need `docker` and `bash` installed on your machine.
