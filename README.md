@@ -83,9 +83,9 @@ java -jar composer-latest-version.jar \
 
 ### Download
 
-Composer [published to jcenter](https://jcenter.bintray.com/com/gojuno/composer) and follows [Semantic Versioning](http://semver.org/).
+Composer is [available on jcenter](https://jcenter.bintray.com/com/gojuno/composer).
 
-You can download it in your CI scripts or store it in your version control system (not recommended).
+>You can download it in your CI scripts or store it in your version control system (not recommended).
 
 All the releases and changelogs can be found on [Releases Page](https://github.com/gojuno/composer/releases).
 
