@@ -102,7 +102,7 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
 }
 
 fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
-    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<Test> = emptyList())
+    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<Test> = emptyList(), val totalTestsCount: Int = 0)
 
     return this
             .scan(result()) { previousResult, newEntry ->
@@ -134,18 +134,19 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                                         StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
                                         StatusCode.Start -> throw IllegalStateException("Unexpected status code [${second.statusCode}] in second entry, please report that to Composer maintainers ($first, $second)")
                                     },
-                                    durationNanos = 0
+                                    durationNanos = second.timestampNanos - first.timestampNanos
                             )
                         }
 
                 result(
                         entries = entries.filter { entry -> tests.firstOrNull { it.className == entry.clazz && it.testName == entry.test } == null },
-                        tests = tests
+                        tests = tests,
+                        totalTestsCount = previousResult.totalTestsCount + tests.size
                 )
             }
             .takeUntil {
                 if (it.entries.count { it.current == it.numTests } == 2) {
-                    if (it.tests.size < it.entries.first().numTests) {
+                    if (it.totalTestsCount < it.entries.first().numTests) {
                         throw IllegalStateException("Less tests were emitted than Instrumentation reported: $it")
                     }
 
