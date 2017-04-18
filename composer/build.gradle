@@ -8,10 +8,11 @@ apply plugin: 'com.jfrog.bintray'
 mainClassName = 'com.gojuno.composer.MainKt'
 
 dependencies {
-    compile libraries.cmdCommon
     compile libraries.kotlinStd
-    compile libraries.jCommander
     compile libraries.rxJava
+    compile libraries.jCommander
+    compile libraries.commanderOs
+    compile libraries.commanderAndroid
     compile libraries.apacheCommonsIo
     compile libraries.apacheCommonsLang
 }
