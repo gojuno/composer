@@ -15,7 +15,7 @@ BUILD_COMMAND+="apt-get update && apt-get --assume-yes install git && "
 
 if [ "$USER_ID" == "0" ]; then
     echo "Warning: running as r00t."
-else 
+else
     BUILD_COMMAND+="apt-get --assume-yes install sudo && "
     BUILD_COMMAND+="groupadd --gid $USER_ID build_user && "
     BUILD_COMMAND+="useradd --shell /bin/bash --uid $USER_ID --gid $USER_ID --create-home build_user && "
