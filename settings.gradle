@@ -1,2 +1,1 @@
-include ':cmd-common'
 include ':composer'
