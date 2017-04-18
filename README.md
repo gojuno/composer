@@ -87,6 +87,11 @@ Composer is [available on jcenter](https://jcenter.bintray.com/com/gojuno/compos
 
 >You can download it in your CI scripts or store it in your version control system (not recommended).
 
+```console
+COMPOSER_VERSION=some-version
+curl --location https://jcenter.bintray.com/com/gojuno/composer/composer/${COMPOSER_VERSION}/composer-${COMPOSER_VERSION}.jar --output /tmp/composer.jar
+```
+
 All the releases and changelogs can be found on [Releases Page](https://github.com/gojuno/composer/releases).
 
 ### How to build
