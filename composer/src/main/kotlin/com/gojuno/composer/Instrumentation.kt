@@ -54,8 +54,8 @@ private fun String.substringBetween(first: String, second: String): String {
     return substring(startIndex, endIndex)
 }
 
-private fun String.parseInstrumentationStatusValue(key: String): String =
-        substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS").trim()
+private fun String.parseInstrumentationStatusValue(key: String): String = substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS")
+        .trim()
 
 private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
         InstrumentationEntry(
@@ -74,7 +74,7 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
                         }
                         .let { statusCode ->
                             when (statusCode) {
-                                null -> throw IllegalStateException("Unknown test result status code, please report that to Composer maintainers $str")
+                                null -> throw IllegalStateException("Unknown test result status code [$statusCode], please report that to Composer maintainers $str")
                                 else -> statusCode
                             }
                         },
@@ -86,12 +86,13 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
     data class result(val buffer: String = "", val readyForProcessing: Boolean = false)
 
     return tail(output)
+            .map { it.trim() }
             // `INSTRUMENTATION_CODE: -1` is last line printed by instrumentation, even if 0 tests were run.
             .takeWhile { !it.startsWith("INSTRUMENTATION_CODE") }
             .scan(result()) { previousResult, newLine ->
                 val buffer = when (previousResult.readyForProcessing) {
                     true -> newLine
-                    false -> "${previousResult.buffer}\n$newLine"
+                    false -> "${previousResult.buffer}${System.lineSeparator()}$newLine"
                 }
 
                 result(buffer = buffer, readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE"))
@@ -101,7 +102,7 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
 }
 
 fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
-    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<Test> = emptyList())
+    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<Test> = emptyList(), val totalTestsCount: Int = 0)
 
     return this
             .scan(result()) { previousResult, newEntry ->
@@ -110,7 +111,15 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                         .mapIndexed { index, first ->
                             val second = entries
                                     .subList(index + 1, entries.size)
-                                    .firstOrNull { first.clazz == it.clazz && first.test == it.test && first.current == it.current }
+                                    .firstOrNull {
+                                        first.clazz == it.clazz
+                                                &&
+                                                first.test == it.test
+                                                &&
+                                                first.current == it.current
+                                                &&
+                                                first.statusCode != it.statusCode
+                                    }
 
                             if (second == null) null else first to second
                         }
@@ -123,7 +132,7 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                                         StatusCode.Ok -> Passed
                                         StatusCode.Ignored -> Ignored
                                         StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
-                                        StatusCode.Start -> throw IllegalStateException("Unexpected Start code in second entry, please report that to Composer maintainers ($first, $second)")
+                                        StatusCode.Start -> throw IllegalStateException("Unexpected status code [${second.statusCode}] in second entry, please report that to Composer maintainers ($first, $second)")
                                     },
                                     durationNanos = second.timestampNanos - first.timestampNanos
                             )
@@ -131,10 +140,21 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
 
                 result(
                         entries = entries.filter { entry -> tests.firstOrNull { it.className == entry.clazz && it.testName == entry.test } == null },
-                        tests = tests
+                        tests = tests,
+                        totalTestsCount = previousResult.totalTestsCount + tests.size
                 )
             }
-            .takeUntil { it.entries.count { it.current == it.numTests } >= 2 }
+            .takeUntil {
+                if (it.entries.count { it.current == it.numTests } == 2) {
+                    if (it.totalTestsCount < it.entries.first().numTests) {
+                        throw IllegalStateException("Less tests were emitted than Instrumentation reported: $it")
+                    }
+
+                    true
+                } else {
+                    false
+                }
+            }
             .filter { it.tests.isNotEmpty() }
             .flatMap { Observable.from(it.tests) }
 }
