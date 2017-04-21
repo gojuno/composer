@@ -1,9 +1,9 @@
 package com.gojuno.composer
 
-import com.gojuno.cmd.common.connectedAdbDevices
-import com.gojuno.cmd.common.installApk
-import com.gojuno.cmd.common.log
-import com.gojuno.cmd.common.nanosToHumanReadableTime
+import com.gojuno.commander.android.connectedAdbDevices
+import com.gojuno.commander.android.installApk
+import com.gojuno.commander.os.log
+import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.janulator.parseArgs
 import rx.Observable
 import rx.schedulers.Schedulers

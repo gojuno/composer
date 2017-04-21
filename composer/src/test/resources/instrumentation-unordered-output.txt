@@ -1,45 +1,45 @@
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=
-com.example.functional_tests.tests.TestClass1:
+com.example.test.TestClass:
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test1
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass1
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=1
 INSTRUMENTATION_STATUS_CODE: 1
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=.
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test1
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass1
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=1
 INSTRUMENTATION_STATUS_CODE: 0
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=
-com.example.functional_tests.tests.TestClass2:
+com.example.test.TestClass:
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test2
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass2
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=2
 INSTRUMENTATION_STATUS_CODE: 1
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test3
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass2
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=3
 INSTRUMENTATION_STATUS_CODE: 1
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=.
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test2
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass2
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=2
 INSTRUMENTATION_STATUS_CODE: 0
 INSTRUMENTATION_STATUS: numtests=3
 INSTRUMENTATION_STATUS: stream=.
 INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
 INSTRUMENTATION_STATUS: test=test3
-INSTRUMENTATION_STATUS: class=com.example.functional_tests.tests.TestClass2
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=3
 INSTRUMENTATION_STATUS_CODE: 0
 
