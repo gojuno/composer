@@ -1,6 +1,6 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.Test.Result.*
+import com.gojuno.composer.AdbDeviceTest.Status.*
 import org.apache.commons.lang3.StringEscapeUtils
 import rx.Completable
 import rx.Single
@@ -9,39 +9,39 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
-fun writeJunit4Report(testRunResult: TestRunResult, outputFile: File): Completable = Single
+fun writeJunit4Report(suite: Suite, outputFile: File): Completable = Single
         .fromCallable { outputFile.parentFile.mkdirs() }
         .map {
             fun Long.toJunitSeconds(): String = (NANOSECONDS.toMillis(this) / 1000.0).toString()
 
-            buildString(capacity = testRunResult.tests.size * 150) {
+            buildString(capacity = suite.tests.size * 150) {
                 appendln("""<?xml version="1.0" encoding="UTF-8"?>""")
 
                 append("<testsuite ")
                 apply {
-                    append("""name="${testRunResult.testPackageName}" """)
-                    append("""tests="${testRunResult.tests.size}" """)
-                    append("""failures="${testRunResult.failedCount}" """)
+                    append("""name="${suite.testPackage}" """)
+                    append("""tests="${suite.tests.size}" """)
+                    append("""failures="${suite.failedCount}" """)
 
                     // We can try to parse logcat output to get this info. See `android.support.test.internal.runner.listener.LogRunListener`.
                     append("""errors="0" """)
-                    append("""skipped="${testRunResult.ignoredCount}" """)
+                    append("""skipped="${suite.ignoredCount}" """)
 
-                    append("""time="${testRunResult.durationNanos.toJunitSeconds()}" """)
-                    append("""timestamp="${SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }.format(Date(testRunResult.timestampMillis))}" """)
+                    append("""time="${suite.durationNanos.toJunitSeconds()}" """)
+                    append("""timestamp="${SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).apply { timeZone = TimeZone.getTimeZone("UTC") }.format(Date(suite.timestampMillis))}" """)
                     append("""hostname="localhost"""")
                 }
                 appendln(">")
 
                 apply {
                     appendln("<properties/>")
-                    testRunResult.tests.forEach { test ->
+                    suite.tests.forEach { test ->
                         append("<testcase ")
                         append("""classname="${test.className}" """)
                         append("""name="${test.testName}" """)
                         append("""time="${test.durationNanos.toJunitSeconds()}"""")
 
-                        when (test.result) {
+                        when (test.status) {
                             Passed -> {
                                 appendln("/>")
                             }
@@ -54,7 +54,7 @@ fun writeJunit4Report(testRunResult: TestRunResult, outputFile: File): Completab
                                 appendln(">")
 
                                 appendln("<failure>")
-                                appendln(StringEscapeUtils.escapeXml10(test.result.stacktrace))
+                                appendln(StringEscapeUtils.escapeXml10(test.status.stacktrace))
                                 appendln("</failure>")
 
                                 appendln("</testcase>")

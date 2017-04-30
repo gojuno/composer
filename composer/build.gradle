@@ -15,6 +15,7 @@ dependencies {
     compile libraries.commanderAndroid
     compile libraries.apacheCommonsIo
     compile libraries.apacheCommonsLang
+    compile libraries.gson
 }
 
 dependencies {

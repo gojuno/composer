@@ -1,23 +1,42 @@
 package com.gojuno.composer
 
+import com.gojuno.commander.android.*
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.commander.os.process
-import com.gojuno.commander.android.*
 import rx.Observable
 import rx.Single
 import rx.schedulers.Schedulers
 import java.io.File
 
-data class TestRunResult(
-        val testPackageName: String,
-        val tests: List<Test>,
+data class AdbDeviceTestRun(
+        val adbDevice: AdbDevice,
+        val tests: List<AdbDeviceTest>,
         val passedCount: Int,
         val ignoredCount: Int,
         val failedCount: Int,
         val durationNanos: Long,
-        val timestampMillis: Long
+        val timestampMillis: Long,
+        val logcat: File,
+        val instrumentationOutput: File
 )
+
+data class AdbDeviceTest(
+        val adbDevice: AdbDevice,
+        val className: String,
+        val testName: String,
+        val status: Status,
+        val durationNanos: Long,
+        val logcat: File,
+        val files: List<File>,
+        val screenshots: List<File>
+) {
+    sealed class Status {
+        object Passed : Status()
+        object Ignored : Status()
+        data class Failed(val stacktrace: String) : Status()
+    }
+}
 
 fun AdbDevice.runTests(
         testPackageName: String,
@@ -25,23 +44,20 @@ fun AdbDevice.runTests(
         instrumentationArguments: List<Pair<String, String>>,
         outputDir: File,
         verboseOutput: Boolean
-): Single<TestRunResult> {
+): Single<AdbDeviceTestRun> {
     val adbDevice = this
-    val logsDir = Single.fromCallable { File(File(outputDir, "logs"), adbDevice.id).apply { mkdirs() } }.cache()
+    val logsDir = File(File(outputDir, "logs"), adbDevice.id)
+    val instrumentationOutputFile = File(logsDir, "instrumentation.output")
 
-    val runTests = logsDir.toObservable()
-            .flatMap { logsDir ->
-                process(
-                        commandAndArgs = listOf(
-                                adb,
-                                "-s", adbDevice.id,
-                                "shell", "am instrument -w -r${instrumentationArguments.formatInstrumentationOptions()} $testPackageName/$testRunnerClass"
-                        ),
-                        timeout = null,
-                        redirectOutputTo = File(logsDir, "instrumentation.output")
-                )
-            }
-            .share()
+    val runTests = process(
+            commandAndArgs = listOf(
+                    adb,
+                    "-s", adbDevice.id,
+                    "shell", "am instrument -w -r${instrumentationArguments.formatInstrumentationOptions()} $testPackageName/$testRunnerClass"
+            ),
+            timeout = null,
+            redirectOutputTo = instrumentationOutputFile
+    ).share()
 
     val runningTests = runTests
             .ofType(Notification.Start::class.java)
@@ -49,55 +65,71 @@ fun AdbDevice.runTests(
             .asTests()
             .share()
 
-    val tests = runningTests
-            .doOnNext { test ->
-                val status = when (test.result) {
-                    Test.Result.Passed -> "passed"
-                    Test.Result.Ignored -> "ignored"
-                    is Test.Result.Failed -> "failed"
-                }
+    val adbDeviceTestRun = Observable.zip(
+            Observable.fromCallable { System.nanoTime() },
+            runningTests
+                    .doOnNext { instrumentationTest ->
+                        val status = when (instrumentationTest.status) {
+                            InstrumentationTest.Status.Passed -> "passed"
+                            InstrumentationTest.Status.Ignored -> "ignored"
+                            is InstrumentationTest.Status.Failed -> "failed"
+                        }
 
-                adbDevice.log("Test $status in ${test.durationNanos.nanosToHumanReadableTime()}: ${test.className}.${test.testName}")
-            }
-            .flatMap { test ->
-                pullTestFiles(adbDevice, test, outputDir, verboseOutput)
-                        .toObservable()
-                        .subscribeOn(Schedulers.io())
-                        .map { test }
-            }
-            .toList()
+                        adbDevice.log("Test $status in ${instrumentationTest.durationNanos.nanosToHumanReadableTime()}: ${instrumentationTest.className}.${instrumentationTest.testName}")
+                    }
+                    .flatMap { test ->
+                        pullTestFiles(adbDevice, test, outputDir, verboseOutput)
+                                .toObservable()
+                                .subscribeOn(Schedulers.io())
+                                .map { pulledFiles -> test to pulledFiles }
+                    }
+                    .toList()
+    ) { startTimeNanos, testsWithPulledFiles ->
+        val tests = testsWithPulledFiles.map { it.first }
+
+        AdbDeviceTestRun(
+                adbDevice = adbDevice,
+                tests = testsWithPulledFiles.map { (test, pulledFiles) ->
+                    AdbDeviceTest(
+                            adbDevice = adbDevice,
+                            className = test.className,
+                            testName = test.testName,
+                            status = when (test.status) {
+                                InstrumentationTest.Status.Passed -> AdbDeviceTest.Status.Passed
+                                InstrumentationTest.Status.Ignored -> AdbDeviceTest.Status.Ignored
+                                is InstrumentationTest.Status.Failed -> AdbDeviceTest.Status.Failed(test.status.stacktrace)
+                            },
+                            durationNanos = test.durationNanos,
+                            logcat = logcatFileForTest(logsDir, test.className, test.testName),
+                            files = pulledFiles.files,
+                            screenshots = pulledFiles.screenshots
+                    )
+                },
+                passedCount = tests.count { it.status is InstrumentationTest.Status.Passed },
+                ignoredCount = tests.count { it.status is InstrumentationTest.Status.Ignored },
+                failedCount = tests.count { it.status is InstrumentationTest.Status.Failed },
+                durationNanos = System.nanoTime() - startTimeNanos,
+                timestampMillis = System.currentTimeMillis(),
+                logcat = logcatFileForDevice(logsDir),
+                instrumentationOutput = instrumentationOutputFile
+        )
+    }
 
     val testRunFinish = runTests.ofType(Notification.Exit::class.java).cache()
 
     val saveLogcat = saveLogcat(adbDevice, logsDir)
             .map { Unit }
             // TODO: Stop when all expected tests were parsed from logcat and not when instrumentation finishes.
-            // Logcat may be delivered with delay and that may result in missing logcat for last (n) tests.
+            // Logcat may be delivered with delay and that may result in missing logcat for last (n) tests (it's just a theory though).
             .takeUntil(testRunFinish)
             .startWith(Unit) // To allow zip finish normally even if no tests were run.
 
     return Observable
-            .zip(
-                    Observable.fromCallable { System.nanoTime() },
-                    tests,
-                    saveLogcat,
-                    testRunFinish
-            )
-            { startTimeNanos, tests, _, _ ->
-                TestRunResult(
-                        testPackageName = testPackageName,
-                        tests = tests,
-                        passedCount = tests.count { it.result is Test.Result.Passed },
-                        ignoredCount = tests.count { it.result is Test.Result.Ignored },
-                        failedCount = tests.count { it.result is Test.Result.Failed },
-                        durationNanos = System.nanoTime() - startTimeNanos,
-                        timestampMillis = System.currentTimeMillis()
-                )
-            }
+            .zip(adbDeviceTestRun, saveLogcat, testRunFinish) { suite, _, _ -> suite }
             .doOnSubscribe { adbDevice.log("Starting tests...") }
-            .doOnNext { result ->
+            .doOnNext { adbDeviceTestRun ->
                 adbDevice.log(
-                        "Test run finished, ${result.passedCount} passed, ${result.failedCount} failed, took ${result.durationNanos.nanosToHumanReadableTime()}."
+                        "Test run finished, ${adbDeviceTestRun.passedCount} passed, ${adbDeviceTestRun.failedCount} failed, took ${adbDeviceTestRun.durationNanos.nanosToHumanReadableTime()}."
                 )
             }
             .doOnError { adbDevice.log("Error during tests run: $it") }
@@ -110,24 +142,35 @@ private fun List<Pair<String, String>>.formatInstrumentationOptions(): String = 
     false -> " " + joinToString(separator = " ") { "-e ${it.first} ${it.second}" }
 }
 
-private fun pullTestFiles(adbDevice: AdbDevice, test: Test, outputDir: File, verboseOutput: Boolean): Single<Boolean> = Single
+data class PulledFiles(
+        val files: List<File>,
+        val screenshots: List<File>
+)
+
+private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outputDir: File, verboseOutput: Boolean): Single<PulledFiles> = Single
+        // TODO: Add support for spoon files dir.
         .fromCallable {
             File(File(File(outputDir, "screenshots"), adbDevice.id), test.className).apply { mkdirs() }
         }
-        .flatMap { folderOnHostMachine ->
-            // TODO: Collect logcat logs for separate tests.
+        .flatMap { screenshotsFolderOnHostMachine ->
             adbDevice
                     .pullFolder(
                             // TODO: Add support for internal storage and external storage strategies.
-                            // TODO: Add support for spoon files dir.
                             folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}",
-                            folderOnHostMachine = folderOnHostMachine,
+                            folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
                     )
+                    .map { screenshotsFolderOnHostMachine }
+        }
+        .map { screenshotsFolderOnHostMachine ->
+            PulledFiles(
+                    files = emptyList(), // TODO: Pull test files.
+                    screenshots = screenshotsFolderOnHostMachine.listFiles().toList()
+            )
         }
 
-private fun saveLogcat(adbDevice: AdbDevice, logsDir: Single<File>): Observable<Pair<String, String>> = logsDir.toObservable()
-        .map { logsDir -> logsDir to File(logsDir, "full.logcat") }
+private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<String, String>> = Observable
+        .just(logsDir to logcatFileForDevice(logsDir))
         .flatMap { (logsDir, fullLogcatFile) -> adbDevice.redirectLogcatToFile(fullLogcatFile).toObservable().map { logsDir to fullLogcatFile } }
         .flatMap { (logsDir, fullLogcatFile) ->
             data class result(val logcat: String = "", val startedTestClassAndName: Pair<String, String>? = null, val finishedTestClassAndName: Pair<String, String>? = null)
@@ -159,10 +202,14 @@ private fun saveLogcat(adbDevice: AdbDevice, logsDir: Single<File>): Observable<
                     }
                     .filter { it.startedTestClassAndName != null && it.startedTestClassAndName == it.finishedTestClassAndName }
                     .map { result ->
-                        File(File(logsDir, result.startedTestClassAndName!!.first)
-                                .apply { mkdirs() }, "${result.startedTestClassAndName.second}.logcat")
+                        logcatFileForTest(logsDir, className = result.startedTestClassAndName!!.first, testName = result.startedTestClassAndName.second)
+                                .apply { parentFile.mkdirs() }
                                 .writeText(result.logcat)
 
                         result.startedTestClassAndName
                     }
         }
+
+private fun logcatFileForDevice(logsDir: File) = File(logsDir, "full.logcat")
+
+private fun logcatFileForTest(logsDir: File, className: String, testName: String): File = File(File(logsDir, className), "$testName.logcat")

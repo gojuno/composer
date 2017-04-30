@@ -1,6 +1,7 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.Test.Result.*
+import com.gojuno.commander.android.AdbDevice
+import com.gojuno.composer.AdbDeviceTest.Status.*
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
@@ -11,39 +12,57 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 class JUnitReportSpec : Spek({
 
-    context("write test run result to junit4 report to file") {
+    context("write test run result as junit4 report to file") {
 
+        val adbDevice by memoized { AdbDevice(id = "testDevice", online = true) }
         val subscriber by memoized { TestSubscriber<Unit>() }
         val outputFile by memoized { testFile() }
 
         perform {
             writeJunit4Report(
-                    testRunResult = TestRunResult(
-                            testPackageName = "com.gojuno.test",
+                    suite = Suite(
+                            testPackage = "com.gojuno.test",
+                            devices = listOf(Device(id = adbDevice.id, logcat = testFile(), instrumentationOutput = testFile())),
                             tests = listOf(
-                                    Test(
+                                    AdbDeviceTest(
+                                            adbDevice = adbDevice,
                                             className = "test.class.name1",
                                             testName = "test1",
-                                            result = Passed,
-                                            durationNanos = SECONDS.toNanos(2)
+                                            status = Passed,
+                                            durationNanos = SECONDS.toNanos(2),
+                                            logcat = testFile(),
+                                            files = emptyList(),
+                                            screenshots = emptyList()
                                     ),
-                                    Test(
+                                    AdbDeviceTest(
+                                            adbDevice = adbDevice,
                                             className = "test.class.name2",
                                             testName = "test2",
-                                            result = Failed(stacktrace = "multi\nline\nstacktrace"),
-                                            durationNanos = MILLISECONDS.toNanos(3250)
+                                            status = Failed(stacktrace = "multi\nline\nstacktrace"),
+                                            durationNanos = MILLISECONDS.toNanos(3250),
+                                            logcat = testFile(),
+                                            files = emptyList(),
+                                            screenshots = emptyList()
                                     ),
-                                    Test(
+                                    AdbDeviceTest(
+                                            adbDevice = adbDevice,
                                             className = "test.class.name3",
                                             testName = "test3",
-                                            result = Passed,
-                                            durationNanos = SECONDS.toNanos(1)
+                                            status = Passed,
+                                            durationNanos = SECONDS.toNanos(1),
+                                            logcat = testFile(),
+                                            files = emptyList(),
+                                            screenshots = emptyList()
                                     ),
-                                    Test(
+                                    AdbDeviceTest(
+                                            adbDevice = adbDevice,
                                             className = "test.class.name4",
                                             testName = "test4",
-                                            result = Ignored,
-                                            durationNanos = SECONDS.toNanos(0)
+                                            status = Ignored,
+                                            durationNanos = SECONDS.toNanos(0),
+                                            logcat = testFile(),
+                                            files = emptyList(),
+                                            screenshots = emptyList()
                                     )
                             ),
                             passedCount = 2,
