@@ -13,9 +13,9 @@ import java.io.File
 
 sealed class Exit(val code: Int, val message: String?) {
     object Ok : Exit(code = 0, message = null)
-    object NoDevicesAvailableForTests : Exit(code = 1, message = "No devices available for tests.")
-    object ThereWereFailedTests : Exit(code = 1, message = "There were failed tests.")
-    object NoTests : Exit(code = 1, message = "0 tests were run.")
+    object NoDevicesAvailableForTests : Exit(code = 1, message = "Error: No devices available for tests.")
+    object ThereWereFailedTests : Exit(code = 1, message = "Error: There were failed tests.")
+    object NoTests : Exit(code = 1, message = "Error: 0 tests were run.")
 }
 
 fun exit(exit: Exit) {

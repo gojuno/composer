@@ -6,7 +6,7 @@ import rx.Completable
 import java.io.File
 
 fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File): Completable = Completable.fromCallable {
-    outputDir.parentFile.mkdirs()
+    outputDir.mkdirs()
 
     val htmlIndexJson = gson.toJson(
             HtmlIndex(

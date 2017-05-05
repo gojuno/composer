@@ -11,9 +11,9 @@ import org.jetbrains.spek.api.dsl.context
 import org.jetbrains.spek.api.dsl.it
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
-class HtmlShortSuiteSpec : Spek({
+class HtmlFullSuiteSpec : Spek({
 
-    context("Suite.toHtmlShortSuite") {
+    context("Suite.toHtmlFullSuite") {
         val suite = Suite(
                 testPackage = "p",
                 devices = listOf(
@@ -49,16 +49,17 @@ class HtmlShortSuiteSpec : Spek({
                 timestampMillis = 123
         )
 
-        val htmlShortSuite = suite.toHtmlShortSuite(id = "testSuite")
+        val htmlFullSuite = suite.toHtmlFullSuite(id = "testSuite")
 
-        it("converts Suite to HtmlShortSuite") {
-            assertThat(htmlShortSuite).isEqualTo(HtmlShortSuite(
+        it("converts Suite to HtmlFullSuite") {
+            assertThat(htmlFullSuite).isEqualTo(HtmlFullSuite(
                     id = "testSuite",
                     passedCount = suite.passedCount,
                     ignoredCount = suite.ignoredCount,
                     failedCount = suite.failedCount,
                     durationMillis = NANOSECONDS.toMillis(suite.durationNanos),
-                    devices = suite.devices.map { it.toHtmlDevice() }
+                    devices = suite.devices.map { it.toHtmlDevice() },
+                    tests = suite.tests.map { it.toHtmlTest() }
             ))
         }
     }

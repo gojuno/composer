@@ -160,12 +160,17 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
                             folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
                     )
-                    .map { screenshotsFolderOnHostMachine }
+                    .map { File(screenshotsFolderOnHostMachine, test.testName) }
         }
         .map { screenshotsFolderOnHostMachine ->
             PulledFiles(
                     files = emptyList(), // TODO: Pull test files.
-                    screenshots = screenshotsFolderOnHostMachine.listFiles().toList()
+                    screenshots = screenshotsFolderOnHostMachine.let {
+                        when (it.exists()) {
+                            true -> it.listFiles().toList()
+                            else -> emptyList()
+                        }
+                    }
             )
         }
 
