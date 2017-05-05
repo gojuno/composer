@@ -10,16 +10,16 @@ data class HtmlShortSuite(
         @SerializedName("id")
         val id: String,
 
-        @SerializedName("passedCount")
+        @SerializedName("passed_count")
         val passedCount: Int,
 
-        @SerializedName("ignoredCount")
+        @SerializedName("ignored_count")
         val ignoredCount: Int,
 
-        @SerializedName("failedCount")
+        @SerializedName("failed_count")
         val failedCount: Int,
 
-        @SerializedName("durationMillis")
+        @SerializedName("duration_millis")
         val durationMillis: Long,
 
         @SerializedName("devices")

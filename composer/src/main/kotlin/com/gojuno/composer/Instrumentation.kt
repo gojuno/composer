@@ -74,7 +74,7 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
                         }
                         .let { statusCode ->
                             when (statusCode) {
-                                null -> throw IllegalStateException("Unknown test status status code [$statusCode], please report that to Composer maintainers $str")
+                                null -> throw IllegalStateException("Unknown test status code [$statusCode], please report that to Composer maintainers $str")
                                 else -> statusCode
                             }
                         },

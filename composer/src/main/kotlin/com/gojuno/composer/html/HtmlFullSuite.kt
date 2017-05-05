@@ -3,8 +3,7 @@ package com.gojuno.composer.html
 import com.gojuno.composer.Device
 import com.gojuno.composer.Suite
 import com.google.gson.annotations.SerializedName
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.TimeUnit.*
+import java.util.concurrent.TimeUnit.NANOSECONDS
 
 data class HtmlFullSuite(
         
@@ -14,16 +13,16 @@ data class HtmlFullSuite(
         @SerializedName("tests")
         val tests: List<HtmlTest>,
 
-        @SerializedName("passedCount")
+        @SerializedName("passed_count")
         val passedCount: Int,
 
-        @SerializedName("ignoredCount")
+        @SerializedName("ignored_count")
         val ignoredCount: Int,
 
-        @SerializedName("failedCount")
+        @SerializedName("failed_count")
         val failedCount: Int,
 
-        @SerializedName("durationMillis")
+        @SerializedName("duration_millis")
         val durationMillis: Long,
 
         @SerializedName("devices")

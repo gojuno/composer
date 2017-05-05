@@ -6,16 +6,16 @@ import java.util.concurrent.TimeUnit.NANOSECONDS
 
 data class HtmlTest(
 
-        @SerializedName("packageName")
+        @SerializedName("package_name")
         val packageName: String,
 
-        @SerializedName("className")
+        @SerializedName("class_name")
         val className: String,
 
         @SerializedName("name")
         val name: String,
 
-        @SerializedName("durationMillis")
+        @SerializedName("duration_millis")
         val durationMillis: Long,
 
         @SerializedName("status")
@@ -24,7 +24,7 @@ data class HtmlTest(
         @SerializedName("stacktrace")
         val stacktrace: String?,
 
-        @SerializedName("logcatPath")
+        @SerializedName("logcat_path")
         val logcatPath: String,
 
         @SerializedName("deviceId")
@@ -33,10 +33,10 @@ data class HtmlTest(
         @SerializedName("properties")
         val properties: Map<String, Any>,
 
-        @SerializedName("filePaths")
+        @SerializedName("file_paths")
         val filePaths: List<String>,
 
-        @SerializedName("screenshotsPaths")
+        @SerializedName("screenshots_paths")
         val screenshotsPaths: List<String>
 ) {
     enum class Status {

@@ -8,10 +8,10 @@ data class HtmlDevice(
         @SerializedName("id")
         val id: String,
 
-        @SerializedName("logcatPath")
+        @SerializedName("logcat_path")
         val logcatPath: String,
 
-        @SerializedName("instrumentationOutputPath")
+        @SerializedName("instrumentation_output_path")
         val instrumentationOutputPath: String
 )
 
