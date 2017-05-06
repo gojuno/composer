@@ -1,20 +1,20 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.Test.Result.*
+import com.gojuno.composer.InstrumentationTest.Status.*
 import rx.Observable
 import java.io.File
 
-data class Test(
+data class InstrumentationTest(
         val className: String,
         val testName: String,
-        val result: Result,
+        val status: Status,
         val durationNanos: Long
 ) {
 
-    sealed class Result {
-        object Passed : Result()
-        object Ignored : Result()
-        data class Failed(val stacktrace: String) : Result()
+    sealed class Status {
+        object Passed : Status()
+        object Ignored : Status()
+        data class Failed(val stacktrace: String) : Status()
     }
 }
 
@@ -74,7 +74,7 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
                         }
                         .let { statusCode ->
                             when (statusCode) {
-                                null -> throw IllegalStateException("Unknown test result status code [$statusCode], please report that to Composer maintainers $str")
+                                null -> throw IllegalStateException("Unknown test status code [$statusCode], please report that to Composer maintainers $str")
                                 else -> statusCode
                             }
                         },
@@ -101,13 +101,13 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
             .map { parseInstrumentationEntry(it.buffer) }
 }
 
-fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
-    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<Test> = emptyList(), val totalTestsCount: Int = 0)
+fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> {
+    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<InstrumentationTest> = emptyList(), val totalTestsCount: Int = 0)
 
     return this
             .scan(result()) { previousResult, newEntry ->
                 val entries = previousResult.entries + newEntry
-                val tests: List<Test> = entries
+                val tests: List<InstrumentationTest> = entries
                         .mapIndexed { index, first ->
                             val second = entries
                                     .subList(index + 1, entries.size)
@@ -125,10 +125,10 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<Test> {
                         }
                         .filterNotNull()
                         .map { (first, second) ->
-                            Test(
+                            InstrumentationTest(
                                     className = first.clazz,
                                     testName = first.test,
-                                    result = when (second.statusCode) {
+                                    status = when (second.statusCode) {
                                         StatusCode.Ok -> Passed
                                         StatusCode.Ignored -> Ignored
                                         StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)

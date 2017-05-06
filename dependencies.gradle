@@ -6,6 +6,7 @@ ext.versions = [
         commander        : '0.1.1',
         apacheCommonsIo  : '2.5',
         apacheCommonsLang: '3.5',
+        gson             : '2.8.0',
 
         junit            : '4.12',
         junitPlatform    : '1.0.0-M3',
@@ -24,6 +25,7 @@ ext.libraries = [
         commanderAndroid       : "com.gojuno.commander:android:$versions.commander",
         apacheCommonsIo        : "commons-io:commons-io:$versions.apacheCommonsIo",
         apacheCommonsLang      : "org.apache.commons:commons-lang3:$versions.apacheCommonsLang",
+        gson                   : "com.google.code.gson:gson:$versions.gson",
 
         junit                  : "junit:junit:$versions.junit",
         spek                   : "org.jetbrains.spek:spek-api:$versions.spek",

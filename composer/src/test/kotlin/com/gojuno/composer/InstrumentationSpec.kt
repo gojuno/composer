@@ -1,6 +1,6 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.Test.Result.*
+import com.gojuno.composer.InstrumentationTest.Status.*
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
@@ -199,7 +199,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<Test>() }
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -209,10 +209,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             it("emits expected tests") {
                 // We have no control over system time in tests.
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
-                                result = Failed(stacktrace = """java.net.UnknownHostException: Test Exception
+                                status = Failed(stacktrace = """java.net.UnknownHostException: Test Exception
 at com.example.test.TestClass.test1.1.invoke(TestClass.kt:245)
 at com.example.test.TestClass.test1.1.invoke(TestClass.kt:44)
 at com.example.test.TestClass.test1(TestClass.kt:238)
@@ -252,22 +252,22 @@ at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:10
 at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)"""),
                                 durationNanos = 0
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test3",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test4",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0
                         )
                 ))
@@ -307,7 +307,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<Test>() }
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -420,7 +420,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<Test>() }
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -429,22 +429,22 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
             it("emits expected tests") {
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0L
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0L
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test3",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0L
                         )
                 ))
@@ -530,7 +530,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<Test>() }
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -539,16 +539,16 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
             it("emits expected tests") {
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
-                                result = Passed,
+                                status = Passed,
                                 durationNanos = 0L
                         ),
-                        Test(
+                        InstrumentationTest(
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
-                                result = Ignored,
+                                status = Ignored,
                                 durationNanos = 0L
                         )
                 ))
