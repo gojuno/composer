@@ -10,6 +10,8 @@ import java.lang.Exception
 
 fun tail(file: File): Observable<String> = Observable.create<String>(
         { emitter ->
+            val o = None
+          
             Tailer.create(file, object : TailerListener {
                 override fun init(tailer: Tailer) = emitter.setCancellation { tailer.stop() }
                 override fun handle(line: String) = emitter.onNext(line)
@@ -20,3 +22,8 @@ fun tail(file: File): Observable<String> = Observable.create<String>(
         },
         BackpressureMode.BUFFER
 )
+
+sealed class Optional<out T : Any>
+
+data class Some<out T : Any>(val value: T) : Optional<T>()
+object None : Optional<Nothing>()
