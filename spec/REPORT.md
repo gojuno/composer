@@ -2,11 +2,13 @@
 
 * Test is a single functionality check.
     * Properties:
-        * name;
         * package name;
         * class name;
+        * name;
         * duration;
         * log;
+        * stacktrace (optional);
+        * completion status (passed | failed | ignored);
         * device name;
         * list of properties — property is a key-value pair;
         * list of files;
@@ -17,7 +19,10 @@
         * success tests count;
         * failure tests count;
         * ignored tests count;
-        * log;
+        * list of devices:
+          * device id;
+          * instrumentation output;
+          * logcat;
         * duration.
     * Test suite can be run different ways.
         * Single device — just a single run of all tests in a test suite.
@@ -34,6 +39,9 @@ This page should be skipped if sharding was used to run the test suite.
 Contains a list of items with following properties:
 
 * device name;
+* test run duration;
+* instrumentation output;
+* logcat output;
 * test suite success tests count;
 * test suite failure tests count;
 * test suite ignored tests count.
