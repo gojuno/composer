@@ -29,7 +29,6 @@ data class HtmlShortTest(
         val properties: Map<String, Any>
 )
 
-
 fun HtmlFullTest.toHtmlShortTest() = HtmlShortTest(
         id = id,
         packageName = packageName,
