@@ -11,7 +11,7 @@ data class HtmlFullSuite(
         val id: String,
         
         @SerializedName("tests")
-        val tests: List<HtmlTest>,
+        val tests: List<HtmlShortTest>,
 
         @SerializedName("passed_count")
         val passedCount: Int,
@@ -31,7 +31,7 @@ data class HtmlFullSuite(
 
 fun Suite.toHtmlFullSuite(id: String) = HtmlFullSuite(
         id = id,
-        tests = tests.map { it.toHtmlTest() },
+        tests = tests.map { it.toHtmlFullTest().toHtmlShortTest() },
         passedCount = passedCount,
         ignoredCount = ignoredCount,
         failedCount = failedCount,

@@ -9,7 +9,7 @@ import org.jetbrains.spek.api.dsl.context
 import org.jetbrains.spek.api.dsl.it
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
-class HtmlTestSpec : Spek({
+class HtmlFullTestSpec : Spek({
 
     context("AdbDeviceTest.toHtmlTest") {
 
@@ -24,14 +24,14 @@ class HtmlTestSpec : Spek({
                 screenshots = listOf(testFile(), testFile())
         )
 
-        val htmlTest = adbDeviceTest.toHtmlTest()
+        val htmlTest = adbDeviceTest.toHtmlFullTest()
 
-        it("converts AdbDeviceTest to HtmlTest") {
-            assertThat(htmlTest).isEqualTo(HtmlTest(
+        it("converts AdbDeviceTest to HtmlFullTest") {
+            assertThat(htmlTest).isEqualTo(HtmlFullTest(
                     packageName = "com.gojuno.example",
                     className = "TestClass",
                     name = adbDeviceTest.testName,
-                    status = HtmlTest.Status.Passed,
+                    status = HtmlFullTest.Status.Passed,
                     durationMillis = NANOSECONDS.toMillis(adbDeviceTest.durationNanos),
                     stacktrace = null,
                     logcatPath = adbDeviceTest.logcat.path,

@@ -4,7 +4,7 @@ import com.gojuno.composer.AdbDeviceTest
 import com.google.gson.annotations.SerializedName
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
-data class HtmlTest(
+data class HtmlFullTest(
 
         @SerializedName("package_name")
         val packageName: String,
@@ -14,6 +14,9 @@ data class HtmlTest(
 
         @SerializedName("name")
         val name: String,
+
+        @SerializedName("id")
+        val id: String = "$packageName$className$name",
 
         @SerializedName("duration_millis")
         val durationMillis: Long,
@@ -52,15 +55,15 @@ data class HtmlTest(
     }
 }
 
-fun AdbDeviceTest.toHtmlTest() = HtmlTest(
+fun AdbDeviceTest.toHtmlFullTest() = HtmlFullTest(
         packageName = className.substringBeforeLast("."),
         className = className.substringAfterLast("."),
         name = testName,
         durationMillis = NANOSECONDS.toMillis(durationNanos),
         status = when (status) {
-            AdbDeviceTest.Status.Passed -> HtmlTest.Status.Passed
-            AdbDeviceTest.Status.Ignored -> HtmlTest.Status.Ignored
-            is AdbDeviceTest.Status.Failed -> HtmlTest.Status.Failed
+            AdbDeviceTest.Status.Passed -> HtmlFullTest.Status.Passed
+            AdbDeviceTest.Status.Ignored -> HtmlFullTest.Status.Ignored
+            is AdbDeviceTest.Status.Failed -> HtmlFullTest.Status.Failed
         },
         stacktrace = when (status) {
             is AdbDeviceTest.Status.Failed -> status.stacktrace

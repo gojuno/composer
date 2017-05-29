@@ -5,6 +5,12 @@ import com.google.gson.Gson
 import rx.Completable
 import java.io.File
 
+/**
+ * Following file tree structure will be created:
+ * - index.json
+ * - suites/suiteId.json
+ * - suites/deviceId/testId.json
+ */
 fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File): Completable = Completable.fromCallable {
     outputDir.mkdirs()
 
@@ -18,8 +24,11 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File): Completab
 
     val suitesDir = File(outputDir, "suites").apply { mkdirs() }
 
-    suites.mapIndexed { index, suite ->
-        val suiteJson = gson.toJson(suite.toHtmlFullSuite(id = "$index"))
-        File(suitesDir, "$index.json").writeText(suiteJson)
+    suites.mapIndexed { suiteId, suite ->
+        File(suitesDir, "$suiteId.json").writeText(gson.toJson(suite.toHtmlFullSuite(id = "$suiteId")))
+
+        suite.tests.map { it.toHtmlFullTest() }.forEach { htmlFullTest ->
+            File(File(File(suitesDir, "$suiteId"), htmlFullTest.deviceId).apply { mkdirs() }, "${htmlFullTest.id}.json").writeText(gson.toJson(htmlFullTest))
+        }
     }
 }
