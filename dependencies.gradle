@@ -9,8 +9,8 @@ ext.versions = [
         gson             : '2.8.0',
 
         junit            : '4.12',
-        junitPlatform    : '1.0.0-M3',
-        spek             : '1.1.0',
+        junitPlatform    : '1.0.0-M4',
+        spek             : '1.1.2',
         assertJ          : '3.5.2',
 ]
 
@@ -29,7 +29,6 @@ ext.libraries = [
 
         junit                  : "junit:junit:$versions.junit",
         spek                   : "org.jetbrains.spek:spek-api:$versions.spek",
-        spekSubjectExtension   : "org.jetbrains.spek:spek-subject-extension:$versions.spek",
         spekJunitPlatformEngine: "org.jetbrains.spek:spek-junit-platform-engine:$versions.spek",
         assertJ                : "org.assertj:assertj-core:$versions.assertJ",
 ]

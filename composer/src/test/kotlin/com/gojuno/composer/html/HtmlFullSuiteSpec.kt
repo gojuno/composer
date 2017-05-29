@@ -59,7 +59,7 @@ class HtmlFullSuiteSpec : Spek({
                     failedCount = suite.failedCount,
                     durationMillis = NANOSECONDS.toMillis(suite.durationNanos),
                     devices = suite.devices.map { it.toHtmlDevice() },
-                    tests = suite.tests.map { it.toHtmlTest() }
+                    tests = suite.tests.map { it.toHtmlFullTest().toHtmlShortTest() }
             ))
         }
     }

@@ -8,3 +8,5 @@ inline fun <reified C> fileFromJarResources(name: String) = File(C::class.java.c
 fun testFile(): File = createTempFile().apply { deleteOnExit() }
 
 fun SpecBody.perform(body: () -> Unit) = beforeEachTest(body)
+
+fun SpecBody.cleanup(body: () -> Unit) = afterEachTest(body)
