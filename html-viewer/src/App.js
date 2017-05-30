@@ -1,18 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Suite from './components/Suite'
+import SuitesList from './components/SuitesList'
+import TestItem from './components/TestItem'
+import {
+  HashRouter as Router,
+  Route,
+  Switch
+} from 'react-router-dom'
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <Router>
+        <Switch>
+          <div className="page">
+            <div className="page-content">
+              <Route exact path="/" component={ SuitesList } />
+              <Route exact path="/suites/:suiteId" component={ Suite } />
+              <Route path="/suites/:suiteId/tests/:testId" component={ TestItem } />
+            </div>
+          </div>
+        </Switch>
+      </Router>
     );
   }
 }

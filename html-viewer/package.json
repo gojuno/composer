@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "jquery": "^3.2.1",
     "react": "^15.5.4",
-    "react-dom": "^15.5.4"
+    "react-dom": "^15.5.4",
+    "react-router-dom": "^4.1.1"
   },
   "devDependencies": {
     "autoprefixer": "7.1.0",
@@ -34,7 +36,6 @@
     "postcss-flexbugs-fixes": "3.0.0",
     "postcss-loader": "2.0.5",
     "postcss-import": "^9.1.0",
-    "postcss-inline-svg": "^2.3.0",
     "postcss-mixins": "^5.4.1",
     "postcss-sass-colors": "^0.1.1",
     "postcss-scss": "^0.4.1",
@@ -48,7 +49,8 @@
     "webpack": "2.6.1",
     "webpack-dev-server": "2.4.5",
     "webpack-manifest-plugin": "1.1.0",
-    "whatwg-fetch": "2.0.3"
+    "whatwg-fetch": "2.0.3",
+    "@juno/ui-private": "git+ssh://git.junolab.net/fl/ui-private.git"
   },
   "scripts": {
     "start": "node scripts/start.js",

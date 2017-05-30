@@ -134,6 +134,7 @@ module.exports = {
           /\.html$/,
           /\.(js|jsx)$/,
           /\.css$/,
+          /\.scss$/,
           /\.json$/,
           /\.bmp$/,
           /\.gif$/,
@@ -189,22 +190,34 @@ module.exports = {
                     sourceMap: true,
                   },
                 },
+              ],
+            },
+            extractTextPluginOptions
+          )
+        ),
+        // Note: this won't work without `new ExtractTextPlugin()` in `plugins`.
+      },
+      {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract(
+          Object.assign(
+            {
+              fallback: require.resolve('style-loader'),
+              use: [
                 {
-                  loader: require.resolve('postcss-loader'),
+                  loader: 'postcss-loader',
                   options: {
-                    ident: 'postcss', // https://webpack.js.org/guides/migrating/#complex-options
+                    parser: 'postcss-scss',
                     plugins: () => [
-                      require('postcss-flexbugs-fixes'),
-                      autoprefixer({
-                        browsers: [
-                          '>1%',
-                          'last 4 versions',
-                          'Firefox ESR',
-                          'not ie < 9', // React doesn't support IE8 anyway
-                        ],
-                        flexbox: 'no-2009',
-                      }),
+                      require('postcss-import'),
+                      require('postcss-sass-colors'),
+                      require('postcss-mixins'),
+                      require('precss'),
+                      autoprefixer
                     ],
+                    importLoaders: 1,
+                    minimize: true,
+                    sourceMap: true,
                   },
                 },
               ],
