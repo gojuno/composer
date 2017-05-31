@@ -37,6 +37,7 @@ docker run \
 --env BINTRAY_API_KEY="$BINTRAY_API_KEY" \
 --env BINTRAY_GPG_PASSPHRASE="$BINTRAY_GPG_PASSPHRASE" \
 --volume `"pwd"`:/opt/project \
+--rm \
 openjdk:8u121-jdk \
 bash -c "$BUILD_COMMAND"
 
