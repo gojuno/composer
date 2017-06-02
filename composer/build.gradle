@@ -20,6 +20,7 @@ dependencies {
 
 dependencies {
     testCompile libraries.spek
+    testCompile libraries.junitPlatformRunner
     testCompile libraries.spekJunitPlatformEngine
     testCompile libraries.assertJ
 }

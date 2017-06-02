@@ -9,21 +9,23 @@ class HtmlShortTestSpec : Spek({
 
     context("HtmlFullTest.toHtmlShortTest") {
 
-        val htmlFullTest = HtmlFullTest(
-                packageName = "com.gojuno.example",
-                className = "TestClass",
-                name = "test1",
-                status = HtmlFullTest.Status.Passed,
-                durationMillis = 1234,
-                stacktrace = null,
-                logcatPath = "testLogcatPath",
-                filePaths = listOf("testFilePath1", "testFilePath2"),
-                screenshotsPaths = listOf("testScreenshotPath1", "testScreenshotPath2"),
-                deviceId = "test-device-id",
-                properties = mapOf("key1" to "value1", "key2" to "value2")
-        )
+        val htmlFullTest by memoized {
+            HtmlFullTest(
+                    packageName = "com.gojuno.example",
+                    className = "TestClass",
+                    name = "test1",
+                    status = HtmlFullTest.Status.Passed,
+                    durationMillis = 1234,
+                    stacktrace = null,
+                    logcatPath = "testLogcatPath",
+                    filePaths = listOf("testFilePath1", "testFilePath2"),
+                    screenshotsPaths = listOf("testScreenshotPath1", "testScreenshotPath2"),
+                    deviceId = "test-device-id",
+                    properties = mapOf("key1" to "value1", "key2" to "value2")
+            )
+        }
 
-        val htmlShortTest = htmlFullTest.toHtmlShortTest()
+        val htmlShortTest by memoized { htmlFullTest.toHtmlShortTest() }
 
         it("converts HtmlFullTest to HtmlShortTest") {
             assertThat(htmlShortTest).isEqualTo(HtmlShortTest(
