@@ -1,6 +1,7 @@
-a:hover {
-  color: $electric-darker;
-}
+//TODO: Test title to make bigger on test page
+//TODO: Change colors log
+
+/* Layout */
 
 .container-expanded {
   margin: 0 -$side-padding;
@@ -16,26 +17,31 @@ a:hover {
   margin-bottom: 5px;
 }
 
-.w700 {
+.bounded {
   max-width: 700px;
 }
 
-.download-link {
-  &:hover {
-    color: $electric-darker;
-  }
+.shortened {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.text-success {
+.title-l {
+  color: $electric;
+}
+
+/* Statuses */
+.status-passed {
   color: $green;
 }
 
-.hoverable {
-  cursor: pointer;
+.status-ignored {
+  color: $primary-grey;
+}
 
-  &:hover {
-    color: $electric;
-  }
+.status-failed {
+  color: $red;
 }
 
 .with-arrow {
@@ -64,7 +70,6 @@ a:hover {
 /* List */
 
 .list__item {
-  display: block;
   position: relative;
   padding: $side-padding;
   color: $primary-blue;
@@ -95,6 +100,7 @@ a:hover {
     cursor: pointer;
     z-index: 2;
     box-shadow: 0 0 3px 0 $primary-grey-lighter-2;
+    color: $primary-blue;
   }
 
   &:nth-child(odd) {
@@ -102,43 +108,70 @@ a:hover {
   }
 }
 
-.list__item__title-l {
-  margin-bottom: 5px;
-  color: $electric;
-}
-
-.list__item__title-m {
-  margin-bottom: 5px;
-}
-
-.additional-info {
-  position: absolute;
-  right: $side-padding;
-  top: 10px;
-}
-
 .images__item {
-  padding-right: $side-padding;
+  box-sizing: border-box;
+  flex: 0 0 25%;
+  padding: 0 $side-padding $side-padding 0;
+
+  img {
+    width: 100%;
+    vertical-align: middle;
+  }
 }
 
 @media $large-screen {
+  .images__item {
+    flex: 0 0 20%;
+  }
   .list__item {
     padding: $side-padding -$side-padding-desktop;
   }
 }
 
-.suite-item__title {
-  display: inline-block;
-  position: relative;
+/* Labels list */
 
-  &:before {
-    content: '';
-    display: block;
-    position: absolute;
-    right: -18px;
-    top: 4px;
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 6px solid $electric;
-  }
+.labels-list {
+  text-align: right;
+}
+
+/* Log */
+
+.log-wrapper {
+  min-width: 1160px;
+  max-width: 1860px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.log {
+  background: #202020;
+  color: rgba(255,255,255,.8);
+}
+
+.log__default {
+  color: rgba(255,255,255,.8);
+}
+
+.log__verbose {
+  color: rgba(255,255,255,.7);
+}
+
+.log__debug {
+  color: #1D91BB;
+}
+
+.log__info {
+  color: #53C8A1;
+}
+
+.log__warning {
+  color: #DBBE10;
+}
+
+.log__error {
+  color: #FF6B68;
+}
+
+.log__assert {
+  color: #C200FF;
 }

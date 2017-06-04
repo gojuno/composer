@@ -1,29 +1,14 @@
 import React, { Component } from 'react';
-import getJson from './../utils/getJson';
+import cx from 'classnames';
 import convertTime from './../utils/convertTime'
-import { Link } from 'react-router-dom';
 import SearchBar from './SearchBar';
 
 export default class Suite extends Component {
-  state = {
-    data: null
-  };
-
-  componentWillMount() {
-    console.log('Suite');
-    getJson(`/data/suites/${this.props.match.params.suiteId}.json`, (json) => {
-      console.log(JSON.parse(json))
-      this.setState({ data: JSON.parse(json) })
-    });
-  }
-
   render() {
-    let { data } = this.state;
-    if (!data) return null;
-
+    const data = window.suite;
     return (
       <div className="content margin-top-20">
-        <div className="title-common"><Link to="/">Suits list</Link>/ Suite {data.id}</div>
+        <div className="title-common"><a href="../index.html">Suits list</a>/ Suite {data.id}</div>
         <div className="row justify-between">
           <div className="card card-info">
             <div className="text-sub-title-light">Passed</div>
@@ -53,15 +38,21 @@ export default class Suite extends Component {
           <div className="title-common">Tests <span className="label">{ data.tests.length }</span></div>
           <div className="container-expanded list">
             { data.tests.map((test, i) => {
-              return ( <Link key={ i } to={`${this.props.match.url}/tests/${test.id}`} className={`list__item ${test.status}`}>
-                <div className="list__item__title-m text-sub-title">{ test.name }</div>
-                <div className="list__item__title-l margin-right-10">{ test.class_name }</div>
-                <div className="list__item__title-s">{ test.package_name }</div>
-                <div className="additional-info">
-                  <div className="label info margin-right-10">{ test.deviceId }</div>
-                  <div className="label">{ convertTime(test.duration_millis) }</div>
+              return ( <a key={ i } href={`${data.id}/${test.deviceId}/${test.id}.html`} className={ cx('list__item', 'row full justify-between', test.status) }>
+                <div>
+                  <div className="margin-bottom-5 text-sub-title">{ test.name }</div>
+                  <div className="title-l text-sub-title margin-bottom-5 margin-right-10">{ test.class_name }</div>
+                  <div className="margin-bottom-5">{ test.package_name }</div>
                 </div>
-              </Link> )
+                <div className="labels-list">
+                  <div className="margin-bottom-5">
+                    <span className="label info">{ test.deviceId }</span>
+                  </div>
+                  <div className="margin-bottom-5">
+                    <span className="label">{ convertTime(test.duration_millis) }</span>
+                  </div>
+                </div>
+              </a> )
             }) }
           </div>
         </div>
