@@ -16,8 +16,8 @@ export default class TestItem extends Component {
     });
     return (
       <div className="content margin-top-20">
-        <div className="title-common"><a href="../../../index.html">Suits list</a> / <a href={ `../../${0}.html` }>
-          Suite { 0 }</a> /
+        <div className="title-common"><a href="../../../index.html">Suits list</a> / <a href={ `../../${data.suiteId}.html` }>
+          Suite { data.suiteId }</a> /
           <div className="label info">{ data.deviceId }</div>
         </div>
         <div className="margin-top-20">
@@ -57,43 +57,11 @@ export default class TestItem extends Component {
           <div className="card">
             <ul className="images row">
               { data.screenshots_paths.map((image) => {
-                let url = image.replace('/opt/project/ci/internal/../../artifacts/composer-output', './../../..');
-                return ( <li key={image} className="images__item col-20">
-                  <img src={ url } />
+                return ( <li key={ image } className="images__item col-20">
+                  <img src={ image } />
                 </li> )
               }) }
             </ul>
-          </div>
-
-          <div className="card log">
-            <div className="log__default">
-              05-29 15:36:04.976 4065 4477 ? LogTracker: [Rx-1-io-30] Analytics start timing event: Appearance /
-              StartupTime
-            </div>
-            <div className="log__info">
-              05-29 15:36:04.976 4065 4477 I LogTracker: [Rx-1-io-30] Analytics start timing event: Appearance /
-              StartupTime
-            </div>
-            <div className="log__verbose">
-              05-29 15:36:04.976 4065 4477 V LogTracker: [Rx-1-io-30] Analytics start timing event: Appearance /
-              StartupTime
-            </div>
-            <div className="log__debug">
-              05-29 15:36:04.977 4065 4389 D RiderApplication$initFabricAsync: [Rx-1-io-28] Google Play Services
-              version: 10.2.98 (470-146496160)
-            </div>
-            <div className="log__error">
-              05-29 15:36:04.983 1287 1287 E EGL_emulation: tid 1287: eglCreateSyncKHR(1669): error 0x3004
-              (EGL_BAD_ATTRIBUTE)
-            </div>
-            <div className="log__warning">
-              05-29 15:36:05.100 4065 4175 W NioEventLoop: Selector.select() returned prematurely 512 times in a row;
-              rebuilding Selector io.netty.channel.nio.SelectedSelectionKeySetSelector@bac7eb3.
-            </div>
-            <div className="log__assert">
-              05-29 15:36:06.100 4065 4175 A NioEventLoop: Selector.select() returned prematurely 512 times in a row;
-              rebuilding Selector io.netty.channel.nio.SelectedSelectionKeySetSelector@bac7eb3.
-            </div>
           </div>
         </div>
       </div>

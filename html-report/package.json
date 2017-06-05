@@ -1,7 +1,7 @@
 {
   "name": "juno-composer",
   "version": "1.0.0",
-  "description": "",
+  "description": "Juno Composer HTML report",
   "main": "index.js",
   "scripts": {
     "dev": "webpack --env=dev --progress --watch",
