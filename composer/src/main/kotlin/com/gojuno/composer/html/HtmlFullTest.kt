@@ -2,6 +2,7 @@ package com.gojuno.composer.html
 
 import com.gojuno.composer.AdbDeviceTest
 import com.google.gson.annotations.SerializedName
+import java.io.File
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
 data class HtmlFullTest(
@@ -55,7 +56,7 @@ data class HtmlFullTest(
     }
 }
 
-fun AdbDeviceTest.toHtmlFullTest() = HtmlFullTest(
+fun AdbDeviceTest.toHtmlFullTest(htmlReportDir: File) = HtmlFullTest(
         packageName = className.substringBeforeLast("."),
         className = className.substringAfterLast("."),
         name = testName,
@@ -69,9 +70,9 @@ fun AdbDeviceTest.toHtmlFullTest() = HtmlFullTest(
             is AdbDeviceTest.Status.Failed -> status.stacktrace
             else -> null
         },
-        logcatPath = logcat.path,
+        logcatPath = logcat.relativePathTo(htmlReportDir),
         deviceId = adbDevice.id,
         properties = emptyMap(), // TODO: add properties support.
-        filePaths = files.map { it.path },
-        screenshotsPaths = screenshots.map { it.path }
+        filePaths = files.map { it.relativePathTo(htmlReportDir) },
+        screenshotsPaths = screenshots.map { it.relativePathTo(htmlReportDir) }
 )

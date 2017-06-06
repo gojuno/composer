@@ -23,7 +23,9 @@ fun tail(file: File): Observable<String> = Observable.create<String>(
         BackpressureMode.BUFFER
 )
 
+
 sealed class Optional<out T : Any>
 
 data class Some<out T : Any>(val value: T) : Optional<T>()
+
 object None : Optional<Nothing>()

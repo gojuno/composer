@@ -2,6 +2,7 @@ package com.gojuno.composer.html
 
 import com.gojuno.composer.Device
 import com.google.gson.annotations.SerializedName
+import java.io.File
 
 data class HtmlDevice(
 
@@ -15,8 +16,8 @@ data class HtmlDevice(
         val instrumentationOutputPath: String
 )
 
-fun Device.toHtmlDevice() = HtmlDevice(
+fun Device.toHtmlDevice(htmlReportDir: File) = HtmlDevice(
         id = id,
-        logcatPath = logcat.path,
-        instrumentationOutputPath = instrumentationOutput.path
+        logcatPath = logcat.relativePathTo(htmlReportDir),
+        instrumentationOutputPath = instrumentationOutput.relativePathTo(htmlReportDir)
 )

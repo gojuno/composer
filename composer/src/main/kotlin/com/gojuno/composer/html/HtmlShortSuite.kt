@@ -1,12 +1,12 @@
 package com.gojuno.composer.html
 
-import com.gojuno.composer.Device
 import com.gojuno.composer.Suite
 import com.google.gson.annotations.SerializedName
+import java.io.File
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
 data class HtmlShortSuite(
-        
+
         @SerializedName("id")
         val id: String,
 
@@ -26,11 +26,11 @@ data class HtmlShortSuite(
         val devices: List<HtmlDevice>
 )
 
-fun Suite.toHtmlShortSuite(id: String) = HtmlShortSuite(
+fun Suite.toHtmlShortSuite(id: String, htmlReportDir: File) = HtmlShortSuite(
         id = id,
         passedCount = passedCount,
         ignoredCount = ignoredCount,
         failedCount = failedCount,
         durationMillis = NANOSECONDS.toMillis(durationNanos),
-        devices = devices.map(Device::toHtmlDevice)
+        devices = devices.map { it.toHtmlDevice(htmlReportDir) }
 )

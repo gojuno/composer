@@ -29,6 +29,7 @@ ext.libraries = [
 
         junit                  : "junit:junit:$versions.junit",
         spek                   : "org.jetbrains.spek:spek-api:$versions.spek",
+        junitPlatformRunner    : "org.junit.platform:junit-platform-launcher:$versions.junitPlatform",
         spekJunitPlatformEngine: "org.jetbrains.spek:spek-junit-platform-engine:$versions.spek",
         assertJ                : "org.assertj:assertj-core:$versions.assertJ",
 ]
