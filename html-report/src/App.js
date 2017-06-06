@@ -5,7 +5,6 @@ import TestItem from './components/TestItem'
 
 class App extends Component {
   renderComponent() {
-    console.log(1);
     if (window.mainData) {
       return <SuitesList />
     }
