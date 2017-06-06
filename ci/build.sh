@@ -11,7 +11,8 @@ pushd "$PROJECT_DIR"
 USER_ID=`id -u $USER`
 
 BUILD_COMMAND="set -xe && "
-BUILD_COMMAND+="apt-get update && apt-get --assume-yes install git && "
+BUILD_COMMAND+="apt-get update && apt-get --assume-yes install git curl && "
+BUILD_COMMAND+="curl -sL https://deb.nodesource.com/setup_7.x | bash - && apt-get install -y nodejs && "
 
 if [ "$USER_ID" == "0" ]; then
     echo "Warning: running as r00t."
@@ -22,6 +23,11 @@ else
     BUILD_COMMAND+="sudo --set-home --preserve-env -u build_user "
 fi
 
+# Build HTML app for reports.
+BUILD_COMMAND+="node --version && npm --version && "
+BUILD_COMMAND+="cd /opt/project/html-report && rm -rf node_modules && npm install && npm run build && cd - && "
+
+# Build Composer.
 BUILD_COMMAND+="/opt/project/gradlew "
 BUILD_COMMAND+="--no-daemon --info --stacktrace "
 BUILD_COMMAND+="clean build "
