@@ -13,13 +13,13 @@ class HtmlDeviceSpec : Spek({
 
         val device = Device(id = "testDevice1", logcat = testFile(), instrumentationOutput = testFile())
 
-        val htmlDevice = device.toHtmlDevice(testFile())
+        val htmlDevice = device.toHtmlDevice(testFile().parentFile)
 
         it("converts Device to HtmlDevice") {
             assertThat(htmlDevice).isEqualTo(HtmlDevice(
                     id = device.id,
-                    logcatPath = "../${device.logcat.name}",
-                    instrumentationOutputPath = "../${device.instrumentationOutput.name}"
+                    logcatPath = device.logcat.name,
+                    instrumentationOutputPath = device.instrumentationOutput.name
             ))
         }
     }

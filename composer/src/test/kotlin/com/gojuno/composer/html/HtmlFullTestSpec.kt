@@ -24,7 +24,7 @@ class HtmlFullTestSpec : Spek({
                 screenshots = listOf(testFile(), testFile())
         )
 
-        val htmlTest = adbDeviceTest.toHtmlFullTest(htmlReportDir = testFile())
+        val htmlTest = adbDeviceTest.toHtmlFullTest(htmlReportDir = testFile().parentFile)
 
         it("converts AdbDeviceTest to HtmlFullTest") {
             assertThat(htmlTest).isEqualTo(HtmlFullTest(
@@ -34,9 +34,9 @@ class HtmlFullTestSpec : Spek({
                     status = HtmlFullTest.Status.Passed,
                     durationMillis = NANOSECONDS.toMillis(adbDeviceTest.durationNanos),
                     stacktrace = null,
-                    logcatPath = "../${adbDeviceTest.logcat.name}",
-                    filePaths = adbDeviceTest.files.map { "../${it.name}" },
-                    screenshotsPaths = adbDeviceTest.screenshots.map { "../${it.name}" },
+                    logcatPath = adbDeviceTest.logcat.name,
+                    filePaths = adbDeviceTest.files.map { it.name },
+                    screenshotsPaths = adbDeviceTest.screenshots.map { it.name },
                     deviceId = adbDeviceTest.adbDevice.id,
                     properties = emptyMap()
             ))
