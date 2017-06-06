@@ -49,7 +49,7 @@ class HtmlFullSuiteSpec : Spek({
                 timestampMillis = 123
         )
 
-        val htmlFullSuite = suite.toHtmlFullSuite(id = "testSuite")
+        val htmlFullSuite = suite.toHtmlFullSuite(id = "testSuite", htmlReportDir = testFile())
 
         it("converts Suite to HtmlFullSuite") {
             assertThat(htmlFullSuite).isEqualTo(HtmlFullSuite(
@@ -58,8 +58,8 @@ class HtmlFullSuiteSpec : Spek({
                     ignoredCount = suite.ignoredCount,
                     failedCount = suite.failedCount,
                     durationMillis = NANOSECONDS.toMillis(suite.durationNanos),
-                    devices = suite.devices.map { it.toHtmlDevice() },
-                    tests = suite.tests.map { it.toHtmlTest() }
+                    devices = suite.devices.map { it.toHtmlDevice(htmlReportDir = testFile()) },
+                    tests = suite.tests.map { it.toHtmlFullTest(htmlReportDir = testFile()).toHtmlShortTest() }
             ))
         }
     }

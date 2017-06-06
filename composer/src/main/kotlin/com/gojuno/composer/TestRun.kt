@@ -1,6 +1,10 @@
 package com.gojuno.composer
 
-import com.gojuno.commander.android.*
+import com.gojuno.commander.android.AdbDevice
+import com.gojuno.commander.android.adb
+import com.gojuno.commander.android.log
+import com.gojuno.commander.android.pullFolder
+import com.gojuno.commander.android.redirectLogcatToFile
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.commander.os.process
@@ -101,8 +105,8 @@ fun AdbDevice.runTests(
                             },
                             durationNanos = test.durationNanos,
                             logcat = logcatFileForTest(logsDir, test.className, test.testName),
-                            files = pulledFiles.files,
-                            screenshots = pulledFiles.screenshots
+                            files = pulledFiles.files.sortedBy { it.name },
+                            screenshots = pulledFiles.screenshots.sortedBy { it.name }
                     )
                 },
                 passedCount = tests.count { it.status is InstrumentationTest.Status.Passed },
