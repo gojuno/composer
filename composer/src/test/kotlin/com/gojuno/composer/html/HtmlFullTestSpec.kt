@@ -24,10 +24,11 @@ class HtmlFullTestSpec : Spek({
                 screenshots = listOf(testFile(), testFile())
         )
 
-        val htmlTest = adbDeviceTest.toHtmlFullTest(htmlReportDir = testFile().parentFile)
+        val htmlTest = adbDeviceTest.toHtmlFullTest(suiteId = "testSuite", htmlReportDir = testFile().parentFile)
 
         it("converts AdbDeviceTest to HtmlFullTest") {
             assertThat(htmlTest).isEqualTo(HtmlFullTest(
+                    suiteId = "testSuite",
                     packageName = "com.gojuno.example",
                     className = "TestClass",
                     name = adbDeviceTest.testName,
