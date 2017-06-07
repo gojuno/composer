@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -e
 
 # See https://denibertovic.com/posts/handling-permissions-with-docker-volumes/
 
