@@ -26,7 +26,15 @@ module.exports = function() {
       new UglifyJSPlugin(),
       new CopyWebpackPlugin([
         {
-          from: 'index.html',
+          from: 'layout/index.html',
+          to: './'
+        },
+        {
+          from: 'layout/log-container.html',
+          to: './'
+        },
+        {
+          from: 'layout/log-entry.html',
           to: './'
         }
       ])
