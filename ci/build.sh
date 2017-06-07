@@ -16,7 +16,7 @@ fi
 
 docker build -t composer:latest ci/docker
 
-BUILD_COMMAND=""
+BUILD_COMMAND="set -e && "
 
 BUILD_COMMAND+="echo 'Java version:' && java -version && "
 BUILD_COMMAND+="echo 'Node.js version:' && node --version && "
@@ -28,7 +28,10 @@ BUILD_COMMAND+="cd /opt/project/html-report && "
 BUILD_COMMAND+="rm -rf node_modules && "
 BUILD_COMMAND+="npm install && "
 BUILD_COMMAND+="npm run build && "
-BUILD_COMMAND+="cd - && "
+BUILD_COMMAND+="cd /opt/project && "
+BUILD_COMMAND+="rm -rf composer/src/main/resources/html-report/ && "
+BUILD_COMMAND+="mkdir -p composer/src/main/resources/html-report/ && "
+BUILD_COMMAND+="cp -R html-report/build/* composer/src/main/resources/html-report/ && "
 
 # Build Composer.
 BUILD_COMMAND+="echo 'Building Composer...' && "

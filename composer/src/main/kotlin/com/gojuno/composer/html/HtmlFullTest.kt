@@ -7,6 +7,9 @@ import java.util.concurrent.TimeUnit.NANOSECONDS
 
 data class HtmlFullTest(
 
+        @SerializedName("suite_id")
+        val suiteId: String,
+
         @SerializedName("package_name")
         val packageName: String,
 
@@ -56,7 +59,8 @@ data class HtmlFullTest(
     }
 }
 
-fun AdbDeviceTest.toHtmlFullTest(htmlReportDir: File) = HtmlFullTest(
+fun AdbDeviceTest.toHtmlFullTest(suiteId: String, htmlReportDir: File) = HtmlFullTest(
+        suiteId = suiteId,
         packageName = className.substringBeforeLast("."),
         className = className.substringAfterLast("."),
         name = testName,

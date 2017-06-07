@@ -40,10 +40,10 @@ export default class SuitesList extends Component {
                     return (<li key={ i } className="list__item no-hover">
                         <div className="text-title margin-bottom-10 label">{ device.id }</div>
                         <div className="margin-bottom-10">
-                          <a href={ `${device.logcat_path}` }>{ device.logcat_path }</a>
+                          <a href={ device.logcat_path }>{ device.logcat_path }</a>
                         </div>
                         <div className="margin-bottom-10">
-                          <a href={ device.instrumentation_output_path }>Instrumentation output path</a>
+                          <a href={ device.instrumentation_output_path }>{ device.instrumentation_output_path }</a>
                         </div>
                       </li>
                     )
