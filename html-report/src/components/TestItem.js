@@ -16,8 +16,8 @@ export default class TestItem extends Component {
     });
     return (
       <div className="content margin-top-20">
-        <div className="title-common"><a href="../../../index.html">Suits list</a> / <a href={ `../../${data.suiteId}.html` }>
-          Suite { data.suiteId }</a> /
+        <div className="title-common"><a href="../../../index.html">Suits list</a> / <a href={ `../../${data.suite_id}.html` }>
+          Suite { data.suite_id }</a> /
           <div className="label info">{ data.deviceId }</div>
         </div>
         <div className="margin-top-20">
