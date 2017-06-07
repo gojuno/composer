@@ -31,7 +31,7 @@ data class HtmlFullSuite(
 
 fun Suite.toHtmlFullSuite(id: String, htmlReportDir: File) = HtmlFullSuite(
         id = id,
-        tests = tests.map { it.toHtmlFullTest(htmlReportDir).toHtmlShortTest() },
+        tests = tests.map { it.toHtmlFullTest(suiteId = id, htmlReportDir = htmlReportDir).toHtmlShortTest() },
         passedCount = passedCount,
         ignoredCount = ignoredCount,
         failedCount = failedCount,

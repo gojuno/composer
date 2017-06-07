@@ -10,6 +10,7 @@ import com.google.gson.Gson
 import rx.Observable
 import rx.schedulers.Schedulers
 import java.io.File
+import java.util.*
 
 sealed class Exit(val code: Int, val message: String?) {
     object Ok : Exit(code = 0, message = null)
@@ -113,7 +114,7 @@ fun main(rawArgs: Array<String>) {
                 }
             }
             .flatMap { suites ->
-                writeHtmlReport(gson, suites, File(args.outputDirectory, "html-report"))
+                writeHtmlReport(gson, suites, File(args.outputDirectory, "html-report"), Date())
                         .andThen(Observable.just(suites))
             }
             .toBlocking()

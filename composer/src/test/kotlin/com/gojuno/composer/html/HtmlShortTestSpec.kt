@@ -11,6 +11,7 @@ class HtmlShortTestSpec : Spek({
 
         val htmlFullTest by memoized {
             HtmlFullTest(
+                    suiteId = "testSuite",
                     packageName = "com.gojuno.example",
                     className = "TestClass",
                     name = "test1",
