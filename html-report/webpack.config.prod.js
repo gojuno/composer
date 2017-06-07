@@ -1,6 +1,6 @@
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
-const webpack = require('webpack');
 const path = require('path');
+var CopyWebpackPlugin = require('copy-webpack-plugin');
 
 
 module.exports = function() {
@@ -15,12 +15,21 @@ module.exports = function() {
     },
     module: {
       rules: [
-        { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ }
+        {
+          test: /\.js$/,
+          loader: 'babel-loader',
+          exclude: /node_modules/
+        }
       ]
     },
     plugins: [
-      // config https://github.com/webpack-contrib/uglifyjs-webpack-plugin
-      new UglifyJSPlugin()
+      new UglifyJSPlugin(),
+      new CopyWebpackPlugin([
+        {
+          from: 'index.html',
+          to: './'
+        }
+      ])
     ]
   };
 }

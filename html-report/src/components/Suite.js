@@ -32,7 +32,7 @@ export default class Suite extends Component {
           </div>
         </div>
 
-        <SearchBar />
+        {/*<SearchBar />*/}
 
         <div className="card">
           <div className="title-common">Tests <span className="label">{ data.tests.length }</span></div>

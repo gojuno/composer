@@ -1,12 +1,3 @@
-/* MediaQueries*/
-/*$tiny-screen*/
-/*$small-screen*/
-/* Transition speed*/
-/* Color swatch*/
-/* Mixins*/
-/* Fonts*/
-/* Variables*/
-/* NEW*/
 .text-title, .title-common, .title-common-simple {
   font-size: 16px;
   line-height: 1.3;
@@ -106,7 +97,7 @@ html, body {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
 }
-html, body, #supportApp, .page-content {
+html, body, .page-content {
   height: 100%;
 }
 body {
@@ -1333,5 +1324,9 @@ select.empty {
 .log__assert {
   color: #C200FF;
 }
-
-/*# sourceMappingURL=main.ae0a4831.css.map*/
+.copy {
+  color: #879bab;
+  font-size: 12px;
+  padding-bottom: 10px;
+  text-align: right;
+}

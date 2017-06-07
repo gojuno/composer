@@ -4,7 +4,7 @@
     <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta charset="utf-8">
     <title>Composer</title>
-    <link href="${relative_path}app.css" rel="stylesheet">
+    <link href="${relative_path}build/app.min.css" rel="stylesheet">
     <script>
       ${data_json}
       // window.indexData / window.suite / window.test={ json }      
@@ -14,5 +14,6 @@
     <div id="root"></div>
     <script type="text/javascript" src="${relative_path}build/app.min.js"></script>
     ${log}
+    <div class="copy content">Generated with&nbsp;❤️&nbsp;&nbsp;by Juno at ${date}</div>
   </body>
 </html>
