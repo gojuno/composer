@@ -114,7 +114,10 @@ fun main(rawArgs: Array<String>) {
                 }
             }
             .flatMap { suites ->
+                log("Generating HTML report...")
+                val htmlReportStartTime = System.nanoTime()
                 writeHtmlReport(gson, suites, File(args.outputDirectory, "html-report"), Date())
+                        .doOnCompleted { log("HTML report generated, took ${(System.nanoTime() - htmlReportStartTime).nanosToHumanReadableTime()}.") }
                         .andThen(Observable.just(suites))
             }
             .toBlocking()
