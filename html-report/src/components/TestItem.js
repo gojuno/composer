@@ -3,35 +3,43 @@ import cx from 'classnames';
 import convertTime from './../utils/convertTime'
 
 export default class TestItem extends Component {
+  componentWillMount() {
+    document.title = `Test ${window.test.name}`;
+  }
+
   render() {
     const data = window.test;
     let statusLabelClass = cx('label', 'margin-right-10', {
       alert: data.status === 'failed',
       success: data.status === 'passed'
     });
-    let statusTextClass = cx({
+    let statusTextClass = cx('test-page__title', {
       'status-failed': data.status === 'failed',
       'status-ignored': data.status === 'ignored',
       'status-passed': data.status === 'passed'
     });
+    let blockClass = cx('card row full justify-between test-page', {
+      'failed': data.status === 'failed',
+      'ignored': data.status === 'ignored',
+      'passed': data.status === 'passed'
+    });
     return (
       <div className="content margin-top-20">
-        <div className="title-common"><a href="../../../index.html">Suits list</a> / <a href={ `../../${data.suite_id}.html` }>
-          Suite { data.suite_id }</a> /
-          <div className="label info">{ data.deviceId }</div>
+        <div className="title-common vertical-aligned-content">
+          <a href="../../../index.html">Suits list</a> /
+          <a href={ `../../${data.suite_id}.html` }>Suite { data.suite_id }</a> /
+          { data.deviceId }
         </div>
-        <div className="margin-top-20">
-          <div className="card row full justify-between">
+        <div className='margin-top-20'>
+          <div className={ blockClass }>
             <div className="margin-right-20">
-              <div className="text-sub-title margin-bottom-10">
+              <div className="margin-bottom-10 vertical-aligned-content">
                 <div className={ statusLabelClass }>{ data.status }</div>
                 <span className={ statusTextClass }>{ data.name }</span></div>
               <div className="title-l text-sub-title margin-bottom-5">{ data.class_name }</div>
               <div className="margin-bottom-5">{ data.package_name }</div>
             </div>
-            <div className="labels-list">
-              <div className="label">{ convertTime(data.duration_millis) }</div>
-            </div>
+            <div className="card-info__content">{ convertTime(data.duration_millis) }</div>
           </div>
 
           { !!Object.keys(data.properties).length && <div className="card">

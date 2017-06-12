@@ -1,5 +1,3 @@
-//TODO: Test title to make bigger on test page
-
 /* Layout */
 
 .container-expanded {
@@ -28,6 +26,26 @@
 
 .title-l {
   color: $electric;
+}
+
+.test-page {
+  &.failed {
+    border-top: 5px solid $red;
+  }
+
+  &.ignored {
+    border-top: 5px solid $primary-grey;
+  }
+
+  &.passed {
+    border-top: 5px solid $green;
+  }
+}
+
+.test-page__title {
+  font-size: 20px;
+  line-height: 22px;
+  font-weight: 500;
 }
 
 /* Statuses */
@@ -70,7 +88,7 @@
 
 .list__item {
   position: relative;
-  padding: $side-padding;
+  padding: 14px $side-padding;
   color: $primary-blue;
 
   &:before {
@@ -180,4 +198,9 @@
   font-size: 12px;
   padding-bottom: 10px;
   text-align: right;
+}
+
+.label.big {
+  height: 25px;
+  font-size: 16px;
 }
