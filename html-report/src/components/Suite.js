@@ -10,11 +10,11 @@ export default class Suite extends Component {
   };
 
   componentWillMount() {
-    this.setColors();
+    this.setDevicesLabelColors();
     document.title = `Suite ${window.suite.id}`;
   }
 
-  setColors() {
+  setDevicesLabelColors() {
     const generatedColors = randomColor({
       count: window.suite.devices.length,
       luminosity: 'bright'
