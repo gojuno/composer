@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack --env=dev --progress --watch",
     "build": "npm run postcss-build && webpack --env=prod --progress",
-    "postcss-dev": "postcss ./styles/app.scss -o=./styles/app.css -w",
+    "postcss-dev": "postcss ./styles/index.scss -o=./build/app.min.css -w",
     "postcss-build": "postcss ./styles/app.css -o=./build/app.min.css"
   },
   "author": "",
@@ -30,6 +30,7 @@
     "postcss-sass-mixins": "^0.3.0",
     "postcss-scss": "^0.1.7",
     "precss": "^1.4.0",
+    "randomcolor": "^0.5.3",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-router-dom": "^4.1.1",
