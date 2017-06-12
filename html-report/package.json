@@ -7,7 +7,7 @@
     "dev": "webpack --env=dev --progress --watch",
     "build": "npm run postcss-build && webpack --env=prod --progress",
     "postcss-dev": "postcss ./styles/index.scss -o=./build/app.min.css -w",
-    "postcss-build": "postcss ./styles/app.css -o=./build/app.min.css"
+    "postcss-build": "postcss ./styles/index.scss -o=./build/app.min.css"
   },
   "author": "",
   "license": "ISC",
