@@ -6,7 +6,7 @@ import elasticlunr from 'elasticlunr';
 const SEARCH_FIELDS = ['package_name', 'class_name', 'name', 'id', 'status'];
 const SEARCH_REF = 'id';
 const EL_SEARCH = elasticlunr();
-const STATUSES = ['failed', 'passed', 'ignored'];
+const STATUSES = ['failed', 'ignored'];
 export default class SearchBar extends Component {
   static propTypes = {
     data: PropTypes.array,
