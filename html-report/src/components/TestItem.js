@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
 import convertTime from './../utils/convertTime'
+import paths from './../utils/paths'
 
 export default class TestItem extends Component {
   componentWillMount() {
@@ -9,6 +10,7 @@ export default class TestItem extends Component {
 
   render() {
     const data = window.test;
+    console.log(data);
     let statusLabelClass = cx('label', 'margin-right-10', {
       alert: data.status === 'failed',
       success: data.status === 'passed'
@@ -26,8 +28,8 @@ export default class TestItem extends Component {
     return (
       <div className="content margin-top-20">
         <div className="title-common vertical-aligned-content">
-          <a href="../../../index.html">Suits list</a> /
-          <a href={ `../../${data.suite_id}.html` }>Suite { data.suite_id }</a> /
+          <a href={ paths.fromTestToIndex }>Suits list</a> /
+          <a href={ paths.fromTestToSuite(data.suite_id) }>Suite { data.suite_id }</a> /
           { data.deviceId }
         </div>
         <div className='margin-top-20'>
@@ -62,7 +64,7 @@ export default class TestItem extends Component {
             </div>) }
           </div> }
 
-          <div className="card">
+          { !!data.screenshots_paths.length && <div className="card">
             <ul className="images row">
               { data.screenshots_paths.map((image) => {
                 return ( <li key={ image } className="images__item col-20">
@@ -70,7 +72,7 @@ export default class TestItem extends Component {
                 </li> )
               }) }
             </ul>
-          </div>
+          </div>}
         </div>
       </div>
     );

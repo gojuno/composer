@@ -19,6 +19,7 @@
     "classnames": "^2.2.5",
     "copy-webpack-plugin": "^4.0.1",
     "cssnano": "^3.10.0",
+    "elasticlunr": "^0.9.5",
     "extract-text-webpack-plugin": "^2.1.0",
     "postcss": "^5.0.19",
     "postcss-cli": "^4.0.0",

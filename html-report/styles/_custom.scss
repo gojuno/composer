@@ -151,6 +151,41 @@
   text-align: right;
 }
 
+/* Filter */
+
+.filter-group__item {
+  padding: 5px 10px;
+  border: 1px solid $primary-grey-lighter-2;
+  font-size: $font-small;
+  background-color: $background;
+  color: $primary-grey;
+  cursor: pointer;
+  user-select: none;
+  text-transform: capitalize;
+  transition: color $short-transition ease,
+  background-color $short-transition ease,
+  border-color $short-transition ease;
+
+  &:hover {
+    border-color: $primary-grey;
+    color: $primary-grey-darker;
+  }
+
+  &:first-child {
+    border-radius: 13px 0 0 13px;
+  }
+
+  &:last-child {
+    border-radius: 0 13px 13px 0;
+  }
+
+  &.active {
+    background: $electric-lightest;
+    border-color: $electric;
+    color: $electric;
+  }
+}
+
 /* Log */
 
 .log-wrapper {
