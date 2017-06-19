@@ -10,7 +10,6 @@ export default class TestItem extends Component {
 
   render() {
     const data = window.test;
-    console.log(data);
     let statusLabelClass = cx('label', 'margin-right-10', {
       alert: data.status === 'failed',
       success: data.status === 'passed'

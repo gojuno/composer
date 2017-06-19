@@ -6,18 +6,19 @@ import elasticlunr from 'elasticlunr';
 const SEARCH_FIELDS = ['package_name', 'class_name', 'name', 'id', 'status'];
 const SEARCH_REF = 'id';
 const EL_SEARCH = elasticlunr();
-const STATUSES = ['failed', 'ignored'];
 export default class SearchBar extends Component {
   static propTypes = {
     data: PropTypes.array,
-    setSearchResults: PropTypes.func
+    setSearchResults: PropTypes.func,
+    filterByStatus: PropTypes.string
   };
 
   state = {
     error: false,
     searchLabel: null,
     searchParams: null,
-    query: ''
+    query: '',
+    status: null
   };
 
   componentWillMount() {
@@ -30,6 +31,15 @@ export default class SearchBar extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    let status = nextProps.filterByStatus;
+    if (status !== this.state.status) {
+      this.setTagSearch('status');
+      this.performSearch(status);
+      this.setState({ status: status, query: status });
+    }
+  }
+
   mapResults(results) {
     return results.map(item => {
       return EL_SEARCH.documentStore.docs[item.ref];
@@ -38,7 +48,7 @@ export default class SearchBar extends Component {
 
   clearResults = () => {
     this.props.setSearchResults(this.props.data);
-    this.setState({ searchLabel: null, searchParams: null, error: false, query: '' });
+    this.setState({ searchLabel: null, searchParams: null, error: false, query: '', status: null });
   };
 
   setTagSearch = (field) => {
