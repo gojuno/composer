@@ -151,6 +151,18 @@
   text-align: right;
 }
 
+/* Filter card */
+
+.filter-card {
+  cursor: pointer;
+  transition: transform $short-transition;
+  transform: translateY(0);
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
 /* Log */
 
 .log-wrapper {

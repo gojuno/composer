@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import convertTime from './../utils/convertTime';
+import paths from './../utils/paths';
 
 export default class SuitesList extends Component {
   render() {
@@ -10,7 +11,7 @@ export default class SuitesList extends Component {
         { window.mainData.suites.map((suite) => {
             return (
               <div key={ suite.id } className="suite-item card">
-                <a href={`./suites/${suite.id}.html`} className="title-common with-arrow">
+                <a href={ paths.fromIndexToSuite(suite.id) } className="title-common with-arrow">
                   Suite { suite.id  }
                 </a>
                 <div className="row full margin-bottom-20 bounded">
