@@ -7,6 +7,8 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 * Screenshots and files pulling for each test reactively (with support for [square/spoon][spoon] folder structure).
 * JUnit4 report generation. 
 
+![Demo](demo/composer.gif)
+
 ### Why we've decided to replace [square/spoon][spoon]
  
 **Problem 1:** Our UI tests are stable, but we saw a lot of UI tests build failures. About ~50% of our CI builds were failing. All such failures of UI tests came from Spoon not being able to run tests on one or more emulators (device is red in the report and error message is `…work/emulator-5554/result.json (No such file or directory)`, basically it timed out on installing the apk on a device, increasing adb timeout did not help, all emulators responded to adb commands and mouse/keyboard interactions, we suppose problem is in in ddmlib used by Spoon.
@@ -23,20 +25,24 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 
 **Problem 4:** If test sharding is enabled (which we do all the time), Spoon HTML report is very hard to look at, especially if you want to find some particular test(s) and it's not failed. You have to either hover mouse over each test to find out its name or go into html/xml source and find on which emulator/device test was sharded in order to click on correct device and then find test by CMD+F on the page.
 
-**Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will be easier to look at and inspect.
+**Solution:** HTML report we've built designed with usability and performance in mind.
   
 **Problem 5:** Html report can be very slow to load if you have lots of screenshots (which we do) since it displays all the screenshots of tests that were run on a particular device on a single page — it can take up to minutes to finish while you effectively unable to scroll page since scroll is jumping up and down each time new screenshot loaded.
 
-**Solution:** ~~Composer does not generate HTML report~~ HTML report that we have in mind will not display screenshots until you explicitly ask it for that → fast page load.
+**Solution:** HTML report that we've built does not display screenshots on index and suite pages, screenshots are displayed only on the test page → fast page load.
 
 >With Composer we were able to make UI tests required part of CI for Pull Requests.
 >It's fast, reliable and uses RxJava which means that it's relatively easy to add more features combining complex async transformations. 
 
 ### HTML Report
 
-Composer already have all the info to generate it, [we're working on it](https://github.com/gojuno/composer/issues/11) with our Web Frontend team.
+Our Frontend Team [helped us](https://github.com/gojuno/composer/issues/11) build HTML Report for the Composer. 
 
-For now you can inspect test run results by looking at build log, screenshots/files, captured logcat output (it's not hard, but HTML report would be very nice).  
+>It's fast, small and designed in collaboration with our QAs and Developers who actually use it on daily basis to make it easy to use.
+
+Here are few screenshots:
+
+[<img src="demo/screenshot1.png" alt="Suite Page" style="height: 300px;"/>](demo/screenshot1.png) [<img src="demo/screenshot2.png" alt="Test Page" style="height: 300px;"/>](demo/screenshot2.png)[<img src="demo/screenshot3.png" alt="Test Page" style="height: 300px;"/>](demo/screenshot3.png)
 
 ## Usage
 
