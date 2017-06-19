@@ -41,12 +41,6 @@ export default class SearchBar extends Component {
     this.setState({ searchLabel: null, searchParams: null, error: false, query: '' });
   };
 
-  filterByStatus = (status) => {
-    this.setTagSearch('status');
-    this.performSearch(status);
-    this.setState({ query: status, error: false });
-  };
-
   setTagSearch = (field) => {
     if (SEARCH_FIELDS.indexOf(field) < 0) {
       this.setState({ error: true });
@@ -99,15 +93,6 @@ export default class SearchBar extends Component {
     return (
       <div className="card">
         <div className="form-container">
-          <div className="filter-group row full margin-bottom-20">
-            { STATUSES.map(s =>
-              <div key={ s }
-                   onClick={ () => this.filterByStatus(s) }
-                   className={ cx('filter-group__item', { active: s == this.state.query }) }>
-                { s }
-              </div>)
-            }
-          </div>
           <div className="row search-params full">
             <div className="row full-width-content input-group full">
               <div className="form-item">
