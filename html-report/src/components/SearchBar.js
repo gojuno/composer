@@ -41,7 +41,7 @@ export default class SearchBar extends Component {
     this.setState({ searchLabel: null, searchParams: null, error: false, query: '' });
   };
 
-  setTagSearch = (field) => {
+  setTagSearch = (field, callback) => {
     if (SEARCH_FIELDS.indexOf(field) < 0) {
       this.setState({ error: true });
       return;
@@ -57,7 +57,7 @@ export default class SearchBar extends Component {
       }
     });
 
-    this.setState({ searchLabel: field, searchParams: params, query: '' })
+    this.setState({ searchLabel: field, searchParams: params, query: '' }, callback)
   };
 
   performSearch = (query) => {
@@ -71,9 +71,10 @@ export default class SearchBar extends Component {
 
   performFilterSearch = (query) => {
     const splitData = query.split(':');
-    this.setTagSearch(splitData[0]);
-    this.performSearch(splitData[1]);
-    this.setState({ query: splitData[1] });
+    this.setTagSearch(splitData[0], () => {
+      this.performSearch(splitData[1]);
+      this.setState({ query: splitData[1] });
+    });
   };
 
   setSearchQuery = (event) => {
