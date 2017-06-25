@@ -5,7 +5,7 @@ module.exports = (time) => {
   time = (time - secs) / 60;
   const mins = time % 60;
 
-  let msLenth = ms.toString().length;
+  const msLenth = ms.toString().length;
   if (msLenth === 2 ) ms = '0'+ms;
   if (msLenth === 1 ) ms = '00'+ms;
 
