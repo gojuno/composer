@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import cx from 'classnames';
 import randomColor from 'randomcolor';
-import convertTime from './../utils/convertTime'
-import paths from './../utils/paths'
+import convertTime from './../utils/convertTime';
+import paths from './../utils/paths';
 import SearchBar from './SearchBar';
 
 export default class Suite extends Component {
   state = {
     colors: null,
-    tests: window.suite.tests,
-    activeStatus: null
+    tests: window.suite.tests
   };
 
   componentWillMount() {
@@ -33,36 +32,13 @@ export default class Suite extends Component {
     this.setState({ tests: results });
   }
 
-  filterByStatus = (status) => {
-    this.setState({ activeStatus: status })
-  };
-
   render() {
     const data = window.suite;
     return (
       <div className="content margin-top-20">
         <div className="title-common"><a href={ paths.fromSuiteToIndex }>Suits list</a>/ Suite {data.id}</div>
-        <div className="row justify-between">
-          <div className="card card-info filter-card" onClick={ () => this.filterByStatus('passed') }>
-            <div className="text-sub-title-light">Passed</div>
-            <div className="card-info__content status-passed">{ data.passed_count }</div>
-          </div>
-          <div className="card card-info filter-card" onClick={ () => this.filterByStatus('failed') }>
-            <div className="text-sub-title-light">Failed</div>
-            <div className="card-info__content status-failed">{ data.failed_count }</div>
-          </div>
-          <div className="card card-info filter-card" onClick={ () => this.filterByStatus('ignored') }>
-            <div className="text-sub-title-light">Ignored</div>
-            <div className="card-info__content status-ignored">{ data.ignored_count }</div>
-          </div>
-          <div className="card card-info">
-            <div className="text-sub-title-light">Duration</div>
-            <div className="card-info__content">{ convertTime(data.duration_millis) }</div>
-          </div>
-        </div>
 
-        <SearchBar data={ data.tests } setSearchResults={ (results) => this.getSearchResults(results) }
-                   filterByStatus={ this.state.activeStatus } />
+        <SearchBar setSearchResults={ (results) => this.getSearchResults(results) } />
 
         <div className="card">
           <div className="vertical-aligned-content title-common">
