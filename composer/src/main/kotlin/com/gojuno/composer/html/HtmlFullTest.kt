@@ -27,7 +27,7 @@ data class HtmlFullTest(
 
         @SerializedName("status")
         val status: Status,
-        
+
         @SerializedName("stacktrace")
         val stacktrace: String?,
 
@@ -43,8 +43,8 @@ data class HtmlFullTest(
         @SerializedName("file_paths")
         val filePaths: List<String>,
 
-        @SerializedName("screenshots_paths")
-        val screenshotsPaths: List<String>
+        @SerializedName("screenshots")
+        val screenshots: List<Screenshot>
 ) {
     enum class Status {
 
@@ -57,6 +57,15 @@ data class HtmlFullTest(
         @SerializedName("ignored")
         Ignored
     }
+
+    data class Screenshot(
+
+            @SerializedName("path")
+            val path: String,
+
+            @SerializedName("title")
+            val title: String
+    )
 }
 
 fun AdbDeviceTest.toHtmlFullTest(suiteId: String, htmlReportDir: File) = HtmlFullTest(
@@ -78,5 +87,10 @@ fun AdbDeviceTest.toHtmlFullTest(suiteId: String, htmlReportDir: File) = HtmlFul
         deviceId = adbDevice.id,
         properties = emptyMap(), // TODO: add properties support.
         filePaths = files.map { it.relativePathTo(htmlReportDir) },
-        screenshotsPaths = screenshots.map { it.relativePathTo(htmlReportDir) }
+        screenshots = screenshots.map {
+            HtmlFullTest.Screenshot(
+                    path = it.relativePathTo(htmlReportDir),
+                    title = it.nameWithoutExtension
+            )
+        }
 )

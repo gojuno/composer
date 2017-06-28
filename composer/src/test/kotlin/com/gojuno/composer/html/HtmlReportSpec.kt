@@ -154,7 +154,7 @@ class HtmlReportSpec : Spek({
                                 <title>Composer</title>
                                 <link href="../../../app.min.css" rel="stylesheet">
                                 <script>
-                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","id":"com.gojuno.example1TestClasstest1","duration_millis":1234,"status":"passed","logcat_path":"../../../com.gojuno.example1.TestClass/test1.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test1/file1","../../../com.gojuno.example1.TestClass.test1/file2"],"screenshots_paths":["../../../com.gojuno.example1.TestClass.test1/screenshot1","../../../com.gojuno.example1.TestClass.test1/screenshot2"]}
+                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","id":"com.gojuno.example1TestClasstest1","duration_millis":1234,"status":"passed","logcat_path":"../../../com.gojuno.example1.TestClass/test1.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test1/file1","../../../com.gojuno.example1.TestClass.test1/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot2","title":"screenshot2"}]}
                                   // window.mainData / window.suite / window.test={ json }
                                 </script>
                               </head>
@@ -180,7 +180,7 @@ class HtmlReportSpec : Spek({
                                 <title>Composer</title>
                                 <link href="../../../app.min.css" rel="stylesheet">
                                 <script>
-                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","id":"com.gojuno.example1TestClasstest2","duration_millis":1234,"status":"failed","stacktrace":"abc","logcat_path":"../../../com.gojuno.example1.TestClass/test2.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test2/file1","../../../com.gojuno.example1.TestClass.test2/file2"],"screenshots_paths":["../../../com.gojuno.example1.TestClass.test2/screenshot1","../../../com.gojuno.example1.TestClass.test2/screenshot2"]}
+                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","id":"com.gojuno.example1TestClasstest2","duration_millis":1234,"status":"failed","stacktrace":"abc","logcat_path":"../../../com.gojuno.example1.TestClass/test2.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test2/file1","../../../com.gojuno.example1.TestClass.test2/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot2","title":"screenshot2"}]}
                                   // window.mainData / window.suite / window.test={ json }
                                 </script>
                               </head>
