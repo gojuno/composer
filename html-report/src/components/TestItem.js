@@ -14,16 +14,7 @@ export default class TestItem extends Component {
       alert: data.status === 'failed',
       success: data.status === 'passed'
     });
-    let statusTextClass = cx('test-page__title', {
-      'status-failed': data.status === 'failed',
-      'status-ignored': data.status === 'ignored',
-      'status-passed': data.status === 'passed'
-    });
-    let blockClass = cx('card row full justify-between test-page', {
-      'failed': data.status === 'failed',
-      'ignored': data.status === 'ignored',
-      'passed': data.status === 'passed'
-    });
+
     return (
       <div className="content margin-top-20">
         <div className="title-common vertical-aligned-content">
@@ -32,11 +23,11 @@ export default class TestItem extends Component {
           { data.deviceId }
         </div>
         <div className='margin-top-20'>
-          <div className={ blockClass }>
+          <div className={ `card row full justify-between test-page ${data.status}` }>
             <div className="margin-right-20">
               <div className="margin-bottom-10 vertical-aligned-content">
                 <div className={ statusLabelClass }>{ data.status }</div>
-                <span className={ statusTextClass }>{ data.name }</span></div>
+                <span className={ `test-page__title status-${data.status}` }>{ data.name }</span></div>
               <div className="title-l text-sub-title margin-bottom-5">{ data.class_name }</div>
               <div className="margin-bottom-5">{ data.package_name }</div>
             </div>
@@ -63,11 +54,13 @@ export default class TestItem extends Component {
             </div>) }
           </div> }
 
-          { !!data.screenshots_paths.length && <div className="card">
+          { !!data.screenshots.length && <div className="card">
+            <div className="title-common">Screenshots</div>
             <ul className="images row">
-              { data.screenshots_paths.map((image) => {
-                return ( <li key={ image } className="images__item col-20">
-                  <img src={ image } />
+              { data.screenshots.map((image) => {
+                return ( <li key={ image.path } className="images__item col-20">
+                  <img src={ image.path } />
+                  <div className="images__item__title margin-top-20">{ image.title }</div>
                 </li> )
               }) }
             </ul>
