@@ -72,7 +72,7 @@ Composer shipped as jar, to run it you need JVM 1.8+: java -jar composer-latest-
 * `--instrumentation-arguments`
   * Key-value pairs to pass to Instrumentation Runner. Usage example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`.
 * `--verbose-output`
-  * Either `true` or `false` to enable/disable verbose output for Swarmer. `false` by default.
+  * Either `true` or `false` to enable/disable verbose output for Composer. `false` by default.
 
 ##### Example
 
@@ -99,6 +99,12 @@ curl --fail --location https://jcenter.bintray.com/com/gojuno/composer/composer/
 ```
 
 All the releases and changelogs can be found on [Releases Page](https://github.com/gojuno/composer/releases).
+
+### Swarmer
+
+Composer works great in combination with [Swarmer][swarmer] — another tool we've built at Juno. 
+
+[Swarmer][swarmer] can create and start multiple emulators in parallel. In our [CI Pipeline][ci pipeline] we start emulators with Swarmer and then Composer runs tests on them.
 
 ### How to build
 
@@ -128,3 +134,5 @@ limitations under the License.
 
 [spoon]: https://github.com/square/spoon
 [test sharding]: https://developer.android.com/topic/libraries/testing-support-library/index.html#ajur-sharding
+[swarmer]: https://github.com/gojuno/swarmer
+[ci pipeline]: https://github.com/gojuno/engineering/tree/master/articles/ci_pipeline_and_custom_tools_of_android_projects
