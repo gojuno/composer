@@ -37,7 +37,7 @@ class HtmlFullTestSpec : Spek({
                     stacktrace = null,
                     logcatPath = adbDeviceTest.logcat.name,
                     filePaths = adbDeviceTest.files.map { it.name },
-                    screenshotsPaths = adbDeviceTest.screenshots.map { it.name },
+                    screenshots = adbDeviceTest.screenshots.map { HtmlFullTest.Screenshot(path = it.name, title = it.nameWithoutExtension) },
                     deviceId = adbDeviceTest.adbDevice.id,
                     properties = emptyMap()
             ))

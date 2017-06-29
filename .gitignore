@@ -16,3 +16,4 @@ gradle/local.properties
 node_modules/
 npm-debug.log*
 test/
+composer/src/main/resources/html-report/

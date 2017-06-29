@@ -20,7 +20,7 @@ class HtmlShortTestSpec : Spek({
                     stacktrace = null,
                     logcatPath = "testLogcatPath",
                     filePaths = listOf("testFilePath1", "testFilePath2"),
-                    screenshotsPaths = listOf("testScreenshotPath1", "testScreenshotPath2"),
+                    screenshots = listOf(HtmlFullTest.Screenshot(path = "testScreenshotPath1", title = "testScreenshot1"), HtmlFullTest.Screenshot(path = "testScreenshotPath2", title = "testScreenshot2")),
                     deviceId = "test-device-id",
                     properties = mapOf("key1" to "value1", "key2" to "value2")
             )
