@@ -10,7 +10,7 @@ import com.google.gson.Gson
 import rx.Observable
 import rx.schedulers.Schedulers
 import java.io.File
-import java.util.*
+import java.util.Date
 
 sealed class Exit(val code: Int, val message: String?) {
     object Ok : Exit(code = 0, message = null)
@@ -27,10 +27,12 @@ fun exit(exit: Exit) {
 }
 
 fun main(rawArgs: Array<String>) {
+    exit(run(rawArgs))
+}
+
+fun run(rawArgs: Array<String>): Exit {
     val startTime = System.nanoTime()
-
     val args = parseArgs(rawArgs)
-
     if (args.verboseOutput) {
         log("$args")
     }
@@ -39,11 +41,7 @@ fun main(rawArgs: Array<String>) {
 
     val suites: List<Suite> = connectedAdbDevices()
             .map {
-                it.filter { it.online }.apply {
-                    if (isEmpty()) {
-                        exit(Exit.NoDevicesAvailableForTests)
-                    }
-                }
+                it.filter { it.online }
             }
             .doOnNext { log("${it.size} connected adb device(s): $it") }
             .flatMap { connectedAdbDevices ->
@@ -121,7 +119,7 @@ fun main(rawArgs: Array<String>) {
                         .andThen(Observable.just(suites))
             }
             .toBlocking()
-            .first()
+            .firstOrDefault(listOf())
 
     val duration = (System.nanoTime() - startTime)
 
@@ -129,12 +127,16 @@ fun main(rawArgs: Array<String>) {
     val totalFailed = suites.sumBy { it.failedCount }
     val totalIgnored = suites.sumBy { it.ignoredCount }
 
-    log("Test run finished, total passed = $totalPassed, total failed = $totalFailed, total ignored = $totalIgnored, took ${duration.nanosToHumanReadableTime()}.")
 
-    when {
-        totalPassed > 0 && totalFailed == 0 -> exit(Exit.Ok)
-        totalPassed == 0 && totalFailed == 0 -> exit(Exit.NoTests)
-        else -> exit(Exit.ThereWereFailedTests)
+    if (suites.isNotEmpty()) {
+        log("Test run finished, total passed = $totalPassed, total failed = $totalFailed, total ignored = $totalIgnored, took ${duration.nanosToHumanReadableTime()}.")
+    }
+
+    return when {
+        suites.isEmpty() -> Exit.NoDevicesAvailableForTests
+        totalPassed > 0 && totalFailed == 0 -> Exit.Ok
+        totalPassed == 0 && totalFailed == 0 -> Exit.NoTests
+        else -> Exit.ThereWereFailedTests
     }
 }
 
