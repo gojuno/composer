@@ -39,6 +39,11 @@ fun main(rawArgs: Array<String>) {
 
     val suites: List<Suite> = connectedAdbDevices()
             .map {
+                it.filter { args.devices.isEmpty() || args.devices.contains(it.id) }.apply {
+                    it
+                }
+            }
+            .map {
                 it.filter { it.online }.apply {
                     if (isEmpty()) {
                         exit(Exit.NoDevicesAvailableForTests)
