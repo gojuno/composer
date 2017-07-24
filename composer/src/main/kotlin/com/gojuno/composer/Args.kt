@@ -92,7 +92,7 @@ private class JCommanderArgs {
             names = arrayOf("--devices"),
             required = false,
             variableArity = true,
-            description = "Connected devices that will be used to run tests against. Usage example: `--devices emulator-5554 emulator-5556`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--devices emulator-5554 emulator-5556`."
     )
     var devices: List<String>? = null
 }

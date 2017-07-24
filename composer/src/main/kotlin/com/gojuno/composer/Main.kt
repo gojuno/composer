@@ -39,9 +39,7 @@ fun main(rawArgs: Array<String>) {
 
     val suites: List<Suite> = connectedAdbDevices()
             .map {
-                it.filter { args.devices.isEmpty() || args.devices.contains(it.id) }.apply {
-                    it
-                }
+                it.filter { args.devices.isEmpty() || args.devices.contains(it.id) }
             }
             .map {
                 it.filter { it.online }.apply {
