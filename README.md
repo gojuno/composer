@@ -46,7 +46,7 @@ Here are few screenshots:
 
 ## Usage
 
-Composer shipped as jar, to run it you need JVM 1.8+: java -jar composer-latest-version.jar options. 
+Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest-version.jar options`. 
 
 #### Supported options
 
