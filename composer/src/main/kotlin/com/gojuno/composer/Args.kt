@@ -13,7 +13,8 @@ data class Args(
         val shard: Boolean,
         val outputDirectory: String,
         val instrumentationArguments: List<Pair<String, String>>,
-        val verboseOutput: Boolean
+        val verboseOutput: Boolean,
+        val devices: List<String>
 )
 
 // No way to share array both for runtime and annotation without reflection.
@@ -86,6 +87,14 @@ private class JCommanderArgs {
             description = "Either `true` or `false` to enable/disable verbose output for Swarmer. `false` by default."
     )
     var verboseOutput: Boolean? = null
+
+    @Parameter(
+            names = arrayOf("--devices"),
+            required = false,
+            variableArity = true,
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--devices emulator-5554 emulator-5556`."
+    )
+    var devices: List<String>? = null
 }
 
 fun parseArgs(rawArgs: Array<String>): Args {
@@ -119,7 +128,8 @@ fun parseArgs(rawArgs: Array<String>): Args {
                         }
                     }
                 },
-                verboseOutput = jCommanderArgs.verboseOutput ?: false
+                verboseOutput = jCommanderArgs.verboseOutput ?: false,
+                devices = jCommanderArgs.devices ?: emptyList()
         )
     }
 }

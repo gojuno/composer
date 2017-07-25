@@ -29,7 +29,8 @@ class ArgsSpec : Spek({
                     shard = true,
                     outputDirectory = "composer-output",
                     instrumentationArguments = emptyList(),
-                    verboseOutput = false
+                    verboseOutput = false,
+                    devices = emptyList()
             ))
         }
     }
@@ -77,5 +78,29 @@ class ArgsSpec : Spek({
                 }
             }
         }
+    }
+
+    context("parse args with passed --devices") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devices", "emulator-5554"))
+        }
+
+        it("parses correctly device ids") {
+            assertThat(args.devices).isEqualTo(listOf("emulator-5554"))
+        }
+
+    }
+
+    context("parse args with passed two --devices") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devices", "emulator-5554", "emulator-5556"))
+        }
+
+        it("parses correctly two device ids") {
+            assertThat(args.devices).isEqualTo(listOf("emulator-5554", "emulator-5556"))
+        }
+
     }
 })
