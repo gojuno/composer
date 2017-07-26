@@ -1,0 +1,10 @@
+INSTRUMENTATION_STATUS: id=ActivityManagerService
+INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for: ComponentInfo{com.composer.example/com.composer.example.ExampleAndroidJUnitRunner}
+INSTRUMENTATION_STATUS_CODE: -1
+android.util.AndroidException: INSTRUMENTATION_FAILED: com.composer.example/com.composer.example.ExampleAndroidJUnitRunner
+	at com.android.commands.am.Am.runInstrument(Am.java:1121)
+	at com.android.commands.am.Am.onRun(Am.java:374)
+	at com.android.internal.os.BaseCommand.run(BaseCommand.java:47)
+	at com.android.commands.am.Am.main(Am.java:103)
+	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:257)

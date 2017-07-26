@@ -555,5 +555,26 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
         }
     }
+
+    context("read output with unable to find instrumentation info error") {
+
+        val outputFile = fileFromJarResources<InstrumentationSpec>("instrumentation-output-unable-to-find-instrumentation-info.txt")
+        val entries by memoized { readInstrumentationOutput(outputFile) }
+        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+
+        perform {
+            entries.subscribe(entriesSubscriber)
+            entriesSubscriber.awaitTerminalEvent(30, SECONDS)
+        }
+
+        it("emits exception with human readable message") {
+            assertThat(entriesSubscriber.onErrorEvents.first()).hasMessage(
+                    "Instrumentation was unable to run tests using runner com.composer.example.ExampleAndroidJUnitRunner.\n" +
+                            "Most likely you forgot to declare test runner in AndroidManifest.xml or build.gradle.\n" +
+                            "Detailed log can be found in ${outputFile.path} or Logcat output.\n" +
+                            "See https://github.com/gojuno/composer/issues/79 for more info."
+            )
+        }
+    }
 })
 
