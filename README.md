@@ -11,15 +11,14 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 
 ### Table of Contents
 
-- [Why we've decided to replace square/spoon](#why-we-ve-decided-to-replace-square-spoon)
+- [Why we've decided to replace square/spoon](#why-weve-decided-to-replace-squarespoon)
 - [HTML Report](#html-report)
 - [Usage](#usage)
 - [Download](#download)
 - [3rd-party Composer Gradle Plugin](#3rd-party-composer-gradle-plugin)
 - [Swarmer](#swarmer)
-- [How to build](how-to-build)
+- [How to build](#how-to-build)
 - [License](#license)
-
 
 ### Why we've decided to replace [square/spoon][spoon]
  
@@ -114,7 +113,7 @@ All the releases and changelogs can be found on [Releases Page](https://github.c
 
 ### 3rd-party Composer Gradle Plugin
 
-@trevjonez [built](https://github.com/gojuno/composer/issues/77) 🎉 [Gradle Plugin for Composer](https://github.com/trevjonez/composer-gradle-plugin) which allows you to configure and run Composer with Gradle.
+[@trevjonez](https://github.com/trevjonez) [built](https://github.com/gojuno/composer/issues/77) 🎉 [Gradle Plugin for Composer](https://github.com/trevjonez/composer-gradle-plugin) which allows you to configure and run Composer with Gradle.
 
 ### Swarmer
 
