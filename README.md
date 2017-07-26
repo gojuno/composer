@@ -9,6 +9,17 @@ Composer is a modern reactive replacement for [square/spoon][spoon] with followi
 
 ![Demo](demo/composer.gif)
 
+### Table of Contents
+
+- [Why we've decided to replace square/spoon](#why-weve-decided-to-replace-squarespoon)
+- [HTML Report](#html-report)
+- [Usage](#usage)
+- [Download](#download)
+- [3rd-party Composer Gradle Plugin](#3rd-party-composer-gradle-plugin)
+- [Swarmer](#swarmer)
+- [How to build](#how-to-build)
+- [License](#license)
+
 ### Why we've decided to replace [square/spoon][spoon]
  
 **Problem 1:** Our UI tests are stable, but we saw a lot of UI tests build failures. About ~50% of our CI builds were failing. All such failures of UI tests came from Spoon not being able to run tests on one or more emulators (device is red in the report and error message is `…work/emulator-5554/result.json (No such file or directory)`, basically it timed out on installing the apk on a device, increasing adb timeout did not help, all emulators responded to adb commands and mouse/keyboard interactions, we suppose problem is in in ddmlib used by Spoon.
@@ -99,6 +110,10 @@ curl --fail --location https://jcenter.bintray.com/com/gojuno/composer/composer/
 ```
 
 All the releases and changelogs can be found on [Releases Page](https://github.com/gojuno/composer/releases).
+
+### 3rd-party Composer Gradle Plugin
+
+[@trevjonez](https://github.com/trevjonez) [built](https://github.com/gojuno/composer/issues/77) 🎉 [Gradle Plugin for Composer](https://github.com/trevjonez/composer-gradle-plugin) which allows you to configure and run Composer with Gradle.
 
 ### Swarmer
 
