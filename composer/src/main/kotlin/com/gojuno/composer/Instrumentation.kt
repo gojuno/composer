@@ -57,6 +57,18 @@ private fun String.substringBetween(first: String, second: String): String {
 private fun String.parseInstrumentationStatusValue(key: String): String = substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS")
         .trim()
 
+private fun parseUnableToFindInstrumentationInfo(str: String, output: File): Exception? = when (str.contains("INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for")) {
+    false -> null
+    true -> {
+        val runner = str.substringBetween("ComponentInfo{", "}").substringAfter("/")
+        Exception("Instrumentation was unable to run tests using runner $runner.\n" +
+                "Most likely you forgot to declare test runner in AndroidManifest.xml or build.gradle.\n" +
+                "Detailed log can be found in ${output.path} or Logcat output.\n" +
+                "See https://github.com/gojuno/composer/issues/79 for more info."
+        )
+    }
+}
+
 private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
         InstrumentationEntry(
                 numTests = str.parseInstrumentationStatusValue("numtests").toInt(),
@@ -86,7 +98,7 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
     data class result(val buffer: String = "", val readyForProcessing: Boolean = false)
 
     return tail(output)
-            .map { it.trim() }
+            .map(String::trim)
             // `INSTRUMENTATION_CODE: -1` is last line printed by instrumentation, even if 0 tests were run.
             .takeWhile { !it.startsWith("INSTRUMENTATION_CODE") }
             .scan(result()) { previousResult, newLine ->
@@ -98,7 +110,16 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
                 result(buffer = buffer, readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE"))
             }
             .filter { it.readyForProcessing }
-            .map { parseInstrumentationEntry(it.buffer) }
+            .map { it.buffer }
+            .map {
+                val unableToFindInstrumentationInfo = parseUnableToFindInstrumentationInfo(it, output)
+
+                when (unableToFindInstrumentationInfo) {
+                    null -> it
+                    else -> throw unableToFindInstrumentationInfo
+                }
+            }
+            .map(::parseInstrumentationEntry)
 }
 
 fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> {
