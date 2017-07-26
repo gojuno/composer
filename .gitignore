@@ -4,9 +4,9 @@
 *.iml
 .DS_Store
 build/
-artifacts/
+/artifacts
 /captures
-gradle/local.properties
+/gradle/local.properties
 /docs
 
 # Share code style.
@@ -15,5 +15,5 @@ gradle/local.properties
 # Html viewer rules
 node_modules/
 npm-debug.log*
-test/
-composer/src/main/resources/html-report/
+/test/
+/composer/src/main/resources/html-report/
