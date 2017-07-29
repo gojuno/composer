@@ -148,6 +148,6 @@ limitations under the License.
 ```
 
 [spoon]: https://github.com/square/spoon
-[test sharding]: https://developer.android.com/topic/libraries/testing-support-library/index.html#ajur-sharding
+[test sharding]: https://developer.android.com/training/testing/junit-runner.html#sharding-tests
 [swarmer]: https://github.com/gojuno/swarmer
 [ci pipeline]: https://github.com/gojuno/engineering/tree/master/articles/ci_pipeline_and_custom_tools_of_android_projects
