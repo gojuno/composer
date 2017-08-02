@@ -14,7 +14,8 @@ data class Args(
         val outputDirectory: String,
         val instrumentationArguments: List<Pair<String, String>>,
         val verboseOutput: Boolean,
-        val devices: List<String>
+        val devices: List<String>,
+        val devicePattern: String
 )
 
 // No way to share array both for runtime and annotation without reflection.
@@ -95,6 +96,13 @@ private class JCommanderArgs {
             description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--devices emulator-5554 emulator-5556`."
     )
     var devices: List<String>? = null
+
+    @Parameter(
+            names = arrayOf("--devicePattern"),
+            required = false,
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--devicePattern \"somePatterns\"`."
+    )
+    var devicePattern: String? = null
 }
 
 fun parseArgs(rawArgs: Array<String>): Args {
@@ -129,7 +137,8 @@ fun parseArgs(rawArgs: Array<String>): Args {
                     }
                 },
                 verboseOutput = jCommanderArgs.verboseOutput ?: false,
-                devices = jCommanderArgs.devices ?: emptyList()
+                devices = jCommanderArgs.devices ?: emptyList(),
+                devicePattern = jCommanderArgs.devicePattern ?: ""
         )
     }
 }

@@ -30,7 +30,8 @@ class ArgsSpec : Spek({
                     outputDirectory = "composer-output",
                     instrumentationArguments = emptyList(),
                     verboseOutput = false,
-                    devices = emptyList()
+                    devices = emptyList(),
+                    devicePattern = ""
             ))
         }
     }
@@ -102,5 +103,16 @@ class ArgsSpec : Spek({
             assertThat(args.devices).isEqualTo(listOf("emulator-5554", "emulator-5556"))
         }
 
+    }
+
+    context("parse args with passed --devicePattern") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devicePattern", "[abc|def]"))
+        }
+
+        it("parses correctly devicePattern") {
+            assertThat(args.devicePattern).isEqualTo("[abc|def]")
+        }
     }
 })
