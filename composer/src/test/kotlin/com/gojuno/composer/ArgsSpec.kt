@@ -105,13 +105,13 @@ class ArgsSpec : Spek({
 
     }
 
-    context("parse args with passed --devicePattern") {
+    context("parse args with passed --device-pattern") {
 
         val args by memoized {
-            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devicePattern", "[abc|def]"))
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]"))
         }
 
-        it("parses correctly devicePattern") {
+        it("parses correctly device-pattern") {
             assertThat(args.devicePattern).isEqualTo("[abc|def]")
         }
     }

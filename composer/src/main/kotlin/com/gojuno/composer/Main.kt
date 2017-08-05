@@ -41,7 +41,7 @@ fun main(rawArgs: Array<String>) {
             .map {
                 when (args.devicePattern.isEmpty()) {
                     true -> it
-                    false -> it.filter { Regex(args.devicePattern).matches(it.id) }
+                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }
                 }
             }
             .map {
