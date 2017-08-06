@@ -38,10 +38,10 @@ fun main(rawArgs: Array<String>) {
     val gson = Gson()
 
     val suites: List<Suite> = connectedAdbDevices()
-            .map {
+            .map { devices ->
                 when (args.devicePattern.isEmpty()) {
-                    true -> it
-                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }
+                    true -> devices
+                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }}
                 }
             }
             .map {
