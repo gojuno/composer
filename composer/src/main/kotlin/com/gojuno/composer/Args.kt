@@ -100,7 +100,7 @@ private class JCommanderArgs {
     @Parameter(
             names = arrayOf("--device-pattern"),
             required = false,
-            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--device-pattern \"somePatterns\"`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. If `--devices` and `device-pattern` are passed, `--devices` is used. Usage example: `--device-pattern \"somePatterns\"`."
     )
     var devicePattern: String? = null
 }
