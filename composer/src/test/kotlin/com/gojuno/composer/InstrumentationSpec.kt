@@ -210,6 +210,8 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                 // We have no control over system time in tests.
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
+                                index = 1,
+                                total = 4,
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
                                 status = Failed(stacktrace = """java.net.UnknownHostException: Test Exception
@@ -253,18 +255,24 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                                 durationNanos = 0
                         ),
                         InstrumentationTest(
+                                index = 2,
+                                total = 4,
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
                                 status = Passed,
                                 durationNanos = 0
                         ),
                         InstrumentationTest(
+                                index = 3,
+                                total = 4,
                                 className = "com.example.test.TestClass",
                                 testName = "test3",
                                 status = Passed,
                                 durationNanos = 0
                         ),
                         InstrumentationTest(
+                                index = 4,
+                                total = 4,
                                 className = "com.example.test.TestClass",
                                 testName = "test4",
                                 status = Passed,
@@ -430,18 +438,24 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             it("emits expected tests") {
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
+                                index = 1,
+                                total = 3,
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
                                 status = Passed,
                                 durationNanos = 0L
                         ),
                         InstrumentationTest(
+                                index = 2,
+                                total = 3,
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
                                 status = Passed,
                                 durationNanos = 0L
                         ),
                         InstrumentationTest(
+                                index = 3,
+                                total = 3,
                                 className = "com.example.test.TestClass",
                                 testName = "test3",
                                 status = Passed,
@@ -540,12 +554,16 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             it("emits expected tests") {
                 assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
+                                index = 1,
+                                total = 2,
                                 className = "com.example.test.TestClass",
                                 testName = "test1",
                                 status = Passed,
                                 durationNanos = 0L
                         ),
                         InstrumentationTest(
+                                index = 2,
+                                total = 2,
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
                                 status = Ignored,

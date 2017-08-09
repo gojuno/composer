@@ -1,10 +1,6 @@
 package com.gojuno.composer
 
-import com.gojuno.commander.android.AdbDevice
-import com.gojuno.commander.android.adb
-import com.gojuno.commander.android.log
-import com.gojuno.commander.android.pullFolder
-import com.gojuno.commander.android.redirectLogcatToFile
+import com.gojuno.commander.android.*
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.commander.os.process
@@ -49,6 +45,7 @@ fun AdbDevice.runTests(
         outputDir: File,
         verboseOutput: Boolean
 ): Single<AdbDeviceTestRun> {
+
     val adbDevice = this
     val logsDir = File(File(outputDir, "logs"), adbDevice.id)
     val instrumentationOutputFile = File(logsDir, "instrumentation.output")
@@ -63,61 +60,68 @@ fun AdbDevice.runTests(
             redirectOutputTo = instrumentationOutputFile
     ).share()
 
+    @Suppress("destructure")
     val runningTests = runTests
             .ofType(Notification.Start::class.java)
             .flatMap { readInstrumentationOutput(it.output) }
             .asTests()
-            .share()
+            .doOnNext { test ->
+                val status = when (test.status) {
+                    is InstrumentationTest.Status.Passed -> "passed"
+                    is InstrumentationTest.Status.Ignored -> "ignored"
+                    is InstrumentationTest.Status.Failed -> "failed"
+                }
 
-    val adbDeviceTestRun = Observable.zip(
-            Observable.fromCallable { System.nanoTime() },
-            runningTests
-                    .doOnNext { instrumentationTest ->
-                        val status = when (instrumentationTest.status) {
-                            InstrumentationTest.Status.Passed -> "passed"
-                            InstrumentationTest.Status.Ignored -> "ignored"
-                            is InstrumentationTest.Status.Failed -> "failed"
-                        }
+                adbDevice.log(
+                        "Test ${test.index}/${test.total} $status in " +
+                        "${test.durationNanos.nanosToHumanReadableTime()}: " +
+                        "${test.className}.${test.testName}"
+                )
+            }
+            .flatMap { test ->
+                pullTestFiles(adbDevice, test, outputDir, verboseOutput)
+                        .toObservable()
+                        .subscribeOn(Schedulers.io())
+                        .map { pulledFiles -> test to pulledFiles }
+            }
+            .toList()
 
-                        adbDevice.log("Test $status in ${instrumentationTest.durationNanos.nanosToHumanReadableTime()}: ${instrumentationTest.className}.${instrumentationTest.testName}")
-                    }
-                    .flatMap { test ->
-                        pullTestFiles(adbDevice, test, outputDir, verboseOutput)
-                                .toObservable()
-                                .subscribeOn(Schedulers.io())
-                                .map { pulledFiles -> test to pulledFiles }
-                    }
-                    .toList()
-    ) { startTimeNanos, testsWithPulledFiles ->
-        val tests = testsWithPulledFiles.map { it.first }
+    val adbDeviceTestRun = Observable
+            .zip(
+                    Observable.fromCallable { System.nanoTime() },
+                    runningTests,
+                    { time, tests -> time to tests }
+            )
+            .map { (startTimeNanos, testsWithPulledFiles) ->
+                val tests = testsWithPulledFiles.map { it.first }
 
-        AdbDeviceTestRun(
-                adbDevice = adbDevice,
-                tests = testsWithPulledFiles.map { (test, pulledFiles) ->
-                    AdbDeviceTest(
-                            adbDevice = adbDevice,
-                            className = test.className,
-                            testName = test.testName,
-                            status = when (test.status) {
-                                InstrumentationTest.Status.Passed -> AdbDeviceTest.Status.Passed
-                                InstrumentationTest.Status.Ignored -> AdbDeviceTest.Status.Ignored
-                                is InstrumentationTest.Status.Failed -> AdbDeviceTest.Status.Failed(test.status.stacktrace)
-                            },
-                            durationNanos = test.durationNanos,
-                            logcat = logcatFileForTest(logsDir, test.className, test.testName),
-                            files = pulledFiles.files.sortedBy { it.name },
-                            screenshots = pulledFiles.screenshots.sortedBy { it.name }
-                    )
-                },
-                passedCount = tests.count { it.status is InstrumentationTest.Status.Passed },
-                ignoredCount = tests.count { it.status is InstrumentationTest.Status.Ignored },
-                failedCount = tests.count { it.status is InstrumentationTest.Status.Failed },
-                durationNanos = System.nanoTime() - startTimeNanos,
-                timestampMillis = System.currentTimeMillis(),
-                logcat = logcatFileForDevice(logsDir),
-                instrumentationOutput = instrumentationOutputFile
-        )
-    }
+                AdbDeviceTestRun(
+                        adbDevice = adbDevice,
+                        tests = testsWithPulledFiles.map { (test, pulledFiles) ->
+                            AdbDeviceTest(
+                                    adbDevice = adbDevice,
+                                    className = test.className,
+                                    testName = test.testName,
+                                    status = when (test.status) {
+                                        is InstrumentationTest.Status.Passed -> AdbDeviceTest.Status.Passed
+                                        is InstrumentationTest.Status.Ignored -> AdbDeviceTest.Status.Ignored
+                                        is InstrumentationTest.Status.Failed -> AdbDeviceTest.Status.Failed(test.status.stacktrace)
+                                    },
+                                    durationNanos = test.durationNanos,
+                                    logcat = logcatFileForTest(logsDir, test.className, test.testName),
+                                    files = pulledFiles.files.sortedBy { it.name },
+                                    screenshots = pulledFiles.screenshots.sortedBy { it.name }
+                            )
+                        },
+                        passedCount = tests.count { it.status is InstrumentationTest.Status.Passed },
+                        ignoredCount = tests.count { it.status is InstrumentationTest.Status.Ignored },
+                        failedCount = tests.count { it.status is InstrumentationTest.Status.Failed },
+                        durationNanos = System.nanoTime() - startTimeNanos,
+                        timestampMillis = System.currentTimeMillis(),
+                        logcat = logcatFileForDevice(logsDir),
+                        instrumentationOutput = instrumentationOutputFile
+                )
+            }
 
     val testRunFinish = runTests.ofType(Notification.Exit::class.java).cache()
 
@@ -131,13 +135,15 @@ fun AdbDevice.runTests(
     return Observable
             .zip(adbDeviceTestRun, saveLogcat, testRunFinish) { suite, _, _ -> suite }
             .doOnSubscribe { adbDevice.log("Starting tests...") }
-            .doOnNext { adbDeviceTestRun ->
+            .doOnNext { testRun ->
                 adbDevice.log(
-                        "Test run finished, ${adbDeviceTestRun.passedCount} passed, ${adbDeviceTestRun.failedCount} failed, took ${adbDeviceTestRun.durationNanos.nanosToHumanReadableTime()}."
+                        "Test run finished, " +
+                        "${testRun.passedCount} passed, " +
+                        "${testRun.failedCount} failed, took " +
+                        "${testRun.durationNanos.nanosToHumanReadableTime()}."
                 )
             }
             .doOnError { adbDevice.log("Error during tests run: $it") }
-            .take(1)
             .toSingle()
 }
 
