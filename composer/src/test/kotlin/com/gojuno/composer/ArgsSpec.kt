@@ -1,8 +1,10 @@
 package com.gojuno.composer
 
+import com.beust.jcommander.ParameterException
 import com.gojuno.janulator.Args
 import com.gojuno.janulator.parseArgs
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
 import org.jetbrains.spek.api.dsl.it
@@ -115,4 +117,12 @@ class ArgsSpec : Spek({
             assertThat(args.devicePattern).isEqualTo("[abc|def]")
         }
     }
+
+    context("parse args with passed  --devices and --device-pattern") {
+
+        it("raises argument error") {
+            assertThatThrownBy { parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]") + arrayOf("--device-pattern", "[abc|def]")) }.isInstanceOf(ParameterException::class.java)
+        }
+    }
+
 })
