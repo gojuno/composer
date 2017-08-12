@@ -39,12 +39,15 @@ fun main(rawArgs: Array<String>) {
 
     val suites: List<Suite> = connectedAdbDevices()
             .map { devices ->
+                when (args.devicePattern.isEmpty()) {
+                    true -> devices
+                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }}
+                }
+            }
+            .map {
                 when (args.devices.isEmpty()) {
-                    true -> when (args.devicePattern.isEmpty()) {
-                                true -> devices
-                                false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }}
-                            }
-                    false -> devices.filter { args.devices.contains(it.id) }
+                    true -> it
+                    false -> it.filter { args.devices.contains(it.id) }
                 }
             }
             .map {
