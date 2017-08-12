@@ -2,6 +2,7 @@ package com.gojuno.janulator
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import com.beust.jcommander.ParameterException
 import com.gojuno.composer.Exit
 import com.gojuno.composer.exit
 
@@ -93,16 +94,24 @@ private class JCommanderArgs {
             names = arrayOf("--devices"),
             required = false,
             variableArity = true,
-            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--devices emulator-5554 emulator-5556`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Can't pass `--devices` with `--device-pattern`. Usage example: `--devices emulator-5554 emulator-5556`."
     )
     var devices: List<String>? = null
 
     @Parameter(
             names = arrayOf("--device-pattern"),
             required = false,
-            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Usage example: `--device-pattern \"somePatterns\"`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Can't pass `--device-pattern` with `--devices`. Usage example: `--device-pattern \"somePatterns\"`."
     )
     var devicePattern: String? = null
+}
+
+private fun validateArguments(args: Args): Args{
+    if(!args.devicePattern.isEmpty() && !args.devices.isEmpty()) {
+        throw ParameterException("Can't pass both --devices and --device-pattern at the same time.")
+    }
+
+    return args
 }
 
 fun parseArgs(rawArgs: Array<String>): Args {
@@ -140,6 +149,5 @@ fun parseArgs(rawArgs: Array<String>): Args {
                 devices = jCommanderArgs.devices ?: emptyList(),
                 devicePattern = jCommanderArgs.devicePattern ?: ""
         )
-    }
+    }.let { args -> validateArguments(args) }
 }
-
