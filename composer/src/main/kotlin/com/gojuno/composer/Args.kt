@@ -2,7 +2,6 @@ package com.gojuno.janulator
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
-import com.beust.jcommander.ParameterException
 import com.gojuno.composer.Exit
 import com.gojuno.composer.exit
 
@@ -17,7 +16,13 @@ data class Args(
         val verboseOutput: Boolean,
         val devices: List<String>,
         val devicePattern: String
-)
+) {
+    fun validateArguments() {
+        if(!this.devicePattern.isEmpty() && !this.devices.isEmpty()) {
+            throw IllegalArgumentException("Specifying both --devices and --device-pattern is prohibited.")
+        }
+    }
+}
 
 // No way to share array both for runtime and annotation without reflection.
 private val PARAMETER_HELP_NAMES = setOf("--help", "-help", "help", "-h")
@@ -94,24 +99,16 @@ private class JCommanderArgs {
             names = arrayOf("--devices"),
             required = false,
             variableArity = true,
-            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Can't pass `--devices` with `--device-pattern`. Usage example: `--devices emulator-5554 emulator-5556`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`."
     )
     var devices: List<String>? = null
 
     @Parameter(
             names = arrayOf("--device-pattern"),
             required = false,
-            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Can't pass `--device-pattern` with `--devices`. Usage example: `--device-pattern \"somePatterns\"`."
+            description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--device-pattern` and `--devices` will result in an error. Usage example: `--device-pattern \"somePatterns\"`."
     )
     var devicePattern: String? = null
-}
-
-private fun validateArguments(args: Args): Args{
-    if(!args.devicePattern.isEmpty() && !args.devices.isEmpty()) {
-        throw ParameterException("Can't pass both --devices and --device-pattern at the same time.")
-    }
-
-    return args
 }
 
 fun parseArgs(rawArgs: Array<String>): Args {
@@ -148,6 +145,6 @@ fun parseArgs(rawArgs: Array<String>): Args {
                 verboseOutput = jCommanderArgs.verboseOutput ?: false,
                 devices = jCommanderArgs.devices ?: emptyList(),
                 devicePattern = jCommanderArgs.devicePattern ?: ""
-        )
-    }.let { args -> validateArguments(args) }
+        ).apply { validateArguments() }
+    }
 }

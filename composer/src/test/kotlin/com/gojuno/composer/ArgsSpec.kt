@@ -1,6 +1,5 @@
 package com.gojuno.composer
 
-import com.beust.jcommander.ParameterException
 import com.gojuno.janulator.Args
 import com.gojuno.janulator.parseArgs
 import org.assertj.core.api.Assertions.assertThat
@@ -118,10 +117,12 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed  --devices and --device-pattern") {
+    context("parse args with passed --devices and --device-pattern") {
 
         it("raises argument error") {
-            assertThatThrownBy { parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]") + arrayOf("--device-pattern", "[abc|def]")) }.isInstanceOf(ParameterException::class.java)
+            assertThatThrownBy { parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]") + arrayOf("--devices", "emulator-5554")) }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("Specifying both --devices and --device-pattern is prohibited.")
         }
     }
 
