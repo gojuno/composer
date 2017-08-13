@@ -16,13 +16,7 @@ data class Args(
         val verboseOutput: Boolean,
         val devices: List<String>,
         val devicePattern: String
-) {
-    fun validateArguments() {
-        if(!this.devicePattern.isEmpty() && !this.devices.isEmpty()) {
-            throw IllegalArgumentException("Specifying both --devices and --device-pattern is prohibited.")
-        }
-    }
-}
+)
 
 // No way to share array both for runtime and annotation without reflection.
 private val PARAMETER_HELP_NAMES = setOf("--help", "-help", "help", "-h")
@@ -111,6 +105,12 @@ private class JCommanderArgs {
     var devicePattern: String? = null
 }
 
+private fun validateArguments(args: Args) {
+    if(!args.devicePattern.isEmpty() && !args.devices.isEmpty()) {
+        throw IllegalArgumentException("Specifying both --devices and --device-pattern is prohibited.")
+    }
+}
+
 fun parseArgs(rawArgs: Array<String>): Args {
     if (PARAMETER_HELP_NAMES.firstOrNull { rawArgs.contains(it) } != null) {
         JCommander(JCommanderArgs()).usage()
@@ -145,6 +145,6 @@ fun parseArgs(rawArgs: Array<String>): Args {
                 verboseOutput = jCommanderArgs.verboseOutput ?: false,
                 devices = jCommanderArgs.devices ?: emptyList(),
                 devicePattern = jCommanderArgs.devicePattern ?: ""
-        ).apply { validateArguments() }
-    }
+        )
+    }.apply { validateArguments(this) }
 }
