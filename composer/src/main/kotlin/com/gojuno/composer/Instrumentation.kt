@@ -5,6 +5,8 @@ import rx.Observable
 import java.io.File
 
 data class InstrumentationTest(
+        val index: Int,
+        val total: Int,
         val className: String,
         val testName: String,
         val status: Status,
@@ -54,19 +56,26 @@ private fun String.substringBetween(first: String, second: String): String {
     return substring(startIndex, endIndex)
 }
 
-private fun String.parseInstrumentationStatusValue(key: String): String = substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS")
+private fun String.parseInstrumentationStatusValue(key: String): String = this
+        .substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS")
         .trim()
 
-private fun parseUnableToFindInstrumentationInfo(str: String, output: File): Exception? = when (str.contains("INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for")) {
-    false -> null
-    true -> {
-        val runner = str.substringBetween("ComponentInfo{", "}").substringAfter("/")
-        Exception("Instrumentation was unable to run tests using runner $runner.\n" +
+private fun String.throwIfError(output: File) = when {
+    contains("INSTRUMENTATION_RESULT: shortMsg=Process crashed") -> {
+        throw Exception("Application process crashed. Check Logcat output for more details.")
+    }
+
+    contains("INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for") -> {
+        val runner = substringBetween("ComponentInfo{", "}").substringAfter("/")
+        throw Exception(
+                "Instrumentation was unable to run tests using runner $runner.\n" +
                 "Most likely you forgot to declare test runner in AndroidManifest.xml or build.gradle.\n" +
                 "Detailed log can be found in ${output.path} or Logcat output.\n" +
                 "See https://github.com/gojuno/composer/issues/79 for more info."
         )
     }
+
+    else -> this
 }
 
 private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
@@ -99,8 +108,11 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
 
     return tail(output)
             .map(String::trim)
-            // `INSTRUMENTATION_CODE: -1` is last line printed by instrumentation, even if 0 tests were run.
-            .takeWhile { !it.startsWith("INSTRUMENTATION_CODE") }
+            .map { it.throwIfError(output) }
+            .takeWhile {
+                // `INSTRUMENTATION_CODE: <code>` is the last line printed by instrumentation, even if 0 tests were run.
+                !it.startsWith("INSTRUMENTATION_CODE")
+            }
             .scan(result()) { previousResult, newLine ->
                 val buffer = when (previousResult.readyForProcessing) {
                     true -> newLine
@@ -111,14 +123,6 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
             }
             .filter { it.readyForProcessing }
             .map { it.buffer }
-            .map {
-                val unableToFindInstrumentationInfo = parseUnableToFindInstrumentationInfo(it, output)
-
-                when (unableToFindInstrumentationInfo) {
-                    null -> it
-                    else -> throw unableToFindInstrumentationInfo
-                }
-            }
             .map(::parseInstrumentationEntry)
 }
 
@@ -133,13 +137,10 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> 
                             val second = entries
                                     .subList(index + 1, entries.size)
                                     .firstOrNull {
-                                        first.clazz == it.clazz
-                                                &&
-                                                first.test == it.test
-                                                &&
-                                                first.current == it.current
-                                                &&
-                                                first.statusCode != it.statusCode
+                                        first.clazz == it.clazz &&
+                                        first.test == it.test &&
+                                        first.current == it.current &&
+                                        first.statusCode != it.statusCode
                                     }
 
                             if (second == null) null else first to second
@@ -147,13 +148,18 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> 
                         .filterNotNull()
                         .map { (first, second) ->
                             InstrumentationTest(
+                                    index = first.current,
+                                    total = first.numTests,
                                     className = first.clazz,
                                     testName = first.test,
                                     status = when (second.statusCode) {
                                         StatusCode.Ok -> Passed
                                         StatusCode.Ignored -> Ignored
                                         StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
-                                        StatusCode.Start -> throw IllegalStateException("Unexpected status code [${second.statusCode}] in second entry, please report that to Composer maintainers ($first, $second)")
+                                        StatusCode.Start -> throw IllegalStateException(
+                                                "Unexpected status code [Start] in second entry, " +
+                                                "please report that to Composer maintainers ($first, $second)"
+                                        )
                                     },
                                     durationNanos = second.timestampNanos - first.timestampNanos
                             )
