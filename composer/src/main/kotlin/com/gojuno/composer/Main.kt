@@ -38,6 +38,12 @@ fun main(rawArgs: Array<String>) {
     val gson = Gson()
 
     val suites: List<Suite> = connectedAdbDevices()
+            .map { devices ->
+                when (args.devicePattern.isEmpty()) {
+                    true -> devices
+                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }}
+                }
+            }
             .map {
                 when (args.devices.isEmpty()) {
                     true -> it

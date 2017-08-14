@@ -3,6 +3,7 @@ package com.gojuno.composer
 import com.gojuno.janulator.Args
 import com.gojuno.janulator.parseArgs
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
 import org.jetbrains.spek.api.dsl.it
@@ -30,7 +31,8 @@ class ArgsSpec : Spek({
                     outputDirectory = "composer-output",
                     instrumentationArguments = emptyList(),
                     verboseOutput = false,
-                    devices = emptyList()
+                    devices = emptyList(),
+                    devicePattern = ""
             ))
         }
     }
@@ -103,4 +105,25 @@ class ArgsSpec : Spek({
         }
 
     }
+
+    context("parse args with passed --device-pattern") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]"))
+        }
+
+        it("parses correctly device-pattern") {
+            assertThat(args.devicePattern).isEqualTo("[abc|def]")
+        }
+    }
+
+    context("parse args with passed --devices and --device-pattern") {
+
+        it("raises argument error") {
+            assertThatThrownBy { parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]") + arrayOf("--devices", "emulator-5554")) }
+                    .isInstanceOf(IllegalArgumentException::class.java)
+                    .hasMessageContaining("Specifying both --devices and --device-pattern is prohibited.")
+        }
+    }
+
 })
