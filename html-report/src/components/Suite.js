@@ -36,7 +36,7 @@ export default class Suite extends Component {
     const data = window.suite;
     return (
       <div className="content margin-top-20">
-        <div className="title-common"><a href={ paths.fromSuiteToIndex }>Suits list</a>/ Suite {data.id}</div>
+        <div className="title-common"><a href={ paths.fromSuiteToIndex }>Suites list</a>/ Suite {data.id}</div>
 
         <SearchBar setSearchResults={ (results) => this.getSearchResults(results) } />
 
