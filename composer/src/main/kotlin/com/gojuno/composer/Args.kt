@@ -118,8 +118,8 @@ fun parseArgs(rawArgs: Array<String>): Args {
     }
 
     val jCommanderArgs = JCommanderArgs()
-
-    JCommander(jCommanderArgs, *rawArgs)
+    val jCommander = JCommander.newBuilder().addObject(jCommanderArgs).build()
+    jCommander.parse(*rawArgs)
 
     return jCommanderArgs.let {
         Args(

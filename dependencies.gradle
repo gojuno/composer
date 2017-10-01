@@ -2,7 +2,7 @@ ext.versions = [
         kotlin           : '1.1.1',
 
         rxJava           : '1.3.0',
-        jCommander       : '1.66',
+        jCommander       : '1.71',
         commander        : '0.1.1',
         apacheCommonsIo  : '2.5',
         apacheCommonsLang: '3.5',
