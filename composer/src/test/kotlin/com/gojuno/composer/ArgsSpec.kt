@@ -1,7 +1,5 @@
 package com.gojuno.composer
 
-import com.gojuno.janulator.Args
-import com.gojuno.janulator.parseArgs
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jetbrains.spek.api.Spek
@@ -44,7 +42,18 @@ class ArgsSpec : Spek({
         }
 
         it("converts instrumentation arguments to list of key-value pairs") {
-            assertThat(args.instrumentationArguments).isEqualTo(listOf("key1" to "value1", "key2" to "value2"))
+            assertThat(args.instrumentationArguments).isEqualTo(listOf("key1", "value1", "key2", "value2"))
+        }
+    }
+
+    context("parse args with instrumentation arguments with values with commas") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--instrumentation-arguments", "key1", "value1,value2", "key2", "value3,value4"))
+        }
+
+        it("converts instrumentation arguments to list of key-value pairs") {
+            assertThat(args.instrumentationArguments).isEqualTo(listOf("key1", "value1,value2", "key2", "value3,value4"))
         }
     }
 

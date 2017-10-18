@@ -24,8 +24,7 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File, date: Date
             )
     )
 
-
-    val date = SimpleDateFormat("HH:mm:ss z, MMM d yyyy").apply { timeZone = TimeZone.getTimeZone("UTC") }.format(date)
+    val formattedDate = SimpleDateFormat("HH:mm:ss z, MMM d yyyy").apply { timeZone = TimeZone.getTimeZone("UTC") }.format(date)
 
     val appJs = File(outputDir, "app.min.js")
     inputStreamFromResources("html-report/app.min.js").copyTo(appJs.outputStream())
@@ -48,7 +47,7 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File, date: Date
     indexHtmlFile.writeText(indexHtml
             .replace("\${relative_path}", indexHtmlFile.relativePathToHtmlDir())
             .replace("\${data_json}", "window.mainData = $htmlIndexJson")
-            .replace("\${date}", date)
+            .replace("\${date}", formattedDate)
             .replace("\${log}", "")
     )
 
@@ -61,7 +60,7 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File, date: Date
         suiteHtmlFile.writeText(indexHtml
                 .replace("\${relative_path}", suiteHtmlFile.relativePathToHtmlDir())
                 .replace("\${data_json}", "window.suite = $suiteJson")
-                .replace("\${date}", date)
+                .replace("\${date}", formattedDate)
                 .replace("\${log}", "")
         )
 
@@ -76,7 +75,7 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File, date: Date
                     testHtmlFile.writeText(indexHtml
                             .replace("\${relative_path}", testHtmlFile.relativePathToHtmlDir())
                             .replace("\${data_json}", "window.test = $testJson")
-                            .replace("\${date}", date)
+                            .replace("\${date}", formattedDate)
                             .replace("\${log}", generateLogcatHtml(test.logcat))
                     )
                 }
