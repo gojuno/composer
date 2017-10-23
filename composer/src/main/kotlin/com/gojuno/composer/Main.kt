@@ -5,7 +5,6 @@ import com.gojuno.commander.android.installApk
 import com.gojuno.commander.os.log
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.composer.html.writeHtmlReport
-import com.gojuno.janulator.parseArgs
 import com.google.gson.Gson
 import rx.Observable
 import rx.schedulers.Schedulers
@@ -41,7 +40,7 @@ fun main(rawArgs: Array<String>) {
             .map { devices ->
                 when (args.devicePattern.isEmpty()) {
                     true -> devices
-                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) }}
+                    false -> Regex(args.devicePattern).let { regex -> devices.filter { regex.matches(it.id) } }
                 }
             }
             .map {
@@ -69,21 +68,19 @@ fun main(rawArgs: Array<String>) {
                             .subscribeOn(Schedulers.io())
                             .toList()
                             .flatMap {
-                                val shardOptions = when {
-                                    args.shard && connectedAdbDevices.size > 1 -> listOf(
-                                            "numShards" to "${connectedAdbDevices.size}",
-                                            "shardIndex" to "$index"
-                                    )
-
-                                    else -> emptyList()
-                                }
+                                val instrumentationArguments =
+                                        buildShardArguments(
+                                                shardingOn = args.shard,
+                                                shardIndex = index,
+                                                devices = connectedAdbDevices.size
+                                        ) + args.instrumentationArguments.pairArguments()
 
                                 device
                                         .runTests(
                                                 // TODO parse package name and runner class from test apk.
                                                 testPackageName = args.testPackage,
                                                 testRunnerClass = args.testRunner,
-                                                instrumentationArguments = shardOptions + args.instrumentationArguments,
+                                                instrumentationArguments = instrumentationArguments.formatInstrumentationArguments(),
                                                 outputDir = File(args.outputDirectory),
                                                 verboseOutput = args.verboseOutput
                                         )
@@ -148,6 +145,31 @@ fun main(rawArgs: Array<String>) {
         totalPassed == 0 && totalFailed == 0 -> exit(Exit.NoTests)
         else -> exit(Exit.ThereWereFailedTests)
     }
+}
+
+private fun List<String>.pairArguments(): List<Pair<String, String>> =
+        foldIndexed(mutableListOf()) { index, accumulator, value ->
+            accumulator.apply {
+                if (index % 2 == 0) {
+                    add(value to "")
+                } else {
+                    set(lastIndex, last().first to value)
+                }
+            }
+        }
+
+private fun buildShardArguments(shardingOn: Boolean, shardIndex: Int, devices: Int): List<Pair<String, String>> = when {
+    shardingOn && devices > 1 -> listOf(
+            "numShards" to "$devices",
+            "shardIndex" to "$shardIndex"
+    )
+
+    else -> emptyList()
+}
+
+private fun List<Pair<String, String>>.formatInstrumentationArguments(): String = when (isEmpty()) {
+    true -> ""
+    false -> " " + joinToString(separator = " ") { "-e ${it.first} ${it.second}" }
 }
 
 data class Suite(

@@ -41,7 +41,7 @@ data class AdbDeviceTest(
 fun AdbDevice.runTests(
         testPackageName: String,
         testRunnerClass: String,
-        instrumentationArguments: List<Pair<String, String>>,
+        instrumentationArguments: String,
         outputDir: File,
         verboseOutput: Boolean
 ): Single<AdbDeviceTestRun> {
@@ -54,7 +54,7 @@ fun AdbDevice.runTests(
             commandAndArgs = listOf(
                     adb,
                     "-s", adbDevice.id,
-                    "shell", "am instrument -w -r${instrumentationArguments.formatInstrumentationOptions()} $testPackageName/$testRunnerClass"
+                    "shell", "am instrument -w -r $instrumentationArguments $testPackageName/$testRunnerClass"
             ),
             timeout = null,
             redirectOutputTo = instrumentationOutputFile
@@ -145,11 +145,6 @@ fun AdbDevice.runTests(
             }
             .doOnError { adbDevice.log("Error during tests run: $it") }
             .toSingle()
-}
-
-private fun List<Pair<String, String>>.formatInstrumentationOptions(): String = when (isEmpty()) {
-    true -> ""
-    false -> " " + joinToString(separator = " ") { "-e ${it.first} ${it.second}" }
 }
 
 data class PulledFiles(
