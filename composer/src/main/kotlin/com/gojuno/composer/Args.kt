@@ -68,17 +68,25 @@ data class Args(
                 names = arrayOf("--verbose-output"),
                 required = false,
                 arity = 1,
-                description = "Either `true` or `false` to enable/disable verbose output for Swarmer. `false` by default.",
+                description = "Either `true` or `false` to enable/disable verbose output for Composer. `false` by default.",
                 order = 7
         )
         var verboseOutput: Boolean = false,
+
+        @Parameter(
+                names = arrayOf("--keep-output-on-exit"),
+                required = false,
+                description = "Keep output on exit. False by default.",
+                order = 8
+        )
+        var keepOutputOnExit: Boolean = false,
 
         @Parameter(
                 names = arrayOf("--devices"),
                 required = false,
                 variableArity = true,
                 description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`.",
-                order = 8
+                order = 9
         )
         var devices: List<String> = emptyList(),
 
@@ -86,7 +94,7 @@ data class Args(
                 names = arrayOf("--device-pattern"),
                 required = false,
                 description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--device-pattern` and `--devices` will result in an error. Usage example: `--device-pattern \"somePatterns\"`.",
-                order = 9
+                order = 10
         )
         var devicePattern: String = ""
 )

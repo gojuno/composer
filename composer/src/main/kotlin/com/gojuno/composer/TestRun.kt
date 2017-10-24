@@ -43,7 +43,8 @@ fun AdbDevice.runTests(
         testRunnerClass: String,
         instrumentationArguments: String,
         outputDir: File,
-        verboseOutput: Boolean
+        verboseOutput: Boolean,
+        keepOutput: Boolean
 ): Single<AdbDeviceTestRun> {
 
     val adbDevice = this
@@ -57,7 +58,8 @@ fun AdbDevice.runTests(
                     "shell", "am instrument -w -r $instrumentationArguments $testPackageName/$testRunnerClass"
             ),
             timeout = null,
-            redirectOutputTo = instrumentationOutputFile
+            redirectOutputTo = instrumentationOutputFile,
+            keepOutputOnExit = keepOutput
     ).share()
 
     @Suppress("destructure")

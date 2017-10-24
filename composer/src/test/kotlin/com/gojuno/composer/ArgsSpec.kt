@@ -29,6 +29,7 @@ class ArgsSpec : Spek({
                     outputDirectory = "composer-output",
                     instrumentationArguments = emptyList(),
                     verboseOutput = false,
+                    keepOutputOnExit = false,
                     devices = emptyList(),
                     devicePattern = ""
             ))
@@ -100,7 +101,6 @@ class ArgsSpec : Spek({
         it("parses correctly device ids") {
             assertThat(args.devices).isEqualTo(listOf("emulator-5554"))
         }
-
     }
 
     context("parse args with passed two --devices") {
@@ -112,7 +112,6 @@ class ArgsSpec : Spek({
         it("parses correctly two device ids") {
             assertThat(args.devices).isEqualTo(listOf("emulator-5554", "emulator-5556"))
         }
-
     }
 
     context("parse args with passed --device-pattern") {
@@ -135,4 +134,14 @@ class ArgsSpec : Spek({
         }
     }
 
+    context("parse args with --keep-output-on-exit") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + "--keep-output-on-exit")
+        }
+
+        it("parses --keep-output-on-exit correctly") {
+            assertThat(args.keepOutputOnExit).isEqualTo(true)
+        }
+    }
 })

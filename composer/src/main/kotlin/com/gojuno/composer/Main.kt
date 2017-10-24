@@ -82,7 +82,8 @@ fun main(rawArgs: Array<String>) {
                                                 testRunnerClass = args.testRunner,
                                                 instrumentationArguments = instrumentationArguments.formatInstrumentationArguments(),
                                                 outputDir = File(args.outputDirectory),
-                                                verboseOutput = args.verboseOutput
+                                                verboseOutput = args.verboseOutput,
+                                                keepOutput = args.keepOutputOnExit
                                         )
                                         .flatMap { adbDeviceTestRun ->
                                             writeJunit4Report(
