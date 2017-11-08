@@ -31,7 +31,8 @@ class ArgsSpec : Spek({
                     verboseOutput = false,
                     keepOutputOnExit = false,
                     devices = emptyList(),
-                    devicePattern = ""
+                    devicePattern = "",
+                    installTimeoutSeconds = 120
             ))
         }
     }
