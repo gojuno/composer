@@ -10,6 +10,7 @@ import rx.Observable
 import rx.schedulers.Schedulers
 import java.io.File
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 sealed class Exit(val code: Int, val message: String?) {
     object Ok : Exit(code = 0, message = null)
@@ -59,8 +60,9 @@ fun main(rawArgs: Array<String>) {
             .doOnNext { log("${it.size} connected adb device(s): $it") }
             .flatMap { connectedAdbDevices ->
                 val runTestsOnDevices: List<Observable<AdbDeviceTestRun>> = connectedAdbDevices.mapIndexed { index, device ->
-                    val installAppApk = device.installApk(pathToApk = args.appApkPath)
-                    val installTestApk = device.installApk(pathToApk = args.testApkPath)
+                    val installTimeout = Pair(args.installTimeoutSeconds, TimeUnit.SECONDS)
+                    val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
+                    val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
 
                     Observable
                             .concat(installAppApk, installTestApk)
