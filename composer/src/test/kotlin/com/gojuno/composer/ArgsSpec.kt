@@ -144,4 +144,15 @@ class ArgsSpec : Spek({
             assertThat(args.keepOutputOnExit).isEqualTo(true)
         }
     }
+
+    context("parse args with passed --install-timeout") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--install-timeout", "600"))
+        }
+
+        it("parses --install-timeout correctly") {
+            assertThat(args.installTimeoutSeconds).isEqualTo(600)
+        }
+    }
 })
