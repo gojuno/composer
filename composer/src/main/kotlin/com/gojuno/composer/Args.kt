@@ -3,6 +3,7 @@ package com.gojuno.composer
 import com.beust.jcommander.IStringConverter
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.Parameter
+import java.util.concurrent.TimeUnit
 
 data class Args(
         @Parameter(
@@ -96,7 +97,15 @@ data class Args(
                 description = "Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--device-pattern` and `--devices` will result in an error. Usage example: `--device-pattern \"somePatterns\"`.",
                 order = 10
         )
-        var devicePattern: String = ""
+        var devicePattern: String = "",
+
+        @Parameter(
+                names = arrayOf("--install-timeout"),
+                required = false,
+                description = "APK installation timeout in seconds. If not passed defaults to 120 seconds (2 minutes). Applicable to both test APK and APK under test.",
+                order = 11
+        )
+        var installTimeoutSeconds: Int = TimeUnit.MINUTES.toSeconds(2).toInt()
 )
 
 // No way to share array both for runtime and annotation without reflection.

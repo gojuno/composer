@@ -31,7 +31,8 @@ class ArgsSpec : Spek({
                     verboseOutput = false,
                     keepOutputOnExit = false,
                     devices = emptyList(),
-                    devicePattern = ""
+                    devicePattern = "",
+                    installTimeoutSeconds = 120
             ))
         }
     }
@@ -142,6 +143,17 @@ class ArgsSpec : Spek({
 
         it("parses --keep-output-on-exit correctly") {
             assertThat(args.keepOutputOnExit).isEqualTo(true)
+        }
+    }
+
+    context("parse args with passed --install-timeout") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--install-timeout", "600"))
+        }
+
+        it("parses --install-timeout correctly") {
+            assertThat(args.installTimeoutSeconds).isEqualTo(600)
         }
     }
 })
