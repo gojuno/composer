@@ -88,6 +88,9 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`.
 * `--device-pattern`
   * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--device-pattern` and `--devices` will result in an error. Usage example: `--device-pattern "emulator.+"`.
+* `--install-timeout`
+  * APK installation timeout in seconds. If not passed defaults to 120 seconds (2 minutes). Applicable to both test APK and APK under test. Usage
+  example (for 10 minutes timeout): `--install-timeout 600`.
 
 ##### Example
 
