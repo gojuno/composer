@@ -15,7 +15,7 @@ data class InstrumentationTest(
 
     sealed class Status {
         object Passed : Status()
-        object Ignored : Status()
+        data class Ignored(val stacktrace: String = "") : Status()
         data class Failed(val stacktrace: String) : Status()
     }
 }
@@ -154,8 +154,9 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> 
                                     testName = first.test,
                                     status = when (second.statusCode) {
                                         StatusCode.Ok -> Passed
-                                        StatusCode.Ignored -> Ignored
-                                        StatusCode.Failure, StatusCode.AssumptionFailure -> Failed(stacktrace = second.stack)
+                                        StatusCode.Ignored  -> Ignored()
+                                        StatusCode.AssumptionFailure -> Ignored(stacktrace = second.stack)
+                                        StatusCode.Failure -> Failed(stacktrace = second.stack)
                                         StatusCode.Start -> throw IllegalStateException(
                                                 "Unexpected status code [Start] in second entry, " +
                                                 "please report that to Composer maintainers ($first, $second)"
