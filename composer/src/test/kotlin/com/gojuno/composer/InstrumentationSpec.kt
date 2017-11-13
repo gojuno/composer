@@ -189,7 +189,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             ))
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -305,7 +305,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             entriesSubscriber.assertNoValues()
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -326,7 +326,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                 testsSubscriber.assertNoValues()
             }
 
-            it("completest stream") {
+            it("completes stream") {
                 testsSubscriber.assertCompleted()
             }
 
@@ -418,7 +418,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             )
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -464,7 +464,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                 ))
             }
 
-            it("completest stream") {
+            it("completes stream") {
                 testsSubscriber.assertCompleted()
             }
 
@@ -534,7 +534,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             )
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -641,7 +641,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
             ))
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
