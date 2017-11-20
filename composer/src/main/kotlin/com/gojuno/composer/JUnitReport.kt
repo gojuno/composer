@@ -45,7 +45,7 @@ fun writeJunit4Report(suite: Suite, outputFile: File): Completable = Single
                             Passed -> {
                                 appendln("/>")
                             }
-                            Ignored -> {
+                            is Ignored -> {
                                 appendln(">")
                                 appendln("<skipped/>")
                                 appendln("</testcase>")
