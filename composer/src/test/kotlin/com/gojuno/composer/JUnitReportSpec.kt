@@ -58,7 +58,7 @@ class JUnitReportSpec : Spek({
                                             adbDevice = adbDevice,
                                             className = "test.class.name4",
                                             testName = "test4",
-                                            status = Ignored(""),
+                                            status = Ignored("multi\nline\nstacktrace"),
                                             durationNanos = SECONDS.toNanos(0),
                                             logcat = testFile(),
                                             files = emptyList(),
