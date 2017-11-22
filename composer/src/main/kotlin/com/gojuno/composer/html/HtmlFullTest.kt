@@ -76,11 +76,12 @@ fun AdbDeviceTest.toHtmlFullTest(suiteId: String, htmlReportDir: File) = HtmlFul
         durationMillis = NANOSECONDS.toMillis(durationNanos),
         status = when (status) {
             AdbDeviceTest.Status.Passed -> HtmlFullTest.Status.Passed
-            AdbDeviceTest.Status.Ignored -> HtmlFullTest.Status.Ignored
+            is AdbDeviceTest.Status.Ignored -> HtmlFullTest.Status.Ignored
             is AdbDeviceTest.Status.Failed -> HtmlFullTest.Status.Failed
         },
         stacktrace = when (status) {
-            is AdbDeviceTest.Status.Failed -> status.stacktrace
+            is AdbDeviceTest.Status.Ignored -> status.stacktrace
+            is AdbDeviceTest.Status.Failed  -> status.stacktrace
             else -> null
         },
         logcatPath = logcat.relativePathTo(htmlReportDir),
