@@ -47,7 +47,13 @@ fun writeJunit4Report(suite: Suite, outputFile: File): Completable = Single
                             }
                             is Ignored -> {
                                 appendln(">")
-                                appendln("<skipped/>")
+                                if (test.status.stacktrace.isEmpty()) {
+                                    appendln("<skipped/>")
+                                } else {
+                                    appendln("<skipped>")
+                                    appendln(StringEscapeUtils.escapeXml10(test.status.stacktrace))
+                                    appendln("</skipped>")
+                                }
                                 appendln("</testcase>")
                             }
                             is Failed -> {
