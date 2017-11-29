@@ -84,6 +84,8 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Key-value pairs to pass to Instrumentation Runner. Usage example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`.
 * `--verbose-output`
   * Either `true` or `false` to enable/disable verbose output for Composer. `false` by default.
+* `--keep-output-on-exit`
+  * Keep output on exit. False by default.
 * `--devices`
   * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`.
 * `--device-pattern`
@@ -102,7 +104,8 @@ java -jar composer-latest-version.jar \
 --test-runner com.example.test.ExampleTestRunner \
 --output-directory artifacts/composer-output \
 --instrumentation-arguments key1 value1 key2 value2 \
---verbose-output false
+--verbose-output false \
+--keep-output-on-exit false
 ```
 
 ### Download
