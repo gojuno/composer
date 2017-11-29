@@ -189,7 +189,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             ))
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -305,7 +305,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             entriesSubscriber.assertNoValues()
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -326,7 +326,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                 testsSubscriber.assertNoValues()
             }
 
-            it("completest stream") {
+            it("completes stream") {
                 testsSubscriber.assertCompleted()
             }
 
@@ -418,7 +418,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             )
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -464,7 +464,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                 ))
             }
 
-            it("completest stream") {
+            it("completes stream") {
                 testsSubscriber.assertCompleted()
             }
 
@@ -534,7 +534,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             )
         }
 
-        it("completest stream") {
+        it("completes stream") {
             entriesSubscriber.assertCompleted()
         }
 
@@ -566,7 +566,135 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                                 total = 2,
                                 className = "com.example.test.TestClass",
                                 testName = "test2",
-                                status = Ignored,
+                                status = Ignored(),
+                                durationNanos = 0L
+                        )
+                ))
+            }
+        }
+    }
+
+    context("read output containing test with assumption violation") {
+
+        val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-assumption-violation.txt")) }
+        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+
+        perform {
+            entries.subscribe(entriesSubscriber)
+            entriesSubscriber.awaitTerminalEvent(30, SECONDS)
+        }
+
+        it("emits expected entries") {
+            // We have no control over system time in tests.
+            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
+                    InstrumentationEntry(
+                            numTests = 1,
+                            stream = "com.example.test.TestClass:",
+                            id = "AndroidJUnitRunner",
+                            test = "violated",
+                            clazz = "com.example.test.TestClass",
+                            current = 1,
+                            stack = "",
+                            statusCode = StatusCode.Start,
+                            timestampNanos = 0
+                    ),
+                    InstrumentationEntry(
+                            numTests = 1,
+                            stream = "com.example.test.TestClass:",
+                            id = "AndroidJUnitRunner",
+                            test = "violated",
+                            clazz = "com.example.test.TestClass",
+                            current = 1,
+                            stack = """org.junit.AssumptionViolatedException: got: "foo", expected: is "bar"
+at org.junit.Assume.assumeThat(Assume.java:95)
+at com.example.test.TestClass.violated(TestClass.java:22)
+at java.lang.reflect.Method.invoke(Native Method)
+at org.junit.runners.model.FrameworkMethod${'$'}1.runReflectiveCall(FrameworkMethod.java:50)
+at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+at org.junit.runners.ParentRunner${'$'}3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner${'$'}1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access${'$'}000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner${'$'}2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runners.Suite.runChild(Suite.java:128)
+at org.junit.runners.Suite.runChild(Suite.java:27)
+at org.junit.runners.ParentRunner${'$'}3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner${'$'}1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access${'$'}000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner${'$'}2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:58)
+at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:375)
+at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)""",
+                            statusCode = StatusCode.AssumptionFailure,
+                            timestampNanos = 0
+                    )
+            ))
+        }
+
+        it("completes stream") {
+            entriesSubscriber.assertCompleted()
+        }
+
+        it("does not emit error") {
+            entriesSubscriber.assertNoErrors()
+        }
+
+        context("as tests") {
+
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+
+            perform {
+                entries.asTests().subscribe(testsSubscriber)
+                testsSubscriber.awaitTerminalEvent(30, SECONDS)
+            }
+
+            it("emits expected tests") {
+                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                        InstrumentationTest(
+                                index = 1,
+                                total = 1,
+                                className = "com.example.test.TestClass",
+                                testName = "violated",
+                                status = Ignored(stacktrace = """org.junit.AssumptionViolatedException: got: "foo", expected: is "bar"
+at org.junit.Assume.assumeThat(Assume.java:95)
+at com.example.test.TestClass.violated(TestClass.java:22)
+at java.lang.reflect.Method.invoke(Native Method)
+at org.junit.runners.model.FrameworkMethod${'$'}1.runReflectiveCall(FrameworkMethod.java:50)
+at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+at org.junit.runners.ParentRunner${'$'}3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner${'$'}1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access${'$'}000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner${'$'}2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runners.Suite.runChild(Suite.java:128)
+at org.junit.runners.Suite.runChild(Suite.java:27)
+at org.junit.runners.ParentRunner${'$'}3.run(ParentRunner.java:290)
+at org.junit.runners.ParentRunner${'$'}1.schedule(ParentRunner.java:71)
+at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+at org.junit.runners.ParentRunner.access${'$'}000(ParentRunner.java:58)
+at org.junit.runners.ParentRunner${'$'}2.evaluate(ParentRunner.java:268)
+at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:137)
+at org.junit.runner.JUnitCore.run(JUnitCore.java:115)
+at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:58)
+at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:375)
+at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)"""),
                                 durationNanos = 0L
                         )
                 ))

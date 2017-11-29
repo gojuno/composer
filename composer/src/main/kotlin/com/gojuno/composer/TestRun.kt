@@ -33,7 +33,7 @@ data class AdbDeviceTest(
 ) {
     sealed class Status {
         object Passed : Status()
-        object Ignored : Status()
+        data class Ignored(val stacktrace: String) : Status()
         data class Failed(val stacktrace: String) : Status()
     }
 }
@@ -106,7 +106,7 @@ fun AdbDevice.runTests(
                                     testName = test.testName,
                                     status = when (test.status) {
                                         is InstrumentationTest.Status.Passed -> AdbDeviceTest.Status.Passed
-                                        is InstrumentationTest.Status.Ignored -> AdbDeviceTest.Status.Ignored
+                                        is InstrumentationTest.Status.Ignored -> AdbDeviceTest.Status.Ignored(test.status.stacktrace)
                                         is InstrumentationTest.Status.Failed -> AdbDeviceTest.Status.Failed(test.status.stacktrace)
                                     },
                                     durationNanos = test.durationNanos,
