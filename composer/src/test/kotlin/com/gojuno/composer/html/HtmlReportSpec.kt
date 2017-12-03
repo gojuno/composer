@@ -1,10 +1,7 @@
 package com.gojuno.composer.html
 
 import com.gojuno.commander.android.AdbDevice
-import com.gojuno.composer.AdbDeviceTest
-import com.gojuno.composer.Device
-import com.gojuno.composer.Suite
-import com.gojuno.composer.perform
+import com.gojuno.composer.*
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Files
@@ -92,8 +89,7 @@ class HtmlReportSpec : Spek({
         fun String.removeEmptyLines() = lines().filter { it.trim() != "" }.joinToString(separator = "\n") { it }
 
         it("creates index html") {
-            assertThat(File(outputDir, "index.html").readText().removeEmptyLines()).isEqualTo(
-                    """
+            var expected = """
                     <!doctype html>
                     <html lang="en">
                       <head>
@@ -114,12 +110,12 @@ class HtmlReportSpec : Spek({
                       </body>
                     </html>
                     """.removeEmptyLines().trimIndent()
-            )
+            expected = normalizeLinefeed(expected)
+            assertThat(File(outputDir, "index.html").readText().removeEmptyLines()).isEqualTo(expected)
         }
 
         it("creates suite html") {
-            assertThat(File(File(outputDir, "suites"), "0.html").readText().removeEmptyLines()).isEqualTo(
-                    """
+            var expected = """
                             <!doctype html>
                             <html lang="en">
                               <head>
@@ -140,12 +136,12 @@ class HtmlReportSpec : Spek({
                               </body>
                             </html>
                             """.removeEmptyLines().trimIndent()
-            )
+            expected = normalizeLinefeed(expected)
+            assertThat(File(File(outputDir, "suites"), "0.html").readText().removeEmptyLines()).isEqualTo(expected)
         }
 
         it("creates html for 1st test") {
-            assertThat(File(File(File(File(outputDir, "suites"), "0"), "device1"), "com.gojuno.example1TestClasstest1.html").readText().removeEmptyLines()).isEqualTo(
-                    """
+            var expected = """
                             <!doctype html>
                             <html lang="en">
                               <head>
@@ -166,12 +162,12 @@ class HtmlReportSpec : Spek({
                               </body>
                             </html>
                             """.removeEmptyLines().trimIndent()
-            )
+            expected = normalizeLinefeed(expected)
+            assertThat(File(File(File(File(outputDir, "suites"), "0"), "device1"), "com.gojuno.example1TestClasstest1.html").readText().removeEmptyLines()).isEqualTo(expected)
         }
 
         it("creates html for 2nd test") {
-            assertThat(File(File(File(File(outputDir, "suites"), "0"), "device1"), "com.gojuno.example1TestClasstest2.html").readText().removeEmptyLines()).isEqualTo(
-                    """
+            var expected = """
                             <!doctype html>
                             <html lang="en">
                               <head>
@@ -192,7 +188,8 @@ class HtmlReportSpec : Spek({
                               </body>
                             </html>
                             """.removeEmptyLines().trimIndent()
-            )
+            expected = normalizeLinefeed(expected)
+            assertThat(File(File(File(File(outputDir, "suites"), "0"), "device1"), "com.gojuno.example1TestClasstest2.html").readText().removeEmptyLines()).isEqualTo(expected)
         }
     }
 
