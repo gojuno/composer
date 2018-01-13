@@ -8,6 +8,7 @@ build/
 /captures
 /gradle/local.properties
 /docs
+/composer-output*
 
 # Share code style.
 !.idea/codeStyleSettings.xml

@@ -104,7 +104,7 @@ private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
 
 // Reads stream in "tail -f" mode.
 fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
-    data class result(val buffer: String = "", val readyForProcessing: Boolean = false)
+    data class Result(val buffer: String = "", val readyForProcessing: Boolean = false)
 
     return tail(output)
             .map(String::trim)
@@ -113,13 +113,13 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
                 // `INSTRUMENTATION_CODE: <code>` is the last line printed by instrumentation, even if 0 tests were run.
                 !it.startsWith("INSTRUMENTATION_CODE")
             }
-            .scan(result()) { previousResult, newLine ->
+            .scan(Result()) { previousResult, newLine ->
                 val buffer = when (previousResult.readyForProcessing) {
                     true -> newLine
                     false -> "${previousResult.buffer}${System.lineSeparator()}$newLine"
                 }
 
-                result(buffer = buffer, readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE"))
+                Result(buffer = buffer, readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE"))
             }
             .filter { it.readyForProcessing }
             .map { it.buffer }
@@ -127,10 +127,10 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
 }
 
 fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> {
-    data class result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<InstrumentationTest> = emptyList(), val totalTestsCount: Int = 0)
+    data class Result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<InstrumentationTest> = emptyList(), val totalTestsCount: Int = 0)
 
     return this
-            .scan(result()) { previousResult, newEntry ->
+            .scan(Result()) { previousResult, newEntry ->
                 val entries = previousResult.entries + newEntry
                 val tests: List<InstrumentationTest> = entries
                         .mapIndexed { index, first ->
@@ -166,7 +166,7 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> 
                             )
                         }
 
-                result(
+                Result(
                         entries = entries.filter { entry -> tests.firstOrNull { it.className == entry.clazz && it.testName == entry.test } == null },
                         tests = tests,
                         totalTestsCount = previousResult.totalTestsCount + tests.size

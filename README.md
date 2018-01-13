@@ -67,13 +67,11 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Path to application apk that needs to be tested.
 * `--test-apk`
   * Path to apk with tests.
-* `--test-package`
-  * Android package name of the test apk (Could be parsed from `--test-apk`, PR welcome).
-* `--test-runner`
-  * Full qualified name of test runner class you're using (Could be parsed from `--test-apk`, PR welcome).
 
 ##### Optional
 
+* `--test-runner`
+  * Fully qualified name of test runner class you're using. Parsed from `--test-apk`, if not specified manually.
 * `--help, -help, help, -h`
   * Print help and exit.
 * `--shard`
@@ -85,7 +83,7 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
 * `--verbose-output`
   * Either `true` or `false` to enable/disable verbose output for Composer. `false` by default.
 * `--keep-output-on-exit`
-  * Keep output on exit. False by default.
+  * Either `true` or `false` to keep/clean output on exit. `false` by default.".
 * `--devices`
   * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`.
 * `--device-pattern`
@@ -96,11 +94,18 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
 
 ##### Example
 
+Simplest :
+```console
+java -jar composer-latest-version.jar \
+--apk app/build/outputs/apk/example-debug.apk \
+--test-apk app/build/outputs/apk/example-debug-androidTest.apk
+```
+
+With arguments :
 ```console
 java -jar composer-latest-version.jar \
 --apk app/build/outputs/apk/example-debug.apk \
 --test-apk app/build/outputs/apk/example-debug-androidTest.apk \
---test-package com.example.test \
 --test-runner com.example.test.ExampleTestRunner \
 --output-directory artifacts/composer-output \
 --instrumentation-arguments key1 value1 key2 value2 \
