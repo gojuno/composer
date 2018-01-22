@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 class JUnitReportSpec : Spek({
 
+    val LF = System.getProperty("line.separator")
+
     context("write test run result as junit4 report to file") {
 
         val adbDevice by memoized { AdbDevice(id = "testDevice", online = true) }
@@ -38,7 +40,7 @@ class JUnitReportSpec : Spek({
                                             adbDevice = adbDevice,
                                             className = "test.class.name2",
                                             testName = "test2",
-                                            status = Failed(stacktrace = "multi\nline\nstacktrace"),
+                                            status = Failed(stacktrace = "multi${LF}line${LF}stacktrace"),
                                             durationNanos = MILLISECONDS.toNanos(3250),
                                             logcat = testFile(),
                                             files = emptyList(),
@@ -68,7 +70,7 @@ class JUnitReportSpec : Spek({
                                             adbDevice = adbDevice,
                                             className = "test.class.name5",
                                             testName = "test5",
-                                            status = Ignored("multi\nline\nstacktrace"),
+                                            status = Ignored("multi${LF}line${LF}stacktrace"),
                                             durationNanos = SECONDS.toNanos(0),
                                             logcat = testFile(),
                                             files = emptyList(),
@@ -86,7 +88,7 @@ class JUnitReportSpec : Spek({
         }
 
         it("produces correct xml report") {
-            assertThat(outputFile.readText()).isEqualTo("""
+            var expected = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <testsuite name="com.gojuno.test" tests="5" failures="1" errors="0" skipped="2" time="6.25" timestamp="2017-03-22T16:29:10" hostname="localhost">
                 <properties/>
@@ -111,7 +113,9 @@ class JUnitReportSpec : Spek({
                 </testcase>
                 </testsuite>
                 """.trimIndent() + "\n"
-            )
+            expected = normalizeLinefeed(expected)
+            val actual = outputFile.readText()
+            assertThat(actual).isEqualTo(expected)
         }
 
         it("emits completion") {
