@@ -173,7 +173,7 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             PulledFiles(
                     files = emptyList(), // TODO: Pull test files.
                     screenshots = screenshotsFolderOnHostMachine.let {
-                        when (it.exists()) {
+                        when (it.exists() && it.listFiles() != null) {
                             true -> it.listFiles().toList()
                             else -> emptyList()
                         }
