@@ -9,7 +9,7 @@ import com.google.gson.Gson
 import rx.Observable
 import rx.schedulers.Schedulers
 import java.io.File
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 sealed class Exit(val code: Int, val message: String?) {
@@ -90,7 +90,7 @@ fun main(rawArgs: Array<String>) {
                                         .flatMap { adbDeviceTestRun ->
                                             writeJunit4Report(
                                                     suite = adbDeviceTestRun.toSuite(args.testPackage),
-                                                    outputFile = File(File(args.outputDirectory, "junit4-reports"), "${device.id}.xml")
+                                                    outputFile = File(File(args.outputDirectory, "junit4-reports"), "${device.sanitizedId()}.xml")
                                             ).toSingleDefault(adbDeviceTestRun)
                                         }
                                         .subscribeOn(Schedulers.io())
@@ -190,7 +190,9 @@ data class Device(
         val id: String,
         val logcat: File,
         val instrumentationOutput: File
-)
+){
+    fun sanitizedId() = id.replace(":","-")
+}
 
 fun AdbDeviceTestRun.toSuite(testPackage: String): Suite = Suite(
         testPackage = testPackage,

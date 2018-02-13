@@ -1,6 +1,7 @@
 package com.gojuno.composer.html
 
 import com.gojuno.composer.Suite
+import com.gojuno.composer.sanitizedId
 import com.google.gson.Gson
 import org.apache.commons.lang3.StringEscapeUtils
 import rx.Completable
@@ -66,7 +67,7 @@ fun writeHtmlReport(gson: Gson, suites: List<Suite>, outputDir: File, date: Date
 
         suite
                 .tests
-                .map { it to File(File(suitesDir, "$suiteId"), it.adbDevice.id).apply { mkdirs() } }
+                .map { it to File(File(suitesDir, "$suiteId"), it.adbDevice.sanitizedId()).apply { mkdirs() } }
                 .map { (test, testDir) -> Triple(test, test.toHtmlFullTest(suiteId = "$suiteId", htmlReportDir = testDir), testDir) }
                 .forEach { (test, htmlTest, testDir) ->
                     val testJson = gson.toJson(htmlTest)
