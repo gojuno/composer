@@ -1,6 +1,10 @@
 package com.gojuno.composer
 
-import com.gojuno.commander.android.*
+import com.gojuno.commander.android.AdbDevice
+import com.gojuno.commander.android.adb
+import com.gojuno.commander.android.log
+import com.gojuno.commander.android.pullFolder
+import com.gojuno.commander.android.redirectLogcatToFile
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.commander.os.process
@@ -38,6 +42,8 @@ data class AdbDeviceTest(
     }
 }
 
+fun AdbDevice.sanitizedId() = id.replace(":","-")
+
 fun AdbDevice.runTests(
         testPackageName: String,
         testRunnerClass: String,
@@ -48,7 +54,7 @@ fun AdbDevice.runTests(
 ): Single<AdbDeviceTestRun> {
 
     val adbDevice = this
-    val logsDir = File(File(outputDir, "logs"), adbDevice.id)
+    val logsDir = File(File(outputDir, "logs"), adbDevice.sanitizedId())
     val instrumentationOutputFile = File(logsDir, "instrumentation.output")
 
     val runTests = process(
@@ -157,7 +163,7 @@ data class PulledFiles(
 private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outputDir: File, verboseOutput: Boolean): Single<PulledFiles> = Single
         // TODO: Add support for spoon files dir.
         .fromCallable {
-            File(File(File(outputDir, "screenshots"), adbDevice.id), test.className).apply { mkdirs() }
+            File(File(File(outputDir, "screenshots"), adbDevice.sanitizedId()), test.className).apply { mkdirs() }
         }
         .flatMap { screenshotsFolderOnHostMachine ->
             adbDevice
@@ -225,3 +231,4 @@ private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<Str
 private fun logcatFileForDevice(logsDir: File) = File(logsDir, "full.logcat")
 
 private fun logcatFileForTest(logsDir: File, className: String, testName: String): File = File(File(logsDir, className), "$testName.logcat")
+
