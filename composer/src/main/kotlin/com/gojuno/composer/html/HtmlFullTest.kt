@@ -37,6 +37,9 @@ data class HtmlFullTest(
         @SerializedName("deviceId")
         val deviceId: String,
 
+        @SerializedName("deviceModel")
+        val deviceModel: String,
+
         @SerializedName("properties")
         val properties: Map<String, Any>,
 
@@ -86,6 +89,7 @@ fun AdbDeviceTest.toHtmlFullTest(suiteId: String, htmlReportDir: File) = HtmlFul
         },
         logcatPath = logcat.relativePathTo(htmlReportDir),
         deviceId = adbDevice.id,
+        deviceModel = adbDevice.model,
         properties = emptyMap(), // TODO: add properties support.
         filePaths = files.map { it.relativePathTo(htmlReportDir) },
         screenshots = screenshots.map {

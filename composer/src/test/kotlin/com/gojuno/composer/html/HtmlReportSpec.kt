@@ -25,14 +25,21 @@ class HtmlReportSpec : Spek({
 
         val adbDevice1 = AdbDevice(
                 id = "device1",
-                online = true
+                online = true,
+                model = "model1"
         )
 
         val suites by memoized {
             listOf(
                     Suite(
                             testPackage = "com.gojuno.example1",
-                            devices = listOf(Device(id = "device1", logcat = File(outputDir, "device1.logcat"), instrumentationOutput = File(outputDir, "device1.instrumentation"))),
+                            devices = listOf(
+                                Device(
+                                    id = "device1",
+                                    logcat = File(outputDir, "device1.logcat"),
+                                    instrumentationOutput = File(outputDir, "device1.instrumentation"),
+                                    model = "model1")
+                            ),
                             tests = listOf(
                                     AdbDeviceTest(
                                             adbDevice = adbDevice1,
@@ -102,7 +109,7 @@ class HtmlReportSpec : Spek({
                         <title>Composer</title>
                         <link href="app.min.css" rel="stylesheet">
                         <script>
-                          window.mainData = {"suites":[{"id":"0","passed_count":2,"ignored_count":0,"failed_count":1,"duration_millis":2468,"devices":[{"id":"device1","logcat_path":"device1.logcat","instrumentation_output_path":"device1.instrumentation"}]}]}
+                          window.mainData = {"suites":[{"id":"0","passed_count":2,"ignored_count":0,"failed_count":1,"duration_millis":2468,"devices":[{"id":"device1","model":"model1","logcat_path":"device1.logcat","instrumentation_output_path":"device1.instrumentation"}]}]}
                           // window.mainData / window.suite / window.test={ json }
                         </script>
                       </head>
@@ -128,14 +135,13 @@ class HtmlReportSpec : Spek({
                                 <title>Composer</title>
                                 <link href="../app.min.css" rel="stylesheet">
                                 <script>
-                                  window.suite = {"id":"0","tests":[{"id":"com.gojuno.example1TestClasstest1","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","duration_millis":1234,"status":"passed","deviceId":"device1","properties":{}},{"id":"com.gojuno.example1TestClasstest2","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","duration_millis":1234,"status":"failed","deviceId":"device1","properties":{}}],"passed_count":2,"ignored_count":0,"failed_count":1,"duration_millis":2468,"devices":[{"id":"device1","logcat_path":"../device1.logcat","instrumentation_output_path":"../device1.instrumentation"}]}
+                                  window.suite = {"id":"0","tests":[{"id":"com.gojuno.example1TestClasstest1","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","duration_millis":1234,"status":"passed","deviceId":"device1","deviceModel":"model1","properties":{}},{"id":"com.gojuno.example1TestClasstest2","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","duration_millis":1234,"status":"failed","deviceId":"device1","deviceModel":"model1","properties":{}}],"passed_count":2,"ignored_count":0,"failed_count":1,"duration_millis":2468,"devices":[{"id":"device1","model":"model1","logcat_path":"../device1.logcat","instrumentation_output_path":"../device1.instrumentation"}]}
                                   // window.mainData / window.suite / window.test={ json }
                                 </script>
                               </head>
                               <body>
                                 <div id="root"></div>
                                 <script type="text/javascript" src="../app.min.js"></script>
-
                                 <div class="copy content">Generated with&nbsp;❤️&nbsp;&nbsp;by Juno at 15:17:57 UTC, Jun 7 2017</div>
                               </body>
                             </html>
@@ -154,7 +160,7 @@ class HtmlReportSpec : Spek({
                                 <title>Composer</title>
                                 <link href="../../../app.min.css" rel="stylesheet">
                                 <script>
-                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","id":"com.gojuno.example1TestClasstest1","duration_millis":1234,"status":"passed","logcat_path":"../../../com.gojuno.example1.TestClass/test1.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test1/file1","../../../com.gojuno.example1.TestClass.test1/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot2","title":"screenshot2"}]}
+                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test1","id":"com.gojuno.example1TestClasstest1","duration_millis":1234,"status":"passed","logcat_path":"../../../com.gojuno.example1.TestClass/test1.logcat","deviceId":"device1","deviceModel":"model1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test1/file1","../../../com.gojuno.example1.TestClass.test1/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test1/screenshot2","title":"screenshot2"}]}
                                   // window.mainData / window.suite / window.test={ json }
                                 </script>
                               </head>
@@ -180,7 +186,7 @@ class HtmlReportSpec : Spek({
                                 <title>Composer</title>
                                 <link href="../../../app.min.css" rel="stylesheet">
                                 <script>
-                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","id":"com.gojuno.example1TestClasstest2","duration_millis":1234,"status":"failed","stacktrace":"abc","logcat_path":"../../../com.gojuno.example1.TestClass/test2.logcat","deviceId":"device1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test2/file1","../../../com.gojuno.example1.TestClass.test2/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot2","title":"screenshot2"}]}
+                                  window.test = {"suite_id":"0","package_name":"com.gojuno.example1","class_name":"TestClass","name":"test2","id":"com.gojuno.example1TestClasstest2","duration_millis":1234,"status":"failed","stacktrace":"abc","logcat_path":"../../../com.gojuno.example1.TestClass/test2.logcat","deviceId":"device1","deviceModel":"model1","properties":{},"file_paths":["../../../com.gojuno.example1.TestClass.test2/file1","../../../com.gojuno.example1.TestClass.test2/file2"],"screenshots":[{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot1","title":"screenshot1"},{"path":"../../../com.gojuno.example1.TestClass.test2/screenshot2","title":"screenshot2"}]}
                                   // window.mainData / window.suite / window.test={ json }
                                 </script>
                               </head>

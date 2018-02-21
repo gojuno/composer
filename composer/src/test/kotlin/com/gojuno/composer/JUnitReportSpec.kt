@@ -24,7 +24,12 @@ class JUnitReportSpec : Spek({
             writeJunit4Report(
                     suite = Suite(
                             testPackage = "com.gojuno.test",
-                            devices = listOf(Device(id = adbDevice.id, logcat = testFile(), instrumentationOutput = testFile())),
+                            devices = listOf(Device(
+                                    id = adbDevice.id,
+                                    logcat = testFile(),
+                                    instrumentationOutput = testFile(),
+                                    model = adbDevice.model
+                            )),
                             tests = listOf(
                                     AdbDeviceTest(
                                             adbDevice = adbDevice,

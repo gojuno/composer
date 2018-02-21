@@ -17,8 +17,8 @@ class HtmlFullSuiteSpec : Spek({
         val suite = Suite(
                 testPackage = "p",
                 devices = listOf(
-                        Device(id = "device1", logcat = testFile(), instrumentationOutput = testFile()),
-                        Device(id = "device2", logcat = testFile(), instrumentationOutput = testFile())
+                        Device(id = "device1", logcat = testFile(), instrumentationOutput = testFile(), model = "model1"),
+                        Device(id = "device2", logcat = testFile(), instrumentationOutput = testFile(), model = "model2")
                 ),
                 tests = listOf(
                         AdbDeviceTest(

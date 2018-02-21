@@ -15,6 +15,7 @@ class HtmlShortTestSpec : Spek({
                     packageName = "com.gojuno.example",
                     className = "TestClass",
                     name = "test1",
+                    deviceModel = "test-device-model",
                     status = HtmlFullTest.Status.Passed,
                     durationMillis = 1234,
                     stacktrace = null,
@@ -37,6 +38,7 @@ class HtmlShortTestSpec : Spek({
                     status = HtmlFullTest.Status.Passed,
                     durationMillis = 1234,
                     deviceId = "test-device-id",
+                    deviceModel = "test-device-model",
                     properties = mapOf("key1" to "value1", "key2" to "value2")
             ))
         }

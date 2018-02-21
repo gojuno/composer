@@ -14,7 +14,7 @@ class HtmlFullTestSpec : Spek({
     context("AdbDeviceTest.toHtmlTest") {
 
         val adbDeviceTest = AdbDeviceTest(
-                adbDevice = AdbDevice(id = "testDevice", online = true),
+                adbDevice = AdbDevice(id = "testDevice", online = true, model = "testModel"),
                 className = "com.gojuno.example.TestClass",
                 testName = "test1",
                 status = AdbDeviceTest.Status.Passed,
@@ -32,6 +32,7 @@ class HtmlFullTestSpec : Spek({
                     packageName = "com.gojuno.example",
                     className = "TestClass",
                     name = adbDeviceTest.testName,
+                    deviceModel = "testModel",
                     status = HtmlFullTest.Status.Passed,
                     durationMillis = NANOSECONDS.toMillis(adbDeviceTest.durationNanos),
                     stacktrace = null,

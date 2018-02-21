@@ -107,6 +107,7 @@ fun main(rawArgs: Array<String>) {
                             devices = adbDeviceTestRuns.fold(emptyList()) { devices, adbDeviceTestRun ->
                                 devices + Device(
                                         id = adbDeviceTestRun.adbDevice.id,
+                                        model = adbDeviceTestRun.adbDevice.model,
                                         logcat = adbDeviceTestRun.logcat,
                                         instrumentationOutput = adbDeviceTestRun.instrumentationOutput
                                 )
@@ -121,7 +122,7 @@ fun main(rawArgs: Array<String>) {
                             timestampMillis = adbDeviceTestRuns.map { it.timestampMillis }.min() ?: -1
                     ))
 
-                // In "shard=false" mode test run from each device represented as own suite of tests.  
+                // In "shard=false" mode test run from each device represented as own suite of tests.
                     false -> adbDeviceTestRuns.map { it.toSuite(args.testPackage) }
                 }
             }
@@ -188,6 +189,7 @@ data class Suite(
 
 data class Device(
         val id: String,
+        val model:String,
         val logcat: File,
         val instrumentationOutput: File
 )
@@ -196,6 +198,7 @@ fun AdbDeviceTestRun.toSuite(testPackage: String): Suite = Suite(
         testPackage = testPackage,
         devices = listOf(Device(
                 id = adbDevice.id,
+                model = adbDevice.model,
                 logcat = logcat,
                 instrumentationOutput = instrumentationOutput
         )),
