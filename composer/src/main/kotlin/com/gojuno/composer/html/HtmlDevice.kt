@@ -9,6 +9,9 @@ data class HtmlDevice(
         @SerializedName("id")
         val id: String,
 
+        @SerializedName("model")
+        val model: String,
+
         @SerializedName("logcat_path")
         val logcatPath: String,
 
@@ -18,6 +21,7 @@ data class HtmlDevice(
 
 fun Device.toHtmlDevice(htmlReportDir: File) = HtmlDevice(
         id = id,
+        model = model,
         logcatPath = logcat.relativePathTo(htmlReportDir),
         instrumentationOutputPath = instrumentationOutput.relativePathTo(htmlReportDir)
 )

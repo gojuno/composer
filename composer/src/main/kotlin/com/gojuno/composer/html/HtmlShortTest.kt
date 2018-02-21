@@ -25,6 +25,9 @@ data class HtmlShortTest(
         @SerializedName("deviceId")
         val deviceId: String,
 
+        @SerializedName("deviceModel")
+        val deviceModel: String,
+
         @SerializedName("properties")
         val properties: Map<String, Any>
 )
@@ -37,5 +40,6 @@ fun HtmlFullTest.toHtmlShortTest() = HtmlShortTest(
         durationMillis = durationMillis,
         status = status,
         deviceId = deviceId,
+        deviceModel = deviceModel,
         properties = properties
 )

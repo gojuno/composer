@@ -40,6 +40,7 @@ export default class SuitesList extends Component {
                   { suite.devices.map((device, i) => {
                     return (<li key={ i } className="list__item no-hover">
                         <div className="text-title margin-bottom-10 label">{ device.id }</div>
+                        <div className="text-title margin-bottom-10 label">{ device.model }</div>
                         <div className="margin-bottom-10">
                           <a href={ device.logcat_path }>{ device.logcat_path }</a>
                         </div>
