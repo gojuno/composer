@@ -10,3 +10,6 @@ fun testFile(): File = createTempFile().apply { deleteOnExit() }
 fun SpecBody.perform(body: () -> Unit) = beforeEachTest(body)
 
 fun SpecBody.cleanup(body: () -> Unit) = afterEachTest(body)
+
+/** Make a Unix-formatted String compliant with current operating system's newline format */
+fun normalizeLinefeed(str: String): String = str.replace("\n", System.getProperty("line.separator"));
