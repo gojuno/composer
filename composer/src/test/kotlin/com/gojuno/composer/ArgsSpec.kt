@@ -10,9 +10,7 @@ class ArgsSpec : Spek({
 
     val rawArgsWithOnlyRequiredFields = arrayOf(
             "--apk", "apk_path",
-            "--test-apk", "test_apk_path",
-            "--test-package", "test_package",
-            "--test-runner", "test_runner"
+            "--test-apk", "test_apk_path"
     )
 
     context("parse args with only required params") {
@@ -23,8 +21,7 @@ class ArgsSpec : Spek({
             assertThat(args).isEqualTo(Args(
                     appApkPath = "apk_path",
                     testApkPath = "test_apk_path",
-                    testPackage = "test_package",
-                    testRunner = "test_runner",
+                    testRunner = "",
                     shard = true,
                     outputDirectory = "composer-output",
                     instrumentationArguments = emptyList(),
@@ -34,6 +31,17 @@ class ArgsSpec : Spek({
                     devicePattern = "",
                     installTimeoutSeconds = 120
             ))
+        }
+    }
+
+    context("parse args with test runner specified") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--test-runner", "test_runner"))
+        }
+
+        it("converts instrumentation arguments to list of key-value pairs") {
+            assertThat(args.testRunner).isEqualTo("test_runner")
         }
     }
 

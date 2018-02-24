@@ -98,8 +98,8 @@ fun generateLogcatHtml(logcatOutput: File): String = when (logcatOutput.exists()
             .fold(StringBuilder("""<div class="content"><div class="card log">""")) { stringBuilder, line ->
                 stringBuilder.appendln(line)
             }
-            .let { it.appendln("""</div></div>""") }
-            .let { it.toString() }
+            .appendln("""</div></div>""")
+            .toString()
 }
 
 fun cssClassForLogcatLine(logcatLine: String): String {
