@@ -1,6 +1,8 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.InstrumentationTest.Status.*
+import com.gojuno.composer.InstrumentationTest.Status.Failed
+import com.gojuno.composer.InstrumentationTest.Status.Ignored
+import com.gojuno.composer.InstrumentationTest.Status.Passed
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.context
@@ -733,6 +735,24 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
                             "Most likely you forgot to declare test runner in AndroidManifest.xml or build.gradle.\n" +
                             "Detailed log can be found in ${outputFile.path} or Logcat output.\n" +
                             "See https://github.com/gojuno/composer/issues/79 for more info."
+            )
+        }
+    }
+
+    context("read output with crash") {
+
+        val outputFile = fileFromJarResources<InstrumentationSpec>("instrumentation-output-app-crash.txt")
+        val entries by memoized { readInstrumentationOutput(outputFile) }
+        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+
+        perform {
+            entries.subscribe(entriesSubscriber)
+            entriesSubscriber.awaitTerminalEvent(30, SECONDS)
+        }
+
+        it("emits exception describing issue") {
+            assertThat(entriesSubscriber.onErrorEvents.first()).hasMessage(
+                    "Application process crashed. Check Logcat output for more details."
             )
         }
     }
