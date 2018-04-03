@@ -1,0 +1,12 @@
+INSTRUMENTATION_STATUS: numtests=1
+INSTRUMENTATION_STATUS: stream=
+com.example.test.TestClass:
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: test=crashTest
+INSTRUMENTATION_STATUS: class=com.example.test.TestClass:
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_RESULT: shortMsg=java.lang.NullPointerException
+INSTRUMENTATION_RESULT: longMsg=java.lang.NullPointerException: Attempt to invoke virtual method 'void java.util.logging.Logger.log(java.util.logging.Level, java.lang.String, java.lang.Throwable)' on a null object reference
+
+INSTRUMENTATION_CODE: 0

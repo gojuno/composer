@@ -1,6 +1,8 @@
 package com.gojuno.composer
 
-import com.gojuno.composer.InstrumentationTest.Status.*
+import com.gojuno.composer.InstrumentationTest.Status.Failed
+import com.gojuno.composer.InstrumentationTest.Status.Ignored
+import com.gojuno.composer.InstrumentationTest.Status.Passed
 import rx.Observable
 import java.io.File
 
@@ -61,7 +63,7 @@ private fun String.parseInstrumentationStatusValue(key: String): String = this
         .trim()
 
 private fun String.throwIfError(output: File) = when {
-    contains("INSTRUMENTATION_RESULT: shortMsg=Process crashed") -> {
+    contains("INSTRUMENTATION_RESULT: shortMsg=") -> {
         throw Exception("Application process crashed. Check Logcat output for more details.")
     }
 
