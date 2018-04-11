@@ -15,7 +15,7 @@ class LogLineParserSpec : Spek({
             }
 
             it("extracts test class and method") {
-                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+                assertThat(args).isEqualTo("com.example.SampleClass" to "someTestMethod")
             }
         }
 
@@ -25,7 +25,7 @@ class LogLineParserSpec : Spek({
             }
 
             it("extracts test class and method") {
-                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+                assertThat(args).isEqualTo("com.example.SampleClass" to "someTestMethod")
             }
         }
     }
@@ -39,7 +39,7 @@ class LogLineParserSpec : Spek({
             }
 
             it("extracts test class and method") {
-                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+                assertThat(args).isEqualTo("com.example.SampleClass" to "someTestMethod")
             }
         }
 
@@ -50,7 +50,7 @@ class LogLineParserSpec : Spek({
             }
 
             it("extracts test class and method") {
-                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+                assertThat(args).isEqualTo("com.example.SampleClass" to "someTestMethod")
             }
         }
     }

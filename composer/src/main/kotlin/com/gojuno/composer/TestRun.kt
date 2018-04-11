@@ -163,7 +163,7 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             adbDevice
                     .pullFolder(
                             // TODO: Add support for internal storage and external storage strategies.
-                            folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}",
+                            folderOnDevice = "/data/data/com.yammer.v1.debug/app_spoon-screenshots/${test.className}/${test.testName}",
                             folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
                     )
