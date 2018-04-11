@@ -181,7 +181,21 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             )
         }
 
-private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<String, String>> = Observable
+class LogLineParser {
+    fun parseTestClassAndName(logLine: String): Pair<String, String>? {
+        if (!logLine.trimStart('I', '/').startsWith("TestRunner")) return null
+
+        val tokens = logLine.split(':')
+        if (tokens.size != 3) return null
+
+        if (tokens[1] == " started" || tokens[1] == " finished") {
+            return tokens[2].substringAfter("(").removeSuffix(")") to tokens[2].substringBefore("(").trim()
+        }
+        return null
+    }
+}
+
+private fun saveLogcat(adbDevice: AdbDevice, logsDir: File, logLineParser: LogLineParser = LogLineParser()): Observable<Pair<String, String>> = Observable
         .just(logsDir to logcatFileForDevice(logsDir))
         .flatMap { (logsDir, fullLogcatFile) -> adbDevice.redirectLogcatToFile(fullLogcatFile).toObservable().map { logsDir to fullLogcatFile } }
         .flatMap { (logsDir, fullLogcatFile) ->
@@ -194,14 +208,10 @@ private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<Str
                             false -> "${previous.logcat}\n$newline"
                         }
 
-                        fun String.parseTestClassAndName(regex: Regex): Pair<String, String>? {
-                            return regex.find(this)?.destructured?.let { (_, testMethod, testClass) -> Pair(testMethod, testClass) }
-                        }
-
                         // Implicitly expecting to see logs from `android.support.test.internal.runner.listener.LogRunListener`.
                         // Was not able to find more reliable solution to capture logcat per test.
-                        val startedTest: Pair<String, String>? = newline.parseTestClassAndName("""(.*TestRunner.*: started: )(.*)\((.*)\)""".toRegex())
-                        val finishedTest: Pair<String, String>? = newline.parseTestClassAndName("""(.*TestRunner.*: finished: )(.*)\((.*)\)""".toRegex())
+                        val startedTest: Pair<String, String>? = logLineParser.parseTestClassAndName(newline)
+                        val finishedTest: Pair<String, String>? = logLineParser.parseTestClassAndName(newline)
 
                         result(
                                 logcat = logcat,
