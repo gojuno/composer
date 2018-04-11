@@ -194,17 +194,14 @@ private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<Str
                             false -> "${previous.logcat}\n$newline"
                         }
 
-                        fun String.parseTestClassAndName(prefix: String): Pair<String, String>? = this.substringAfter(prefix, missingDelimiterValue = "").let {
-                            when (it) {
-                                "" -> null
-                                else -> it.substringAfter("(").removeSuffix(")") to it.substringBefore("(")
-                            }
+                        fun String.parseTestClassAndName(regex: Regex): Pair<String, String>? {
+                            return regex.find(this)?.destructured?.let { (_, testMethod, testClass) -> Pair(testMethod, testClass) }
                         }
 
                         // Implicitly expecting to see logs from `android.support.test.internal.runner.listener.LogRunListener`.
                         // Was not able to find more reliable solution to capture logcat per test.
-                        val startedTest: Pair<String, String>? = newline.parseTestClassAndName("TestRunner: started: ")
-                        val finishedTest: Pair<String, String>? = newline.parseTestClassAndName("TestRunner: finished: ")
+                        val startedTest: Pair<String, String>? = newline.parseTestClassAndName("""(.*TestRunner.*: started: )(.*)\((.*)\)""".toRegex())
+                        val finishedTest: Pair<String, String>? = newline.parseTestClassAndName("""(.*TestRunner.*: finished: )(.*)\((.*)\)""".toRegex())
 
                         result(
                                 logcat = logcat,
