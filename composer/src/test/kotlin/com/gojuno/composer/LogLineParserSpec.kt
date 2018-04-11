@@ -7,36 +7,63 @@ import org.jetbrains.spek.api.dsl.it
 
 class LogLineParserSpec : Spek({
 
-    val parser = LogLineParser()
+    context("parse TestRunner log line with long prefix") {
 
-    context("parse test class and name") {
+        context("parse started log") {
+            val args by memoized {
+                "04-06 00:25:49.747 28632 28650 I TestRunner: started: someTestMethod(com.example.SampleClass)".parseTestClassAndName()
+            }
 
-        it("parses old TestRunner start logs") {
-            assertThat(parser.parseTestClassAndName("I/TestRunner( 123): started: someTestMethod(com.example.SampleClass)"))
-                .isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+            it("extracts test class and method") {
+                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+            }
         }
 
-        it("parses old TestRunner finish logs") {
-            assertThat(parser.parseTestClassAndName("I/TestRunner( 123): finished: someTestMethod(com.example.SampleClass)"))
-                .isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+        context("parse finished log") {
+            val args by memoized {
+                "04-06 00:25:49.747 28632 28650 I TestRunner: finished: someTestMethod(com.example.SampleClass)".parseTestClassAndName()
+            }
+
+            it("extracts test class and method") {
+                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+            }
+        }
+    }
+
+    context("parse TestRunner log line with short prefix") {
+
+        context("parse started log") {
+
+            val args by memoized {
+                "I/TestRunner( 123): started: someTestMethod(com.example.SampleClass)".parseTestClassAndName()
+            }
+
+            it("extracts test class and method") {
+                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+            }
         }
 
-        it("parses new TestRunner start logs") {
-            assertThat(parser.parseTestClassAndName("TestRunner: started: someTestMethod(com.example.SampleClass)"))
-                .isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+        context("parse finished log") {
+
+            val args by memoized {
+                "I/TestRunner( 123): finished: someTestMethod(com.example.SampleClass)".parseTestClassAndName()
+            }
+
+            it("extracts test class and method") {
+                assertThat(args).isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
+            }
+        }
+    }
+
+    context("parse non TestRunner started/finished logs") {
+
+        it("does not parse empty log") {
+            assertThat("".parseTestClassAndName()).isNull()
         }
 
-        it("parses new TestRunner finish logs") {
-            assertThat(parser.parseTestClassAndName("TestRunner: finished: someTestMethod(com.example.SampleClass)"))
-                .isEqualTo(Pair("com.example.SampleClass", "someTestMethod"))
-        }
-
-        it("does not parse other logs") {
-            assertThat(parser.parseTestClassAndName("")).isNull()
-            assertThat(parser.parseTestClassAndName("blah: blah: blah")).isNull()
-            assertThat(parser.parseTestClassAndName("aldkjf ;aldkj ffha a;ldjfoioihfads")).isNull()
-            assertThat(parser.parseTestClassAndName("I/TestRunner( 123):")).isNull()
-            assertThat(parser.parseTestClassAndName("TestRunner")).isNull()
+        it("does not parse TestRunner logs without started/finished") {
+            assertThat("I/TestRunner( 123):".parseTestClassAndName()).isNull()
+            assertThat("04-06 00:25:49.747 28632 28650 I TestRunner:".parseTestClassAndName()).isNull()
         }
     }
 })
