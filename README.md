@@ -64,33 +64,56 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
 ##### Required
 
 * `--apk`
-  * Path to application apk that needs to be tested.
+  * Either relative or absolute path to application apk that needs to be tested.
+  * Example: `--apk myapp.apk`
 * `--test-apk`
-  * Path to apk with tests.
+  * Either relative or absolute path to apk with tests.
+  * Example: `--test-apk myapp-androidTest.apk`
 
 ##### Optional
 
-* `--test-runner`
-  * Fully qualified name of test runner class you're using. Parsed from `--test-apk`, if not specified manually.
 * `--help, -help, help, -h`
   * Print help and exit.
+* `--test-runner`
+  * Fully qualified name of test runner class you're using. 
+  * Default: automatically parsed from `--test-apk`'s `AndroidManifest`. 
+  * Example: `--test-runner com.example.TestRunner`
 * `--shard`
-  * Either `true` or `false` to enable/disable [test sharding][test sharding] which runs shards tests to available devices/emulators. True by default.
+  * Either `true` or `false` to enable/disable [test sharding][test sharding] which statically shards tests between available devices/emulators. 
+  * Default: `true`.
+  * Example: `--shard false`
 * `--output-directory`
-  * Either relative or absolute path to directory for output: reports, files from devices and so on. `composer-output` by default.
+  * Either relative or absolute path to directory for output: reports, files from devices and so on. 
+  * Default: `composer-output` in current working directory.
+  * Example: `--output-directory artifacts/composer-output`
 * `--instrumentation-arguments`
-  * Key-value pairs to pass to Instrumentation Runner. Usage example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`.
+  * Key-value pairs to pass to Instrumentation Runner.
+  * Default: empty.
+  * Example: `--instrumentation-arguments myKey1 myValue1 myKey2 myValue2`.
 * `--verbose-output`
-  * Either `true` or `false` to enable/disable verbose output for Composer. `false` by default.
+  * Either `true` or `false` to enable/disable verbose output for Composer. 
+  * Default: `false`.
+  * Example: `--verbose-output true`
 * `--keep-output-on-exit`
-  * Either `true` or `false` to keep/clean output on exit. `false` by default.".
+  * Either `true` or `false` to keep/clean temporary output files used by Composer on exit. 
+  * Default: `false`.
+  * Composer uses files to pipe output of external commands like `adb`, keeping them might be useful for debugging issues. 
+  * Example: `--keep-output-on-exit true`
 * `--devices`
-  * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--devices` and `--device-pattern` will result in an error. Usage example: `--devices emulator-5554 emulator-5556`.
+  * Connected devices/emulators that will be used to run tests against.
+  * Default: empty, tests will run on all connected devices/emulators.
+  * Specifying both `--devices` and `--device-pattern` will result in an error.
+  * Example: `--devices emulator-5554 emulator-5556`
 * `--device-pattern`
-  * Connected devices/emulators that will be used to run tests against. If not passed — tests will run on all connected devices/emulators. Specifying both `--device-pattern` and `--devices` will result in an error. Usage example: `--device-pattern "emulator.+"`.
+  * Connected devices/emulators that will be used to run tests against.
+  * Default: empty, tests will run on all connected devices/emulators.
+  * Specifying both `--device-pattern` and `--devices` will result in an error.
+  * Example: `--device-pattern "emulator.+"`
 * `--install-timeout`
-  * APK installation timeout in seconds. If not passed defaults to 120 seconds (2 minutes). Applicable to both test APK and APK under test. Usage
-  example (for 10 minutes timeout): `--install-timeout 600`.
+  * APK installation timeout in seconds. 
+  * Default: `120` seconds (2 minutes). 
+  * Applicable to both test APK and APK under test. 
+  * Example: `--install-timeout 20`
 
 ##### Example
 
@@ -141,7 +164,7 @@ Composer works great in combination with [Swarmer][swarmer] — another tool we'
 Dependencies: you only need `docker` and `bash` installed on your machine.
 
 ```console
-bash ci/build.sh
+ci/build.sh
 ```
 
 ## License
