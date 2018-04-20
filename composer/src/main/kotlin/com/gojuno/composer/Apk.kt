@@ -3,6 +3,9 @@ package com.gojuno.composer
 import com.gojuno.commander.android.aapt
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.process
+import com.linkedin.dex.parser.DexParser
+import com.linkedin.dex.parser.TestMethod
+import java.io.File
 
 sealed class TestPackage {
     data class Valid(val value: String) : TestPackage()
@@ -62,3 +65,5 @@ fun parseTestRunner(testApkPath: String): TestRunner =
                 .toSingle()
                 .toBlocking()
                 .value()
+
+fun parseTests(testApkPath: String) = DexParser.findTestMethods(testApkPath)
