@@ -18,5 +18,8 @@ class ApkSpec : Spek({
         it("parses test package correctly") {
             assertThat(parseTestPackage(testApkPath)).isEqualTo(TestPackage.Valid("test.test.myapplication.test"))
         }
+        it("parses tests list correctly") {
+            assertThat(parseTests(testApkPath)).isEqualTo(listOf("test.test.myapplication.ExampleInstrumentedTest#useAppContext"))
+        }
     }
 })
