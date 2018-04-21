@@ -4,7 +4,6 @@ import com.gojuno.commander.android.aapt
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.process
 import com.linkedin.dex.parser.DexParser
-import com.linkedin.dex.parser.TestMethod
 
 sealed class TestPackage {
     data class Valid(val value: String) : TestPackage()
@@ -65,5 +64,5 @@ fun parseTestRunner(testApkPath: String): TestRunner =
                 .toBlocking()
                 .value()
 
-fun parseTests(testApkPath: String) : List<TestMethod> =
-        DexParser.findTestMethods(testApkPath)
+fun parseTests(testApkPath: String) : List<String> =
+        DexParser.findTestMethods(testApkPath).map { it.testName }

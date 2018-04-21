@@ -198,6 +198,11 @@ private fun List<String>.pairArguments(): List<Pair<String, String>> =
             }
         }
 
+
+private fun buildSingleTestArguments(testMethod : String) : List<Pair<String,String>> =
+        listOf("class" to testMethod)
+
+
 private fun buildShardArguments(shardingOn: Boolean, shardIndex: Int, devices: Int): List<Pair<String, String>> = when {
     shardingOn && devices > 1 -> listOf(
             "numShards" to "$devices",
