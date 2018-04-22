@@ -161,7 +161,27 @@ Composer works great in combination with [Swarmer][swarmer] — another tool we'
 
 ### How to build
 
-Dependencies: you only need `docker` and `bash` installed on your machine.
+#### To build composer
+
+environmental variable ANDROID_HOME must be set.
+
+```console
+./gradlew build
+```
+
+#### To build html-report
+
+you need `npm` and `nodejs` packages installed.
+
+```console
+cd html-report
+npm install
+npm build
+```
+
+#### All-in-one script (used in Travis build)
+
+you only need `docker` and `bash` installed on your machine.
 
 ```console
 ci/build.sh
