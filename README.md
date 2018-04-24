@@ -118,7 +118,7 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Either `true` or `false` to enable/disable error on empty test suite.
   * Default: `true`.
   * `False` may be applicable when you run tests conditionally(via annotation/package filters) and empty suite is a valid outcome.
-  * Example: `--fail-if-no-tests true`
+  * Example: `--fail-if-no-tests false`
   
 ##### Example
 
