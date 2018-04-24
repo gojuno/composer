@@ -74,7 +74,7 @@ fun main(rawArgs: Array<String>) {
 
     when {
         totalPassed > 0 && totalFailed == 0 -> exit(Exit.Ok)
-        totalPassed == 0 && totalFailed == 0 -> exit(Exit.NoTests)
+        totalPassed == 0 && totalFailed == 0 -> if(args.failIfNoTests) exit(Exit.NoTests) else exit(Exit.Ok)
         else -> exit(Exit.ThereWereFailedTests)
     }
 

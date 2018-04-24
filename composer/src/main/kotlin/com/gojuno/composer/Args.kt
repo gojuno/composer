@@ -97,7 +97,16 @@ data class Args(
                 description = "APK installation timeout in seconds. If not passed defaults to 120 seconds (2 minutes). Applicable to both test APK and APK under test.",
                 order = 10
         )
-        var installTimeoutSeconds: Int = TimeUnit.MINUTES.toSeconds(2).toInt()
+        var installTimeoutSeconds: Int = TimeUnit.MINUTES.toSeconds(2).toInt(),
+
+        @Parameter(
+                names = arrayOf("--fail-if-no-tests"),
+                required = false,
+                arity = 1,
+                description = "Either `true` or `false` to enable/disable error on empty test suite. True by default.",
+                order = 11
+        )
+        var failIfNoTests: Boolean = true
 )
 
 // No way to share array both for runtime and annotation without reflection.
