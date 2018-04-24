@@ -20,7 +20,11 @@ class ApkSpec : Spek({
         }
 
         it("parses tests list correctly") {
-            assertThat(parseTests(testApkPath)).isEqualTo(listOf("test.test.myapplication.ExampleInstrumentedTest#useAppContext"))
+            assertThat(parseTests(testApkPath)).isEqualTo(listOf(
+                    TestMethod("test.test.myapplication.ExampleInstrumentedTest#useAppContext",
+                            listOf("dalvik.annotation.Throws", "org.junit.Test", "org.junit.runner.RunWith")
+                    )
+            ))
         }
     }
 })
