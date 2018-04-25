@@ -16,6 +16,7 @@ dependencies {
     compile libraries.apacheCommonsIo
     compile libraries.apacheCommonsLang
     compile libraries.gson
+    compile libraries.dexParser
 }
 
 dependencies {
