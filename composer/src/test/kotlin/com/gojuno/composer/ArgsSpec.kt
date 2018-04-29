@@ -29,7 +29,8 @@ class ArgsSpec : Spek({
                     keepOutputOnExit = false,
                     devices = emptyList(),
                     devicePattern = "",
-                    installTimeoutSeconds = 120
+                    installTimeoutSeconds = 120,
+                    failIfNoTests = true
             ))
         }
     }
@@ -162,6 +163,34 @@ class ArgsSpec : Spek({
 
         it("parses --install-timeout correctly") {
             assertThat(args.installTimeoutSeconds).isEqualTo(600)
+        }
+    }
+
+    context("parse args with passed --fail-if-no-tests") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--fail-if-no-tests", "false"))
+        }
+
+        it("parses --fail-if-no-tests correctly") {
+            assertThat(args.failIfNoTests).isEqualTo(false)
+        }
+    }
+
+    context("parse args with explicitly passed --fail-if-no-tests") {
+
+        listOf(true, false).forEach { failIfNoTests ->
+
+            context("--fail-if-no-tests $failIfNoTests") {
+
+                val args by memoized {
+                    parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--fail-if-no-tests", "$failIfNoTests"))
+                }
+
+                it("parses --fail-if-no-tests correctly") {
+                    assertThat(args.failIfNoTests).isEqualTo(failIfNoTests)
+                }
+            }
         }
     }
 })

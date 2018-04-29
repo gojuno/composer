@@ -7,6 +7,7 @@ ext.versions = [
         apacheCommonsIo  : '2.5',
         apacheCommonsLang: '3.5',
         gson             : '2.8.0',
+        dexParser        : '1.1.0',
 
         junit            : '4.12',
         junitPlatform    : '1.0.0-M4',
@@ -26,6 +27,7 @@ ext.libraries = [
         apacheCommonsIo        : "commons-io:commons-io:$versions.apacheCommonsIo",
         apacheCommonsLang      : "org.apache.commons:commons-lang3:$versions.apacheCommonsLang",
         gson                   : "com.google.code.gson:gson:$versions.gson",
+        dexParser              : "com.linkedin.dextestparser:parser:$versions.dexParser",
 
         junit                  : "junit:junit:$versions.junit",
         spek                   : "org.jetbrains.spek:spek-api:$versions.spek",
