@@ -3,7 +3,7 @@ import cx from 'classnames';
 import randomColor from 'randomcolor';
 import convertTime from './../utils/convertTime';
 import paths from './../utils/paths';
-import SearchBar from './SearchBar';
+import SuiteFilter from './SuiteFilter';
 
 export default class Suite extends Component {
   state = {
@@ -38,7 +38,7 @@ export default class Suite extends Component {
       <div className="content margin-top-20">
         <div className="title-common"><a href={ paths.fromSuiteToIndex }>Suites list</a>/ Suite {data.id}</div>
 
-        <SearchBar setSearchResults={ (results) => this.getSearchResults(results) } />
+        <SuiteFilter setSearchResults={ (results) => this.getSearchResults(results) } />
 
         <div className="card">
           <div className="vertical-aligned-content title-common">

@@ -2,14 +2,21 @@ import React, { Component } from 'react';
 import cx from 'classnames';
 import convertTime from './../utils/convertTime'
 import paths from './../utils/paths'
+import LogContainer from './LogContainer'
 
 export default class TestItem extends Component {
+
+  state = {
+    data: window.test,
+  };
+
   componentWillMount() {
     document.title = `Test ${window.test.name}`;
   }
 
   render() {
-    const data = window.test;
+    const data = this.state.data
+
     let statusLabelClass = cx('label', 'margin-right-10', {
       alert: data.status === 'failed',
       success: data.status === 'passed'
@@ -65,6 +72,8 @@ export default class TestItem extends Component {
               }) }
             </ul>
           </div>}
+
+          <LogContainer logcatPath={ this.state.data.logcat_path } />
         </div>
       </div>
     );
