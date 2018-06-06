@@ -119,7 +119,12 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Default: `true`.
   * `False` may be applicable when you run tests conditionally(via annotation/package filters) and empty suite is a valid outcome.
   * Example: `--fail-if-no-tests false`
-  
+* `--coverage`
+  * Either `true` or `false` to enable/disable test coverage reports collection.
+  * Default: `false`.
+  * For this to work, your test APK should be built with instrumentation from EMMA or JaCoCo.
+  * Example: `--coverage true`
+
 ##### Example
 
 Simplest :

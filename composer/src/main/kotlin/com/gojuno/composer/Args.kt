@@ -112,7 +112,7 @@ data class Args(
                 names = arrayOf("--coverage"),
                 required = false,
                 arity = 1,
-                description = "Either `true` or `false` to enable/disable test coverage collection. `false` by default.",
+                description = "Either `true` or `false` to enable/disable test coverage reports collection. `false` by default. For this to work, your test APK should be built with instrumentation from EMMA or JaCoCo.",
                 order = 12
         )
         var coverage: Boolean = false
