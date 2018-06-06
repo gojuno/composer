@@ -99,7 +99,7 @@ fun AdbDevice.runTests(
             if (coverage) {
                 coverageReportDir.mkdirs()
                 adbDevice.pullFolder(
-                        folderOnDevice = "/storage/emulated/0/app_coverage/$testPackageName/coverage.ec",
+                        folderOnDevice = "$COVERAGE_DIR/$testPackageName/coverage.ec",
                         folderOnHostMachine = coverageReport,
                         logErrors = verboseOutput
                 ).map { coverageReport }
@@ -183,7 +183,7 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             adbDevice
                     .pullFolder(
                             // TODO: Add support for internal storage and external storage strategies.
-                            folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}",
+                            folderOnDevice = "$SCREENSHOTS_DIR/${test.className}/${test.testName}",
                             folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
                     )

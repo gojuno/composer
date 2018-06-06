@@ -113,7 +113,7 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     val installTimeout = Pair(args.installTimeoutSeconds, TimeUnit.SECONDS)
                     val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
                     val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
-                    val coverageDir = "/storage/emulated/0/app_coverage/${testPackage.value}"
+                    val coverageDir = "$COVERAGE_DIR/${testPackage.value}"
                     val makeCoverageDir = if (args.coverage) {
                         process(commandAndArgs = listOf(adb, "-s", device.id, "shell", "mkdir", "-p", coverageDir))
                                 .map { Unit }
