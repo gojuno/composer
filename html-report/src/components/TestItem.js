@@ -73,7 +73,7 @@ export default class TestItem extends Component {
             </ul>
           </div>}
 
-          <LogContainer logcatPath={ this.state.data.logcat_path } />
+          <LogContainer />
         </div>
       </div>
     );
