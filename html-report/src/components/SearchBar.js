@@ -4,16 +4,18 @@ import cx from 'classnames';
 import elasticlunr from 'elasticlunr';
 import convertTime from './../utils/convertTime'
 
-const SEARCH_FIELDS = ['package_name', 'class_name', 'name', 'id', 'status'];
-const SEARCH_REF = 'id';
 const EL_SEARCH = elasticlunr();
 export default class SearchBar extends Component {
   static propTypes = {
-    setSearchResults: PropTypes.func
+    setSearchResults: PropTypes.func,
+    setPerformFilterSearchCallback: PropTypes.func,
+    searchFields: PropTypes.array,
+    searchRef: PropTypes.string,
+    data: PropTypes.array,
   };
 
   state = {
-    data: window.suite.tests,
+    data: this.props.data,
     error: false,
     searchLabel: null,
     searchParams: null,
@@ -21,13 +23,28 @@ export default class SearchBar extends Component {
   };
 
   componentWillMount() {
-    let { data } = this.state;
     elasticlunr.clearStopWords();
-    SEARCH_FIELDS.forEach(f => EL_SEARCH.addField(f))
-    EL_SEARCH.setRef(SEARCH_REF);
-    if (data.length) {
-      data.forEach(item => EL_SEARCH.addDoc(item))
-    }
+    this.props.searchFields.forEach(f => EL_SEARCH.addField(f))
+    EL_SEARCH.setRef(this.props.searchRef);
+  }
+
+  componentDidMount() {
+    this.props.setPerformFilterSearchCallback(this.performFilterSearch)
+  }
+
+  componentWillReceiveProps(props) {
+      let data = props.data;
+      if (data === this.state.data) {
+        return;
+      }
+      if (data.length) {
+        data.forEach(item => EL_SEARCH.addDoc(item))
+      }
+      this.setState({data: props.data});
+  }
+
+  componentWillUnmount() {
+    this.props.setPerformFilterSearchCallback(undefined)
   }
 
   mapResults(results) {
@@ -42,14 +59,14 @@ export default class SearchBar extends Component {
   };
 
   setTagSearch = (field, callback) => {
-    if (SEARCH_FIELDS.indexOf(field) < 0) {
+    if (this.props.searchFields.indexOf(field) < 0) {
       this.setState({ error: true });
       return;
     }
 
     let params = {};
     params.fields = {};
-    SEARCH_FIELDS.forEach((f) => {
+    this.props.searchFields.forEach((f) => {
       if (f === field) {
         params.fields[f] = { boost: 1 }
       } else {
@@ -97,43 +114,29 @@ export default class SearchBar extends Component {
   render() {
     let errorTextClasses = cx('form-item__error-text col-100', { visible: this.state.error });
     let errorInputClasses = cx({ 'is-invalid-input': this.state.error });
-    const data = window.suite;
 
     return (
-      <div>
-        <div className="row justify-between">
-          <div className="card card-info filter-card" onClick={ () => this.performFilterSearch('status:passed') }>
-            <div className="text-sub-title-light">Passed</div>
-            <div className="card-info__content status-passed">{ data.passed_count }</div>
-          </div>
-          <div className="card card-info filter-card" onClick={ () => this.performFilterSearch('status:failed') }>
-            <div className="text-sub-title-light">Failed</div>
-            <div className="card-info__content status-failed">{ data.failed_count }</div>
-          </div>
-          <div className="card card-info filter-card" onClick={ () => this.performFilterSearch('status:ignored') }>
-            <div className="text-sub-title-light">Ignored</div>
-            <div className="card-info__content status-ignored">{ data.ignored_count }</div>
-          </div>
-          <div className="card card-info">
-            <div className="text-sub-title-light">Duration</div>
-            <div className="card-info__content">{ convertTime(data.duration_millis) }</div>
-          </div>
-        </div>
-        <div className="card">
-          <div className="form-container">
-            <div className="row search-params full">
-              <div className="row full-width-content input-group full">
-                <div className="form-item">
-                  <div className="vertical-aligned-content">
-                    { this.state.searchLabel && <div className="label margin-right-20">{ this.state.searchLabel }:</div> }
-                    <input type="text" className={ errorInputClasses } placeholder="Search" value={ this.state.query }
-                           onChange={ this.setSearchQuery } />
-                    <button type="reset" className="button secondary margin-left-20" onClick={ this.clearResults }>
-                      Reset
-                    </button>
-                  </div>
-                  <div className={ errorTextClasses }>No such key exists!</div>
+      <div className="card">
+        <div className="form-container">
+          <div className="row search-params full">
+            <div className="row full-width-content input-group full">
+              <div className="form-item">
+                <div className="vertical-aligned-content">
+                  { this.state.searchLabel && <div className="label margin-right-20">{ this.state.searchLabel }:</div> }
+                  <input
+                    type="text" className={ errorInputClasses } placeholder="Search" value={ this.state.query }
+                    onChange={ this.setSearchQuery }
+                    disabled={ !!!this.state.data.length ? "disabled" : "" }
+                    />
+                  <button
+                    type="reset" className="button secondary margin-left-20"
+                    onClick={ this.clearResults }
+                    disabled={ !!!this.state.data.length ? "disabled" : "" }
+                    >
+                    Reset
+                  </button>
                 </div>
+                <div className={ errorTextClasses }>No such key exists!</div>
               </div>
             </div>
           </div>

@@ -95,7 +95,7 @@ fun generateLogcatHtml(logcatOutput: File): String = when (logcatOutput.exists()
     true -> logcatOutput
             .readLines()
             .map { line -> """<div class="log__${cssClassForLogcatLine(line)}">${StringEscapeUtils.escapeXml11(line)}</div>""" }
-            .fold(StringBuilder("""<div class="content"><div class="card log">""")) { stringBuilder, line ->
+            .fold(StringBuilder("""<div id="static_logs" class="content"><div class="card log">""")) { stringBuilder, line ->
                 stringBuilder.appendln(line)
             }
             .appendln("""</div></div>""")
