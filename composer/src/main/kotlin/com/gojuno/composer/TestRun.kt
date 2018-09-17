@@ -44,18 +44,22 @@ fun AdbDevice.runTests(
         instrumentationArguments: String,
         outputDir: File,
         verboseOutput: Boolean,
-        keepOutput: Boolean
+        keepOutput: Boolean,
+        useTestServices: Boolean
 ): Single<AdbDeviceTestRun> {
 
     val adbDevice = this
     val logsDir = File(File(outputDir, "logs"), adbDevice.id)
     val instrumentationOutputFile = File(logsDir, "instrumentation.output")
+    val commandPrefix = if (useTestServices) {
+        "CLASSPATH=$(pm path android.support.test.services) app_process / android.support.test.services.shellexecutor.ShellMain "
+    } else ""
 
     val runTests = process(
             commandAndArgs = listOf(
                     adb,
                     "-s", adbDevice.id,
-                    "shell", "am instrument -w -r $instrumentationArguments $testPackageName/$testRunnerClass"
+                    "shell", "${commandPrefix}am instrument -w -r $instrumentationArguments $testPackageName/$testRunnerClass"
             ),
             timeout = null,
             redirectOutputTo = instrumentationOutputFile,

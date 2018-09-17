@@ -30,7 +30,8 @@ class ArgsSpec : Spek({
                     devices = emptyList(),
                     devicePattern = "",
                     installTimeoutSeconds = 120,
-                    failIfNoTests = true
+                    failIfNoTests = true,
+                    runWithOrchestrator = false
             ))
         }
     }
@@ -191,6 +192,17 @@ class ArgsSpec : Spek({
                     assertThat(args.failIfNoTests).isEqualTo(failIfNoTests)
                 }
             }
+        }
+    }
+
+    context("parse args with --with-orchestrator") {
+
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + "--with-orchestrator")
+        }
+
+        it("parses --with-orchestrator correctly") {
+            assertThat(args.runWithOrchestrator).isEqualTo(true)
         }
     }
 })

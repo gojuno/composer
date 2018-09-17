@@ -118,21 +118,36 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                             .subscribeOn(Schedulers.io())
                             .toList()
                             .flatMap {
+                                val targetInstrumentation: List<Pair<String, String>>
+                                val testPackageName: String
+                                val testRunnerClass: String
+
+                                if (args.runWithOrchestrator) {
+                                    targetInstrumentation = listOf("targetInstrumentation" to "${testPackage.value}/${testRunner.value}")
+                                    testPackageName = "android.support.test.orchestrator"
+                                    testRunnerClass = "android.support.test.orchestrator.AndroidTestOrchestrator"
+                                } else {
+                                    targetInstrumentation = emptyList()
+                                    testPackageName = testPackage.value
+                                    testRunnerClass = testRunner.value
+                                }
+
                                 val instrumentationArguments =
                                         buildShardArguments(
                                                 shardingOn = args.shard,
                                                 shardIndex = index,
                                                 devices = connectedAdbDevices.size
-                                        ) + args.instrumentationArguments.pairArguments()
+                                        ) + args.instrumentationArguments.pairArguments() + targetInstrumentation
 
                                 device
                                         .runTests(
-                                                testPackageName = testPackage.value,
-                                                testRunnerClass = testRunner.value,
+                                                testPackageName = testPackageName,
+                                                testRunnerClass = testRunnerClass,
                                                 instrumentationArguments = instrumentationArguments.formatInstrumentationArguments(),
                                                 outputDir = File(args.outputDirectory),
                                                 verboseOutput = args.verboseOutput,
-                                                keepOutput = args.keepOutputOnExit
+                                                keepOutput = args.keepOutputOnExit,
+                                                useTestServices = args.runWithOrchestrator
                                         )
                                         .flatMap { adbDeviceTestRun ->
                                             writeJunit4Report(
