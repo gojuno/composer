@@ -65,6 +65,11 @@ export default class TestItem extends Component {
               }) }
             </ul>
           </div>}
+
+          { !!data.stacktrace.length && <div className="card">
+            <div className="title-common">Stacktrace</div>
+            <pre className="row" style={ { overflow: 'auto' } }>{ data.stacktrace }</pre>
+          </div>}
         </div>
       </div>
     );
