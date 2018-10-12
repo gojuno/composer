@@ -18,7 +18,8 @@ data class AdbDeviceTestRun(
         val durationNanos: Long,
         val timestampMillis: Long,
         val logcat: File,
-        val instrumentationOutput: File
+        val instrumentationOutput: File,
+        val coverageReport: File
 )
 
 data class AdbDeviceTest(
@@ -44,12 +45,14 @@ fun AdbDevice.runTests(
         instrumentationArguments: String,
         outputDir: File,
         verboseOutput: Boolean,
-        keepOutput: Boolean
+        keepOutput: Boolean,
+        coverage: Boolean
 ): Single<AdbDeviceTestRun> {
 
     val adbDevice = this
     val logsDir = File(File(outputDir, "logs"), adbDevice.id)
     val instrumentationOutputFile = File(logsDir, "instrumentation.output")
+    val coverageReportDir = File(File(outputDir, "coverage"), adbDevice.id)
 
     val runTests = process(
             commandAndArgs = listOf(
@@ -88,13 +91,31 @@ fun AdbDevice.runTests(
             }
             .toList()
 
+    val testRunFinish = runTests.ofType(Notification.Exit::class.java).cache()
+
+    val pullCoverage = testRunFinish.toSingle()
+        .flatMap {
+            val coverageReport = File(coverageReportDir, "coverage.ec")
+            if (coverage) {
+                coverageReportDir.mkdirs()
+                adbDevice.pullFolder(
+                        folderOnDevice = "$COVERAGE_DIR/$testPackageName/coverage.ec",
+                        folderOnHostMachine = coverageReport,
+                        logErrors = verboseOutput
+                ).map { coverageReport }
+            } else {
+                Single.just(coverageReport)
+            }
+        }.toObservable()
+
     val adbDeviceTestRun = Observable
             .zip(
                     Observable.fromCallable { System.nanoTime() },
                     runningTests,
-                    { time, tests -> time to tests }
+                    pullCoverage,
+                    { time, tests, coverageFile -> Triple(time, tests, coverageFile) }
             )
-            .map { (startTimeNanos, testsWithPulledFiles) ->
+            .map { (startTimeNanos, testsWithPulledFiles, coverageFile) ->
                 val tests = testsWithPulledFiles.map { it.first }
 
                 AdbDeviceTestRun(
@@ -121,11 +142,10 @@ fun AdbDevice.runTests(
                         durationNanos = System.nanoTime() - startTimeNanos,
                         timestampMillis = System.currentTimeMillis(),
                         logcat = logcatFileForDevice(logsDir),
-                        instrumentationOutput = instrumentationOutputFile
+                        instrumentationOutput = instrumentationOutputFile,
+                        coverageReport = coverageFile
                 )
             }
-
-    val testRunFinish = runTests.ofType(Notification.Exit::class.java).cache()
 
     val saveLogcat = saveLogcat(adbDevice, logsDir)
             .map { Unit }
@@ -135,7 +155,7 @@ fun AdbDevice.runTests(
             .startWith(Unit) // To allow zip finish normally even if no tests were run.
 
     return Observable
-            .zip(adbDeviceTestRun, saveLogcat, testRunFinish) { suite, _, _ -> suite }
+            .zip(adbDeviceTestRun, saveLogcat, pullCoverage, testRunFinish) { suite, _, _, _ -> suite }
             .doOnSubscribe { adbDevice.log("Starting tests...") }
             .doOnNext { testRun ->
                 adbDevice.log(
@@ -163,7 +183,7 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             adbDevice
                     .pullFolder(
                             // TODO: Add support for internal storage and external storage strategies.
-                            folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}",
+                            folderOnDevice = "$SCREENSHOTS_DIR/${test.className}/${test.testName}",
                             folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
                     )

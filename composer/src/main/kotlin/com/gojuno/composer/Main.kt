@@ -1,9 +1,11 @@
 package com.gojuno.composer
 
+import com.gojuno.commander.android.adb
 import com.gojuno.commander.android.connectedAdbDevices
 import com.gojuno.commander.android.installApk
 import com.gojuno.commander.os.log
 import com.gojuno.commander.os.nanosToHumanReadableTime
+import com.gojuno.commander.os.process
 import com.gojuno.composer.html.writeHtmlReport
 import com.google.gson.Gson
 import rx.Observable
@@ -111,15 +113,25 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     val installTimeout = Pair(args.installTimeoutSeconds, TimeUnit.SECONDS)
                     val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
                     val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
+                    val coverageDir = "$COVERAGE_DIR/${testPackage.value}"
+                    val makeCoverageDir = if (args.coverage) {
+                        process(commandAndArgs = listOf(adb, "-s", device.id, "shell", "mkdir", "-p", coverageDir))
+                                .map { Unit }
+                    } else {
+                        Observable.just(Unit)
+                    }
 
                     Observable
-                            .concat(installAppApk, installTestApk)
+                            .concat(installAppApk, installTestApk, makeCoverageDir)
                             // Work with each device in parallel, but install apks sequentially on a device.
                             .subscribeOn(Schedulers.io())
                             .toList()
                             .flatMap {
                                 val instrumentationArguments =
-                                        buildShardArguments(
+                                        buildCoverageArguments(
+                                                coverage = args.coverage,
+                                                coverageDir = coverageDir
+                                        ) + buildShardArguments(
                                                 shardingOn = args.shard,
                                                 shardIndex = index,
                                                 devices = connectedAdbDevices.size
@@ -132,7 +144,8 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                                                 instrumentationArguments = instrumentationArguments.formatInstrumentationArguments(),
                                                 outputDir = File(args.outputDirectory),
                                                 verboseOutput = args.verboseOutput,
-                                                keepOutput = args.keepOutputOnExit
+                                                keepOutput = args.keepOutputOnExit,
+                                                coverage = args.coverage
                                         )
                                         .flatMap { adbDeviceTestRun ->
                                             writeJunit4Report(
@@ -209,6 +222,12 @@ private fun buildShardArguments(shardingOn: Boolean, shardIndex: Int, devices: I
 
     else -> emptyList()
 }
+
+private fun buildCoverageArguments(coverage: Boolean, coverageDir: String): List<Pair<String, String>> =
+    if (coverage) listOf(
+        "coverage" to "true",
+        "coverageFile" to "$coverageDir/coverage.ec"
+    ) else emptyList()
 
 private fun List<Pair<String, String>>.formatInstrumentationArguments(): String = when (isEmpty()) {
     true -> ""

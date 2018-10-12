@@ -106,7 +106,16 @@ data class Args(
                 description = "Either `true` or `false` to enable/disable error on empty test suite. True by default.",
                 order = 11
         )
-        var failIfNoTests: Boolean = true
+        var failIfNoTests: Boolean = true,
+
+        @Parameter(
+                names = arrayOf("--coverage"),
+                required = false,
+                arity = 1,
+                description = "Either `true` or `false` to enable/disable test coverage reports collection. `false` by default. For this to work, your test APK should be built with instrumentation from EMMA or JaCoCo.",
+                order = 12
+        )
+        var coverage: Boolean = false
 )
 
 // No way to share array both for runtime and annotation without reflection.
