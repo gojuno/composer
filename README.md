@@ -119,6 +119,13 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * Default: `true`.
   * `False` may be applicable when you run tests conditionally(via annotation/package filters) and empty suite is a valid outcome.
   * Example: `--fail-if-no-tests false`
+* `--with-orchestrator`
+  * Either `true` or `false` to enable/disable running tests via Android Test Orchestrator.
+  * Default: `false`.
+  * When enabled - minimizes shared state and isolates test crashes.
+  * Requires test orchestrator & test services APKs to be installed on device before executing.
+  * More info: https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
+  * Example: `--with-orchestrator true`
   
 ##### Example
 
@@ -138,7 +145,8 @@ java -jar composer-latest-version.jar \
 --output-directory artifacts/composer-output \
 --instrumentation-arguments key1 value1 key2 value2 \
 --verbose-output false \
---keep-output-on-exit false
+--keep-output-on-exit false \
+--with-orchestrator false
 ```
 
 ### Download
