@@ -111,9 +111,15 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     val installTimeout = Pair(args.installTimeoutSeconds, TimeUnit.SECONDS)
                     val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
                     val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
+                    val installApks: MutableCollection<Observable<Unit>> = mutableListOf(installAppApk, installTestApk)
+                    if (args.runWithOrchestrator && args.orchestratorApks.isNotEmpty()) {
+                      installApks.addAll(args.orchestratorApks.map {
+                        device.installApk(pathToApk = it, timeout = installTimeout)
+                      })
+                    }
 
                     Observable
-                            .concat(installAppApk, installTestApk)
+                            .concat(installApks)
                             // Work with each device in parallel, but install apks sequentially on a device.
                             .subscribeOn(Schedulers.io())
                             .toList()
