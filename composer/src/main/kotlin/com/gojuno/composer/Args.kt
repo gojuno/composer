@@ -117,13 +117,13 @@ data class Args(
         var runWithOrchestrator: Boolean = false,
 
         @Parameter(
-            names = arrayOf("--orchestrator-apks"),
+            names = arrayOf("--extra-apks"),
             required = false,
             variableArity = true,
-            description = "APKs for orchestrator ( orchestrator and test-services )",
+            description = "Extra APKs you would usually put on androidTestUtil",
             order = 13
         )
-        var orchestratorApks: List<String> = emptyList()
+        var extraApks: List<String> = emptyList()
 )
 
 // No way to share array both for runtime and annotation without reflection.

@@ -112,8 +112,8 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
                     val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
                     val installApks: MutableCollection<Observable<Unit>> = mutableListOf(installAppApk, installTestApk)
-                    if (args.runWithOrchestrator && args.orchestratorApks.isNotEmpty()) {
-                      installApks.addAll(args.orchestratorApks.map {
+                    if (args.extraApks.isNotEmpty()) {
+                      installApks.addAll(args.extraApks.map {
                         device.installApk(pathToApk = it, timeout = installTimeout)
                       })
                     }
