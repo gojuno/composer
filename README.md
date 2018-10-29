@@ -129,7 +129,7 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
 * `--extra-apks`
   * Apks to be installed for utilities. What you would typically declare in gradle as `androidTestUtil` 
   * Default: empty, only apk and test apk would be installed.
-  * Works great with orchestrator to install orchestrator & test services APKs.
+  * Works great with Orchestrator to install orchestrator & test services APKs.
   * Example: `--extra-apks path/to/apk/first.apk path/to/apk/second.apk`
   
 ##### Example
