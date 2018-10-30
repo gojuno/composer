@@ -114,7 +114,16 @@ data class Args(
                 description = "Either `true` or `false` to enable/disable running tests via Android Test Orchestrator. False by default.",
                 order = 12
         )
-        var runWithOrchestrator: Boolean = false
+        var runWithOrchestrator: Boolean = false,
+
+        @Parameter(
+            names = arrayOf("--extra-apks"),
+            required = false,
+            variableArity = true,
+            description = "Extra APKs you would usually put on androidTestUtil",
+            order = 13
+        )
+        var extraApks: List<String> = emptyList()
 )
 
 // No way to share array both for runtime and annotation without reflection.
