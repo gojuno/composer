@@ -11,6 +11,7 @@ import rx.schedulers.Schedulers
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 sealed class Exit(val code: Int, val message: String?) {
     object Ok : Exit(code = 0, message = null)
@@ -117,7 +118,11 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     })
 
                     Observable
-                            .concat(installApks)
+                            .concat(installApks.map {
+                                it.retry { attempts, error ->
+                                    attempts < args.installRetries && error is TimeoutException
+                                }
+                            })
                             // Work with each device in parallel, but install apks sequentially on a device.
                             .subscribeOn(Schedulers.io())
                             .toList()

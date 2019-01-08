@@ -100,11 +100,19 @@ data class Args(
         var installTimeoutSeconds: Int = TimeUnit.MINUTES.toSeconds(2).toInt(),
 
         @Parameter(
+                names = arrayOf("--install-retries"),
+                required = false,
+                description = "Number of times to retry APK installation after timeout. Applicable to both test APK and APK under test.",
+                order = 11
+        )
+        var installRetries: Int = 3,
+
+        @Parameter(
                 names = arrayOf("--fail-if-no-tests"),
                 required = false,
                 arity = 1,
                 description = "Either `true` or `false` to enable/disable error on empty test suite. True by default.",
-                order = 11
+                order = 12
         )
         var failIfNoTests: Boolean = true,
 
@@ -112,7 +120,7 @@ data class Args(
                 names = arrayOf("--with-orchestrator"),
                 required = false,
                 description = "Either `true` or `false` to enable/disable running tests via Android Test Orchestrator. False by default.",
-                order = 12
+                order = 13
         )
         var runWithOrchestrator: Boolean = false,
 
@@ -121,7 +129,7 @@ data class Args(
             required = false,
             variableArity = true,
             description = "Extra APKs you would usually put on androidTestUtil",
-            order = 13
+            order = 14
         )
         var extraApks: List<String> = emptyList()
 )
