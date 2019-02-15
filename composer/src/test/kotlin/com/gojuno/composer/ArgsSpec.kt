@@ -199,7 +199,7 @@ class ArgsSpec : Spek({
     context("parse args with --with-orchestrator") {
 
         val args by memoized {
-            parseArgs(rawArgsWithOnlyRequiredFields + "--with-orchestrator")
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--with-orchestrator", "true"))
         }
 
         it("parses --with-orchestrator correctly") {

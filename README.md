@@ -120,7 +120,7 @@ Composer shipped as jar, to run it you need JVM 1.8+: `java -jar composer-latest
   * `False` may be applicable when you run tests conditionally(via annotation/package filters) and empty suite is a valid outcome.
   * Example: `--fail-if-no-tests false`
 * `--with-orchestrator`
-  * Either `true` or `false` to enable/disable running tests via Android Test Orchestrator.
+  * Either `true` or `false` to enable/disable running tests via AndroidX Test Orchestrator.
   * Default: `false`.
   * When enabled - minimizes shared state and isolates test crashes.
   * Requires test orchestrator & test services APKs to be installed on device before executing.

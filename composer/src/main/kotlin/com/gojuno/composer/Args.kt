@@ -111,7 +111,8 @@ data class Args(
         @Parameter(
                 names = arrayOf("--with-orchestrator"),
                 required = false,
-                description = "Either `true` or `false` to enable/disable running tests via Android Test Orchestrator. False by default.",
+                arity = 1,
+                description = "Either `true` or `false` to enable/disable running tests via AndroidX Test Orchestrator. False by default.",
                 order = 12
         )
         var runWithOrchestrator: Boolean = false,
