@@ -128,8 +128,8 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
 
                                 if (args.runWithOrchestrator) {
                                     targetInstrumentation = listOf("targetInstrumentation" to "${testPackage.value}/${testRunner.value}")
-                                    testPackageName = "android.support.test.orchestrator"
-                                    testRunnerClass = "android.support.test.orchestrator.AndroidTestOrchestrator"
+                                    testPackageName = "androidx.test.orchestrator"
+                                    testRunnerClass = "androidx.test.orchestrator.AndroidTestOrchestrator"
                                 } else {
                                     targetInstrumentation = emptyList()
                                     testPackageName = testPackage.value

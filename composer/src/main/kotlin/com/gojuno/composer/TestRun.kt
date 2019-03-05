@@ -52,7 +52,7 @@ fun AdbDevice.runTests(
     val logsDir = File(File(outputDir, "logs"), adbDevice.id)
     val instrumentationOutputFile = File(logsDir, "instrumentation.output")
     val commandPrefix = if (useTestServices) {
-        "CLASSPATH=$(pm path android.support.test.services) app_process / android.support.test.services.shellexecutor.ShellMain "
+        "CLASSPATH=$(pm path androidx.test.services) app_process / androidx.test.services.shellexecutor.ShellMain "
     } else ""
 
     val runTests = process(
