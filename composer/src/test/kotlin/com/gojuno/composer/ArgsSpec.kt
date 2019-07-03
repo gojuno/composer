@@ -2,9 +2,8 @@ package com.gojuno.composer
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 class ArgsSpec : Spek({
 
@@ -13,7 +12,7 @@ class ArgsSpec : Spek({
             "--test-apk", "test_apk_path"
     )
 
-    context("parse args with only required params") {
+    describe("parse args with only required params") {
 
         val args by memoized { parseArgs(rawArgsWithOnlyRequiredFields) }
 
@@ -37,7 +36,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with test runner specified") {
+    describe("parse args with test runner specified") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--test-runner", "test_runner"))
@@ -48,7 +47,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with instrumentation arguments") {
+    describe("parse args with instrumentation arguments") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--instrumentation-arguments", "key1", "value1", "key2", "value2"))
@@ -59,7 +58,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with instrumentation arguments with values with commas") {
+    describe("parse args with instrumentation arguments with values with commas") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--instrumentation-arguments", "key1", "value1,value2", "key2", "value3,value4"))
@@ -70,7 +69,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with explicitly passed --shard") {
+    describe("parse args with explicitly passed --shard") {
 
         listOf(true, false).forEach { shard ->
 
@@ -87,7 +86,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with explicitly passed --verbose-output") {
+    describe("parse args with explicitly passed --verbose-output") {
 
         listOf(true, false).forEach { verboseOutput ->
 
@@ -104,7 +103,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed --devices") {
+    describe("parse args with passed --devices") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devices", "emulator-5554"))
@@ -115,7 +114,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed two --devices") {
+    describe("parse args with passed two --devices") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--devices", "emulator-5554", "emulator-5556"))
@@ -126,7 +125,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed --device-pattern") {
+    describe("parse args with passed --device-pattern") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]"))
@@ -137,7 +136,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed --devices and --device-pattern") {
+    describe("parse args with passed --devices and --device-pattern") {
 
         it("raises argument error") {
             assertThatThrownBy { parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--device-pattern", "[abc|def]") + arrayOf("--devices", "emulator-5554")) }
@@ -146,7 +145,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with --keep-output-on-exit") {
+    describe("parse args with --keep-output-on-exit") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + "--keep-output-on-exit")
@@ -157,7 +156,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed --install-timeout") {
+    describe("parse args with passed --install-timeout") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--install-timeout", "600"))
@@ -168,7 +167,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with passed --fail-if-no-tests") {
+    describe("parse args with passed --fail-if-no-tests") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--fail-if-no-tests", "false"))
@@ -179,7 +178,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with explicitly passed --fail-if-no-tests") {
+    describe("parse args with explicitly passed --fail-if-no-tests") {
 
         listOf(true, false).forEach { failIfNoTests ->
 
@@ -196,7 +195,7 @@ class ArgsSpec : Spek({
         }
     }
 
-    context("parse args with --with-orchestrator") {
+    describe("parse args with --with-orchestrator") {
 
         val args by memoized {
             parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--with-orchestrator", "true"))
@@ -207,15 +206,15 @@ class ArgsSpec : Spek({
         }
     }
 
-  context("parse args with passed --extra-apks") {
+    describe("parse args with passed --extra-apks") {
 
-    val args by memoized {
-      parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--extra-apks", "apk1.apk", "apk2.apk"))
-    }
+        val args by memoized {
+            parseArgs(rawArgsWithOnlyRequiredFields + arrayOf("--extra-apks", "apk1.apk", "apk2.apk"))
+        }
 
-    it("parses correctly two extra apks") {
-      assertThat(args.extraApks).isEqualTo(listOf("apk1.apk", "apk2.apk"))
+        it("parses correctly two extra apks") {
+            assertThat(args.extraApks).isEqualTo(listOf("apk1.apk", "apk2.apk"))
+        }
     }
-  }
 
 })

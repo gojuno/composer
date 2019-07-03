@@ -1,13 +1,12 @@
 package com.gojuno.composer
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 class LogLineParserSpec : Spek({
 
-    context("parse TestRunner log line with long prefix") {
+    describe("parse TestRunner log line with long prefix") {
 
         context("parse started log") {
             val args by memoized {
@@ -30,7 +29,7 @@ class LogLineParserSpec : Spek({
         }
     }
 
-    context("parse TestRunner log line with short prefix") {
+    describe("parse TestRunner log line with short prefix") {
 
         context("parse started log") {
 
@@ -55,7 +54,7 @@ class LogLineParserSpec : Spek({
         }
     }
 
-    context("parse non TestRunner started/finished logs") {
+    describe("parse non TestRunner started/finished logs") {
 
         it("does not parse empty log") {
             assertThat("".parseTestClassAndName()).isNull()

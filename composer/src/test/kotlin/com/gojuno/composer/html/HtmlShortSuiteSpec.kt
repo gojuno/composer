@@ -6,14 +6,13 @@ import com.gojuno.composer.Device
 import com.gojuno.composer.Suite
 import com.gojuno.composer.testFile
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import java.util.concurrent.TimeUnit.NANOSECONDS
 
 class HtmlShortSuiteSpec : Spek({
 
-    context("Suite.toHtmlShortSuite") {
+    describe("Suite.toHtmlShortSuite") {
         val suite by memoized {
             Suite(
                     testPackage = "p",

@@ -1,13 +1,12 @@
 package com.gojuno.composer.html
 
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 class HtmlShortTestSpec : Spek({
 
-    context("HtmlFullTest.toHtmlShortTest") {
+    describe("HtmlFullTest.toHtmlShortTest") {
 
         val htmlFullTest by memoized {
             HtmlFullTest(
