@@ -3,13 +3,12 @@ package com.gojuno.composer.html
 import com.gojuno.composer.Device
 import com.gojuno.composer.testFile
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 
 class HtmlDeviceSpec : Spek({
 
-    context("Device.toHtmlDevice") {
+    describe("Device.toHtmlDevice") {
 
         val device = Device(id = "testDevice1", logcat = testFile(), instrumentationOutput = testFile(), model = "testModel1")
 

@@ -2,11 +2,11 @@ package com.gojuno.composer
 
 import com.gojuno.commander.android.AdbDevice
 import com.gojuno.composer.AdbDeviceTest.Status.*
+import io.reactivex.observers.TestObserver
+import io.reactivex.subscribers.TestSubscriber
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
-import rx.observers.TestSubscriber
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -14,10 +14,10 @@ class JUnitReportSpec : Spek({
 
     val LF = System.getProperty("line.separator")
 
-    context("write test run result as junit4 report to file") {
+    describe("write test run result as junit4 report to file") {
 
         val adbDevice by memoized { AdbDevice(id = "testDevice", online = true) }
-        val subscriber by memoized { TestSubscriber<Unit>() }
+        val subscriber by memoized { TestObserver<Unit>() }
         val outputFile by memoized { testFile() }
 
         perform {
@@ -124,7 +124,7 @@ class JUnitReportSpec : Spek({
         }
 
         it("emits completion") {
-            subscriber.assertCompleted()
+            subscriber.assertComplete()
         }
 
         it("does not emit values") {

@@ -8,10 +8,8 @@ import com.gojuno.composer.perform
 import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.util.Files
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
-import rx.observers.TestSubscriber
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -19,7 +17,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 class HtmlReportSpec : Spek({
 
-    context("writeHtmlReport") {
+    describe("writeHtmlReport") {
 
         val outputDir by memoized { Files.newTemporaryFolder() }
 
@@ -71,8 +69,6 @@ class HtmlReportSpec : Spek({
             )
         }
 
-        val subscriber by memoized { TestSubscriber<Unit>() }
-
         fun File.deleteOnExitRecursively() {
             when (isDirectory) {
                 false -> deleteOnExit()
@@ -82,14 +78,17 @@ class HtmlReportSpec : Spek({
 
         val date by memoized { Date(1496848677000) }
 
+        val subscriber by memoized {
+            writeHtmlReport(Gson(), suites, outputDir, date).test()
+        }
+
         perform {
-            writeHtmlReport(Gson(), suites, outputDir, date).subscribe(subscriber)
             subscriber.awaitTerminalEvent(5, SECONDS)
             outputDir.deleteOnExitRecursively()
         }
 
         it("completes") {
-            subscriber.assertCompleted()
+            subscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -202,7 +201,7 @@ class HtmlReportSpec : Spek({
         }
     }
 
-    context("cssClassForLogcatLine") {
+    describe("cssClassForLogcatLine") {
 
         context("verbose") {
 

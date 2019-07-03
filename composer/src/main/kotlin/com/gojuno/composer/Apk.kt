@@ -36,9 +36,8 @@ fun parseTestPackage(testApkPath: String): TestPackage =
                             ?.let(TestPackage::Valid)
                             ?: TestPackage.ParseError("Cannot parse test package from `aapt dump badging \$APK` output.")
                 }
-                .toSingle()
-                .toBlocking()
-                .value()
+                .singleOrError()
+                .blockingGet()
 
 fun parseTestRunner(testApkPath: String): TestRunner =
         process(
@@ -60,9 +59,8 @@ fun parseTestRunner(testApkPath: String): TestRunner =
                             ?.let(TestRunner::Valid)
                             ?: TestRunner.ParseError("Cannot parse test runner from `aapt dump xmltree \$TEST_APK AndroidManifest.xml` output.")
                 }
-                .toSingle()
-                .toBlocking()
-                .value()
+                .singleOrError()
+                .blockingGet()
 
 fun parseTests(testApkPath: String): List<TestMethod> =
         DexParser.findTestMethods(testApkPath).map { TestMethod(it.testName, it.annotationNames) }

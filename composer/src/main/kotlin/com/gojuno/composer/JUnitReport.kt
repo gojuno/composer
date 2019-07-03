@@ -1,9 +1,9 @@
 package com.gojuno.composer
 
 import com.gojuno.composer.AdbDeviceTest.Status.*
-import org.apache.commons.lang3.StringEscapeUtils
-import rx.Completable
-import rx.Single
+import io.reactivex.Completable
+import io.reactivex.Single
+import org.apache.commons.text.StringEscapeUtils
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -73,4 +73,4 @@ fun writeJunit4Report(suite: Suite, outputFile: File): Completable = Single
             }
         }
         .map { xml -> outputFile.writeText(xml) }
-        .toCompletable()
+        .ignoreElement()

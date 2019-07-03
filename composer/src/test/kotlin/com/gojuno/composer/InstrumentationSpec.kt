@@ -3,19 +3,18 @@ package com.gojuno.composer
 import com.gojuno.composer.InstrumentationTest.Status.Failed
 import com.gojuno.composer.InstrumentationTest.Status.Ignored
 import com.gojuno.composer.InstrumentationTest.Status.Passed
+import io.reactivex.observers.TestObserver
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.context
-import org.jetbrains.spek.api.dsl.it
-import rx.observers.TestSubscriber
+import org.spekframework.spek2.Spek
+import org.spekframework.spek2.style.specification.describe
 import java.util.concurrent.TimeUnit.SECONDS
 
 class InstrumentationSpec : Spek({
 
-    context("read output with failed test") {
+    describe("read output with failed test") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-failed-test.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -105,7 +104,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             stream = normalizeLinefeed(stream)
 
             // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
+            assertThat(entriesSubscriber.values().map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
                     InstrumentationEntry(
                             numTests = 4,
                             stream = "com.example.test.TestClass:",
@@ -198,7 +197,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
 
         it("completes stream") {
-            entriesSubscriber.assertCompleted()
+            entriesSubscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -207,7 +206,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+            val testsSubscriber by memoized { TestObserver<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -256,7 +255,7 @@ at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:10
 at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)"""
 
                 stacktrace = normalizeLinefeed(stacktrace)
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                assertThat(testsSubscriber.values().map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 4,
@@ -293,7 +292,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("completes stream") {
-                testsSubscriber.assertCompleted()
+                testsSubscriber.assertComplete()
             }
 
             it("does not emit error") {
@@ -302,10 +301,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
     }
 
-    context("read output with 0 tests") {
+    describe("read output with 0 tests") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-0-tests.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -317,7 +316,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
 
         it("completes stream") {
-            entriesSubscriber.assertCompleted()
+            entriesSubscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -326,7 +325,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+            val testsSubscriber by memoized { TestObserver<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -338,7 +337,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("completes stream") {
-                testsSubscriber.assertCompleted()
+                testsSubscriber.assertComplete()
             }
 
             it("does not emit error") {
@@ -347,10 +346,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
     }
 
-    context("read unordered output") {
+    describe("read unordered output") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-unordered-output.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -359,7 +358,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         it("emits expected entries") {
             // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
+            assertThat(entriesSubscriber.values().map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
                     InstrumentationEntry(
                             numTests = 3,
                             stream = "com.example.test.TestClass:",
@@ -430,7 +429,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
 
         it("completes stream") {
-            entriesSubscriber.assertCompleted()
+            entriesSubscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -439,7 +438,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+            val testsSubscriber by memoized { TestObserver<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -447,7 +446,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("emits expected tests") {
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                assertThat(testsSubscriber.values().map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 3,
@@ -476,7 +475,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("completes stream") {
-                testsSubscriber.assertCompleted()
+                testsSubscriber.assertComplete()
             }
 
             it("does not emit error") {
@@ -485,10 +484,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
     }
 
-    context("read output with ignored test") {
+    describe("read output with ignored test") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-ignored-test.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -497,7 +496,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         it("emits expected entries") {
             // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
+            assertThat(entriesSubscriber.values().map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
                     InstrumentationEntry(
                             numTests = 2,
                             stream = "com.example.test.TestClass:",
@@ -546,7 +545,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
 
         it("completes stream") {
-            entriesSubscriber.assertCompleted()
+            entriesSubscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -555,7 +554,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+            val testsSubscriber by memoized { TestObserver<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -563,7 +562,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("emits expected tests") {
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                assertThat(testsSubscriber.values().map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 2,
@@ -585,10 +584,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
     }
 
-    context("read output containing test with assumption violation") {
+    describe("read output containing test with assumption violation") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-assumption-violation.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -629,7 +628,7 @@ at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.jav
 at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)"""
             stacktrace = normalizeLinefeed(stacktrace)
 
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
+            assertThat(entriesSubscriber.values().map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
                     InstrumentationEntry(
                             numTests = 1,
                             stream = "com.example.test.TestClass:",
@@ -656,7 +655,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
         }
 
         it("completes stream") {
-            entriesSubscriber.assertCompleted()
+            entriesSubscriber.assertComplete()
         }
 
         it("does not emit error") {
@@ -665,7 +664,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
 
         context("as tests") {
 
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+            val testsSubscriber by memoized { TestObserver<InstrumentationTest>() }
 
             perform {
                 entries.asTests().subscribe(testsSubscriber)
@@ -704,7 +703,7 @@ at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:5
 at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:375)
 at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)"""
                 stacktrace = normalizeLinefeed(stacktrace)
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                assertThat(testsSubscriber.values().map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 1,
@@ -718,11 +717,11 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
         }
     }
 
-    context("read output with unable to find instrumentation info error") {
+    describe("read output with unable to find instrumentation info error") {
 
         val outputFile = fileFromJarResources<InstrumentationSpec>("instrumentation-output-unable-to-find-instrumentation-info.txt")
         val entries by memoized { readInstrumentationOutput(outputFile) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -730,7 +729,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
         }
 
         it("emits exception with human readable message") {
-            assertThat(entriesSubscriber.onErrorEvents.first()).hasMessage(
+            assertThat(entriesSubscriber.errors().first()).hasMessage(
                     "Instrumentation was unable to run tests using runner com.composer.example.ExampleAndroidJUnitRunner.\n" +
                             "Most likely you forgot to declare test runner in AndroidManifest.xml or build.gradle.\n" +
                             "Detailed log can be found in ${outputFile.path} or Logcat output.\n" +
@@ -739,11 +738,11 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
         }
     }
 
-    context("read output with crash") {
+    describe("read output with crash") {
 
         val outputFile = fileFromJarResources<InstrumentationSpec>("instrumentation-output-app-crash.txt")
         val entries by memoized { readInstrumentationOutput(outputFile) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
+        val entriesSubscriber by memoized { TestObserver<InstrumentationEntry>() }
 
         perform {
             entries.subscribe(entriesSubscriber)
@@ -751,7 +750,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
         }
 
         it("emits exception describing issue") {
-            assertThat(entriesSubscriber.onErrorEvents.first()).hasMessage(
+            assertThat(entriesSubscriber.errors().first()).hasMessage(
                     "Application process crashed. Check Logcat output for more details."
             )
         }

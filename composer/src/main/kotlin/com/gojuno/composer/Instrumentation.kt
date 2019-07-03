@@ -3,7 +3,7 @@ package com.gojuno.composer
 import com.gojuno.composer.InstrumentationTest.Status.Failed
 import com.gojuno.composer.InstrumentationTest.Status.Ignored
 import com.gojuno.composer.InstrumentationTest.Status.Passed
-import rx.Observable
+import io.reactivex.Observable
 import java.io.File
 
 data class InstrumentationTest(
@@ -186,5 +186,5 @@ fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> 
                 }
             }
             .filter { it.tests.isNotEmpty() }
-            .flatMap { Observable.from(it.tests) }
+            .flatMap { Observable.fromIterable(it.tests) }
 }

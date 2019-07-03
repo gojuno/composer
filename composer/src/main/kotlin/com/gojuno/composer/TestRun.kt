@@ -4,9 +4,9 @@ import com.gojuno.commander.android.*
 import com.gojuno.commander.os.Notification
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.commander.os.process
-import rx.Observable
-import rx.Single
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 
 data class AdbDeviceTestRun(
@@ -80,8 +80,8 @@ fun AdbDevice.runTests(
 
                 adbDevice.log(
                         "Test ${test.index}/${test.total} $status in " +
-                        "${test.durationNanos.nanosToHumanReadableTime()}: " +
-                        "${test.className}.${test.testName}"
+                                "${test.durationNanos.nanosToHumanReadableTime()}: " +
+                                "${test.className}.${test.testName}"
                 )
             }
             .flatMap { test ->
@@ -92,12 +92,8 @@ fun AdbDevice.runTests(
             }
             .toList()
 
-    val adbDeviceTestRun = Observable
-            .zip(
-                    Observable.fromCallable { System.nanoTime() },
-                    runningTests,
-                    { time, tests -> time to tests }
-            )
+    val adbDeviceTestRun = Single
+            .zip(Single.fromCallable { System.nanoTime() }, runningTests, { time, tests -> time to tests })
             .map { (startTimeNanos, testsWithPulledFiles) ->
                 val tests = testsWithPulledFiles.map { it.first }
 
@@ -136,12 +132,12 @@ fun AdbDevice.runTests(
             // TODO: Stop when all expected tests were parsed from logcat and not when instrumentation finishes.
             // Logcat may be delivered with delay and that may result in missing logcat for last (n) tests (it's just a theory though).
             .takeUntil(testRunFinish)
-            .startWith(Unit) // To allow zip finish normally even if no tests were run.
+            .last(Unit) // Default value to allow zip finish normally even if no tests were run.
 
-    return Observable
-            .zip(adbDeviceTestRun, saveLogcat, testRunFinish) { suite, _, _ -> suite }
+    return Single
+            .zip(adbDeviceTestRun, saveLogcat, testRunFinish.singleOrError()) { suite, _, _ -> suite }
             .doOnSubscribe { adbDevice.log("Starting tests...") }
-            .doOnNext { testRun ->
+            .doOnSuccess { testRun ->
                 adbDevice.log(
                         "Test run finished, " +
                         "${testRun.passedCount} passed, " +
@@ -150,7 +146,6 @@ fun AdbDevice.runTests(
                 )
             }
             .doOnError { adbDevice.log("Error during tests run: $it") }
-            .toSingle()
 }
 
 data class PulledFiles(
@@ -164,24 +159,27 @@ private fun pullTestFiles(adbDevice: AdbDevice, test: InstrumentationTest, outpu
             File(File(File(outputDir, "screenshots"), adbDevice.id), test.className).apply { mkdirs() }
         }
         .flatMap { screenshotsFolderOnHostMachine ->
-            adbDevice
-                    .pullFolder(
-                            // TODO: Add support for internal storage and external storage strategies.
-                            folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}",
+            // TODO: Add support for internal storage and external storage strategies.
+            val folderOnDevice = "/storage/emulated/0/app_spoon-screenshots/${test.className}/${test.testName}"
+            Single.concat(
+                    adbDevice.pullFolder(
+                            folderOnDevice = folderOnDevice,
                             folderOnHostMachine = screenshotsFolderOnHostMachine,
                             logErrors = verboseOutput
+                    ),
+                    adbDevice.deleteFolder(
+                            folderOnDevice = folderOnDevice,
+                            logErrors = verboseOutput
                     )
+            )
+                    .lastOrError()
                     .map { File(screenshotsFolderOnHostMachine, test.testName) }
         }
         .map { screenshotsFolderOnHostMachine ->
             PulledFiles(
                     files = emptyList(), // TODO: Pull test files.
-                    screenshots = screenshotsFolderOnHostMachine.let {
-                        when (it.exists()) {
-                            true -> it.listFiles().toList()
-                            else -> emptyList()
-                        }
-                    }
+                    screenshots = screenshotsFolderOnHostMachine
+                            .takeIf { it.exists() }?.listFiles()?.toList() ?: emptyList()
             )
         }
 
@@ -199,14 +197,18 @@ internal fun String.parseTestClassAndName(): Pair<String, String>? {
     return null
 }
 
-private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<String, String>> = Observable
+private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<String, String>> = Single
         .just(logsDir to logcatFileForDevice(logsDir))
-        .flatMap { (logsDir, fullLogcatFile) -> adbDevice.redirectLogcatToFile(fullLogcatFile).toObservable().map { logsDir to fullLogcatFile } }
-        .flatMap { (logsDir, fullLogcatFile) ->
-            data class result(val logcat: String = "", val startedTestClassAndName: Pair<String, String>? = null, val finishedTestClassAndName: Pair<String, String>? = null)
+        .flatMap { (logsDir, fullLogcatFile) -> adbDevice.redirectLogcatToFile(fullLogcatFile).map { logsDir to fullLogcatFile } }
+        .flatMapObservable { (logsDir, fullLogcatFile) ->
+            data class CaptureState(
+                    val logcat: String = "",
+                    val startedTestClassAndName: Pair<String, String>? = null,
+                    val finishedTestClassAndName: Pair<String, String>? = null
+            )
 
             tail(fullLogcatFile)
-                    .scan(result()) { previous, newline ->
+                    .scan(CaptureState()) { previous, newline ->
                         val logcat = when (previous.startedTestClassAndName != null && previous.finishedTestClassAndName != null) {
                             true -> newline
                             false -> "${previous.logcat}\n$newline"
@@ -217,7 +219,7 @@ private fun saveLogcat(adbDevice: AdbDevice, logsDir: File): Observable<Pair<Str
                         val startedTest: Pair<String, String>? = newline.parseTestClassAndName()
                         val finishedTest: Pair<String, String>? = newline.parseTestClassAndName()
 
-                        result(
+                        CaptureState(
                                 logcat = logcat,
                                 startedTestClassAndName = startedTest ?: previous.startedTestClassAndName,
                                 finishedTestClassAndName = finishedTest // Actual finished test should always overwrite previous.

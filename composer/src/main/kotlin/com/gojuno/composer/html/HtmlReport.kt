@@ -3,7 +3,7 @@ package com.gojuno.composer.html
 import com.gojuno.composer.Suite
 import com.google.gson.Gson
 import org.apache.commons.lang3.StringEscapeUtils
-import rx.Completable
+import io.reactivex.Completable
 import java.io.File
 import java.io.InputStream
 import java.text.SimpleDateFormat

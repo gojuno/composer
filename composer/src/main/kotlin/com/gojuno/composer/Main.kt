@@ -6,8 +6,9 @@ import com.gojuno.commander.os.log
 import com.gojuno.commander.os.nanosToHumanReadableTime
 import com.gojuno.composer.html.writeHtmlReport
 import com.google.gson.Gson
-import rx.Observable
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -105,9 +106,9 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                     }
                 }
             }
-            .doOnNext { log("${it.size} connected adb device(s): $it") }
+            .doOnSuccess { log("${it.size} connected adb device(s): $it") }
             .flatMap { connectedAdbDevices ->
-                val runTestsOnDevices: List<Observable<AdbDeviceTestRun>> = connectedAdbDevices.mapIndexed { index, device ->
+                val runTestsOnDevices: List<Single<AdbDeviceTestRun>> = connectedAdbDevices.mapIndexed { index, device ->
                     val installTimeout = Pair(args.installTimeoutSeconds, TimeUnit.SECONDS)
                     val installAppApk = device.installApk(pathToApk = args.appApkPath, timeout = installTimeout)
                     val installTestApk = device.installApk(pathToApk = args.testApkPath, timeout = installTimeout)
@@ -160,10 +161,9 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                                             ).toSingleDefault(adbDeviceTestRun)
                                         }
                                         .subscribeOn(Schedulers.io())
-                                        .toObservable()
                             }
                 }
-                Observable.zip(runTestsOnDevices, { results -> results.map { it as AdbDeviceTestRun } })
+                Single.zip(runTestsOnDevices, { results: Array<Any> -> results.map { it as AdbDeviceTestRun } })
             }
             .map { adbDeviceTestRuns ->
                 when (args.shard) {
@@ -199,11 +199,10 @@ private fun runAllTests(args: Args, testPackage: TestPackage.Valid, testRunner: 
                 log("Generating HTML report...")
                 val htmlReportStartTime = System.nanoTime()
                 writeHtmlReport(gson, suites, File(args.outputDirectory, "html-report"), Date())
-                        .doOnCompleted { log("HTML report generated, took ${(System.nanoTime() - htmlReportStartTime).nanosToHumanReadableTime()}.") }
-                        .andThen(Observable.just(suites))
+                        .doOnComplete { log("HTML report generated, took ${(System.nanoTime() - htmlReportStartTime).nanosToHumanReadableTime()}.") }
+                        .andThen(Single.just(suites))
             }
-            .toBlocking()
-            .first()
+            .blockingGet()
 }
 
 private fun List<String>.pairArguments(): List<Pair<String, String>> =
