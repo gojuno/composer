@@ -34,6 +34,9 @@ enum class StatusCode(val code: Int) {
 }
 
 sealed class InstrumentationEntry {
+    /**
+     * Corresponds to entries starting with INSTRUMENTATION_STATUS
+     */
     data class Status(
         val numTests: Int,
         val stream: String,
@@ -46,6 +49,9 @@ sealed class InstrumentationEntry {
         val timestampNanos: Long
     ): InstrumentationEntry()
 
+    /**
+     * Corresponds to entries starting with INSTRUMENTATION_RESULT
+     */
     data class Result(
         val message: String,
         val timestampNanos: Long
@@ -186,6 +192,9 @@ private data class NormalizedInstrumentationEntry(
     val timestampNanos: Long
 )
 
+/**
+ * @return a normalized set of data for this [InstrumentationEntry]
+ */
 private fun InstrumentationEntry.normalize() = when (this) {
     is InstrumentationEntry.Status -> NormalizedInstrumentationEntry(
         statusCode = statusCode,
@@ -193,7 +202,8 @@ private fun InstrumentationEntry.normalize() = when (this) {
         timestampNanos = timestampNanos
     )
     is InstrumentationEntry.Result -> NormalizedInstrumentationEntry(
-        statusCode = StatusCode.Failure,
+        statusCode = StatusCode.Failure, /* if, after starting, our 2nd instrumentation entry is a Result instead of Status..
+                                            we know the test execution ended prematurely and thus can be considered as a Failure */
         stack = message,
         timestampNanos = timestampNanos
     )
