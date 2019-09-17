@@ -33,7 +33,11 @@ enum class StatusCode(val code: Int) {
     AssumptionFailure(-4)
 }
 
-data class InstrumentationEntry(
+sealed class InstrumentationEntry {
+    /**
+     * Corresponds to entries starting with INSTRUMENTATION_STATUS
+     */
+    data class Status(
         val numTests: Int,
         val stream: String,
         val id: String,
@@ -43,7 +47,16 @@ data class InstrumentationEntry(
         val stack: String,
         val statusCode: StatusCode,
         val timestampNanos: Long
-)
+    ): InstrumentationEntry()
+
+    /**
+     * Corresponds to entries starting with INSTRUMENTATION_RESULT
+     */
+    data class Result(
+        val message: String,
+        val timestampNanos: Long
+    ): InstrumentationEntry()
+}
 
 private fun String.substringBetween(first: String, second: String): String {
     val indexOfFirst = indexOf(first)
@@ -58,15 +71,21 @@ private fun String.substringBetween(first: String, second: String): String {
     return substring(startIndex, endIndex)
 }
 
+private fun String.parseInstrumentationResultMessage() = Regex(
+    pattern = "INSTRUMENTATION_RESULT: (?:stream|shortMsg|longMsg)=(.*?)INSTRUMENTATION_CODE",
+    option = RegexOption.DOT_MATCHES_ALL
+)
+    .find(this)
+    ?.groupValues
+    ?.get(1)
+    ?.trim()
+    ?: ""
+
 private fun String.parseInstrumentationStatusValue(key: String): String = this
         .substringBetween("INSTRUMENTATION_STATUS: $key=", "INSTRUMENTATION_STATUS")
         .trim()
 
 private fun String.throwIfError(output: File) = when {
-    contains("INSTRUMENTATION_RESULT: shortMsg=") -> {
-        throw Exception("Application process crashed. Check Logcat output for more details.")
-    }
-
     contains("INSTRUMENTATION_STATUS: Error=Unable to find instrumentation info for") -> {
         val runner = substringBetween("ComponentInfo{", "}").substringAfter("/")
         throw Exception(
@@ -80,29 +99,34 @@ private fun String.throwIfError(output: File) = when {
     else -> this
 }
 
-private fun parseInstrumentationEntry(str: String): InstrumentationEntry =
-        InstrumentationEntry(
-                numTests = str.parseInstrumentationStatusValue("numtests").toInt(),
-                stream = str.parseInstrumentationStatusValue("stream"),
-                stack = str.parseInstrumentationStatusValue("stack"),
-                id = str.parseInstrumentationStatusValue("id"),
-                test = str.parseInstrumentationStatusValue("test"),
-                clazz = str.parseInstrumentationStatusValue("class"),
-                current = str.parseInstrumentationStatusValue("current").toInt(),
-                statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS")
-                        .trim()
-                        .toInt()
-                        .let { code ->
-                            StatusCode.values().firstOrNull { it.code == code }
-                        }
-                        .let { statusCode ->
-                            when (statusCode) {
-                                null -> throw IllegalStateException("Unknown test status code [$statusCode], please report that to Composer maintainers $str")
-                                else -> statusCode
-                            }
-                        },
-                timestampNanos = System.nanoTime()
-        )
+private fun parseInstrumentationEntry(str: String): InstrumentationEntry = when {
+    str.startsWith("INSTRUMENTATION_RESULT") -> InstrumentationEntry.Result(
+        message = str.parseInstrumentationResultMessage(),
+        timestampNanos = System.nanoTime()
+    )
+    else -> InstrumentationEntry.Status(
+        numTests = str.parseInstrumentationStatusValue("numtests").toInt(),
+        stream = str.parseInstrumentationStatusValue("stream"),
+        stack = str.parseInstrumentationStatusValue("stack"),
+        id = str.parseInstrumentationStatusValue("id"),
+        test = str.parseInstrumentationStatusValue("test"),
+        clazz = str.parseInstrumentationStatusValue("class"),
+        current = str.parseInstrumentationStatusValue("current").toInt(),
+        statusCode = str.substringBetween("INSTRUMENTATION_STATUS_CODE: ", "INSTRUMENTATION_STATUS")
+            .trim()
+            .toInt()
+            .let { code ->
+                StatusCode.values().firstOrNull { it.code == code }
+            }
+            .let { statusCode ->
+                when (statusCode) {
+                    null -> throw IllegalStateException("Unknown test status code [$statusCode], please report that to Composer maintainers $str")
+                    else -> statusCode
+                }
+            },
+        timestampNanos = System.nanoTime()
+    )
+}
 
 // Reads stream in "tail -f" mode.
 fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
@@ -111,9 +135,9 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
     return tail(output)
             .map(String::trim)
             .map { it.throwIfError(output) }
-            .takeWhile {
+            .takeUntil {
                 // `INSTRUMENTATION_CODE: <code>` is the last line printed by instrumentation, even if 0 tests were run.
-                !it.startsWith("INSTRUMENTATION_CODE")
+                it.startsWith("INSTRUMENTATION_CODE")
             }
             .scan(Result()) { previousResult, newLine ->
                 val buffer = when (previousResult.readyForProcessing) {
@@ -121,70 +145,66 @@ fun readInstrumentationOutput(output: File): Observable<InstrumentationEntry> {
                     false -> "${previousResult.buffer}${System.lineSeparator()}$newLine"
                 }
 
-                Result(buffer = buffer, readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE"))
+                Result(
+                    buffer = buffer,
+                    readyForProcessing = newLine.startsWith("INSTRUMENTATION_STATUS_CODE") || newLine.startsWith("INSTRUMENTATION_CODE")
+                )
             }
             .filter { it.readyForProcessing }
-            .map { it.buffer }
+            .map { it.buffer.trim() }
             .map(::parseInstrumentationEntry)
 }
 
-fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> {
-    data class Result(val entries: List<InstrumentationEntry> = emptyList(), val tests: List<InstrumentationTest> = emptyList(), val totalTestsCount: Int = 0)
+fun Observable<InstrumentationEntry>.asTests(): Observable<InstrumentationTest> = buffer(2)
+    .filter { it.size == 2 }
+    .map { (first, second) ->
+        if (first !is InstrumentationEntry.Status) {
+            throw IllegalStateException(
+                "Unexpected order of instrumentation entries: encountered Result before a Status? " +
+                    "This should never happen, please report this to Composer maintainers ($first, $second)"
+            )
+        }
 
-    return this
-            .scan(Result()) { previousResult, newEntry ->
-                val entries = previousResult.entries + newEntry
-                val tests: List<InstrumentationTest> = entries
-                        .mapIndexed { index, first ->
-                            val second = entries
-                                    .subList(index + 1, entries.size)
-                                    .firstOrNull {
-                                        first.clazz == it.clazz &&
-                                        first.test == it.test &&
-                                        first.current == it.current &&
-                                        first.statusCode != it.statusCode
-                                    }
+        val secondNormalized = second.normalize()
 
-                            if (second == null) null else first to second
-                        }
-                        .filterNotNull()
-                        .map { (first, second) ->
-                            InstrumentationTest(
-                                    index = first.current,
-                                    total = first.numTests,
-                                    className = first.clazz,
-                                    testName = first.test,
-                                    status = when (second.statusCode) {
-                                        StatusCode.Ok -> Passed
-                                        StatusCode.Ignored  -> Ignored()
-                                        StatusCode.AssumptionFailure -> Ignored(stacktrace = second.stack)
-                                        StatusCode.Failure -> Failed(stacktrace = second.stack)
-                                        StatusCode.Start -> throw IllegalStateException(
-                                                "Unexpected status code [Start] in second entry, " +
-                                                "please report that to Composer maintainers ($first, $second)"
-                                        )
-                                    },
-                                    durationNanos = second.timestampNanos - first.timestampNanos
-                            )
-                        }
-
-                Result(
-                        entries = entries.filter { entry -> tests.firstOrNull { it.className == entry.clazz && it.testName == entry.test } == null },
-                        tests = tests,
-                        totalTestsCount = previousResult.totalTestsCount + tests.size
+        InstrumentationTest(
+            index = first.current,
+            total = first.numTests,
+            className = first.clazz,
+            testName = first.test,
+            status = when (secondNormalized.statusCode) {
+                StatusCode.Ok -> Passed
+                StatusCode.Ignored  -> Ignored()
+                StatusCode.AssumptionFailure -> Ignored(stacktrace = secondNormalized.stack)
+                StatusCode.Failure -> Failed(stacktrace = secondNormalized.stack)
+                StatusCode.Start -> throw IllegalStateException(
+                    "Unexpected status code [Start] in second entry, " +
+                        "please report that to Composer maintainers ($first, $second)"
                 )
-            }
-            .takeUntil {
-                if (it.entries.count { it.current == it.numTests } == 2) {
-                    if (it.totalTestsCount < it.entries.first().numTests) {
-                        throw IllegalStateException("Less tests were emitted than Instrumentation reported: $it")
-                    }
+            },
+            durationNanos = secondNormalized.timestampNanos - first.timestampNanos
+        )
+    }
 
-                    true
-                } else {
-                    false
-                }
-            }
-            .filter { it.tests.isNotEmpty() }
-            .flatMap { Observable.from(it.tests) }
+private data class NormalizedInstrumentationEntry(
+    val statusCode: StatusCode,
+    val stack: String,
+    val timestampNanos: Long
+)
+
+/**
+ * @return a normalized set of data for this [InstrumentationEntry]
+ */
+private fun InstrumentationEntry.normalize() = when (this) {
+    is InstrumentationEntry.Status -> NormalizedInstrumentationEntry(
+        statusCode = statusCode,
+        stack = stack,
+        timestampNanos = timestampNanos
+    )
+    is InstrumentationEntry.Result -> NormalizedInstrumentationEntry(
+        statusCode = StatusCode.Failure, /* if, after starting, our 2nd instrumentation entry is a Result instead of Status..
+                                            we know the test execution ended prematurely and thus can be considered as a Failure */
+        stack = message,
+        timestampNanos = timestampNanos
+    )
 }

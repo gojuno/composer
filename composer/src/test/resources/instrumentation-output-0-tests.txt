@@ -1,5 +1,3 @@
-Script started on Fri Mar 31 15:28:24 2017
-command: /usr/local/opt/android-sdk/platform-tools/adb -s emulator-5556 shell am instrument -w -r -e numShards 2 -e shardIndex 0 -e
 INSTRUMENTATION_RESULT: stream=
 
 Time: 0

@@ -1,4 +1,3 @@
-adb shell am instrument -w -r -e numShards 20 -e shardIndex 1 com.example.test/android.support.test.runner.JunoAndroidRunner
 INSTRUMENTATION_STATUS: numtests=4
 INSTRUMENTATION_STATUS: stream=
 com.example.test.TestClass:
@@ -136,6 +135,7 @@ INSTRUMENTATION_STATUS: test=test4
 INSTRUMENTATION_STATUS: class=com.example.test.TestClass
 INSTRUMENTATION_STATUS: current=4
 INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
 
 Time: 96.641
 There was 1 failure:
@@ -143,7 +143,6 @@ There was 1 failure:
 java.net.UnknownHostException: Test Exception
 	at com.example.test.TestClass.test1.1.invoke(TestClass.kt:245)
 	at com.example.test.TestClass.test1.1.invoke(TestClass.kt:44)
-	at com.example.test.screens.AddCreditCardScreen.Companion.invoke(AddCreditCardScreen.kt:23)
 	at com.example.test.TestClass.test1(TestClass.kt:238)
 	at java.lang.reflect.Method.invoke(Native Method)
 	at org.junit.runners.model.FrameworkMethod.1.runReflectiveCall(FrameworkMethod.java:50)
