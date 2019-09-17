@@ -104,9 +104,17 @@ at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:10
 at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)"""
             stream = normalizeLinefeed(stream)
 
+            val expectedResultMessage = normalizeLinefeed("""Time: 96.641
+There was 1 failure:
+1) test1(com.example.test.TestClass)
+$stacktrace
+
+FAILURES!!!
+Tests run: 4,  Failures: 1""")
+
             // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
-                    InstrumentationEntry(
+            entriesSubscriber.assertValuesWithZeroedTimestamps(listOf(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = "com.example.test.TestClass:",
                             id = "AndroidJUnitRunner",
@@ -117,7 +125,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = stream,
                             id = "AndroidJUnitRunner",
@@ -128,7 +136,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Failure,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = "",
                             id = "AndroidJUnitRunner",
@@ -139,7 +147,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = ".",
                             id = "AndroidJUnitRunner",
@@ -150,7 +158,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Ok,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = "com.example.test.TestClass:",
                             id = "AndroidJUnitRunner",
@@ -161,7 +169,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = ".",
                             id = "AndroidJUnitRunner",
@@ -172,7 +180,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Ok,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = "",
                             id = "AndroidJUnitRunner",
@@ -183,7 +191,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 4,
                             stream = ".",
                             id = "AndroidJUnitRunner",
@@ -192,6 +200,10 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             current = 4,
                             stack = "",
                             statusCode = StatusCode.Ok,
+                            timestampNanos = 0
+                    ),
+                    InstrumentationEntry.Result(
+                            message = expectedResultMessage,
                             timestampNanos = 0
                     )
             ))
@@ -256,7 +268,7 @@ at android.support.test.runner.JunoAndroidRunner.onStart(JunoAndroidRunner.kt:10
 at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:1932)"""
 
                 stacktrace = normalizeLinefeed(stacktrace)
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                testsSubscriber.assertValuesWithZeroedDurations(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 4,
@@ -312,8 +324,13 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             entriesSubscriber.awaitTerminalEvent(30, SECONDS)
         }
 
-        it("does not emit any entry") {
-            entriesSubscriber.assertNoValues()
+        it("emits no statuses, only the final result") {
+            entriesSubscriber.assertValuesWithZeroedTimestamps(listOf(
+                InstrumentationEntry.Result(
+                    message = "Time: 0\n\nOK (0 tests)",
+                    timestampNanos = 0
+                )
+            ))
         }
 
         it("completes stream") {
@@ -347,144 +364,6 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
         }
     }
 
-    context("read unordered output") {
-
-        val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-unordered-output.txt")) }
-        val entriesSubscriber by memoized { TestSubscriber<InstrumentationEntry>() }
-
-        perform {
-            entries.subscribe(entriesSubscriber)
-            entriesSubscriber.awaitTerminalEvent(30, SECONDS)
-        }
-
-        it("emits expected entries") {
-            // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = "com.example.test.TestClass:",
-                            id = "AndroidJUnitRunner",
-                            test = "test1",
-                            clazz = "com.example.test.TestClass",
-                            current = 1,
-                            stack = "",
-                            statusCode = StatusCode.Start,
-                            timestampNanos = 0
-                    ),
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = ".",
-                            id = "AndroidJUnitRunner",
-                            test = "test1",
-                            clazz = "com.example.test.TestClass",
-                            current = 1,
-                            stack = "",
-                            statusCode = StatusCode.Ok,
-                            timestampNanos = 0
-                    ),
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = "com.example.test.TestClass:",
-                            id = "AndroidJUnitRunner",
-                            test = "test2",
-                            clazz = "com.example.test.TestClass",
-                            current = 2,
-                            stack = "",
-                            statusCode = StatusCode.Start,
-                            timestampNanos = 0
-                    ),
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = "",
-                            id = "AndroidJUnitRunner",
-                            test = "test3",
-                            clazz = "com.example.test.TestClass",
-                            current = 3,
-                            stack = "",
-                            statusCode = StatusCode.Start,
-                            timestampNanos = 0
-                    ),
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = ".",
-                            id = "AndroidJUnitRunner",
-                            test = "test2",
-                            clazz = "com.example.test.TestClass",
-                            current = 2,
-                            stack = "",
-                            statusCode = StatusCode.Ok,
-                            timestampNanos = 0
-                    ),
-                    InstrumentationEntry(
-                            numTests = 3,
-                            stream = ".",
-                            id = "AndroidJUnitRunner",
-                            test = "test3",
-                            clazz = "com.example.test.TestClass",
-                            current = 3,
-                            stack = "",
-                            statusCode = StatusCode.Ok,
-                            timestampNanos = 0
-                    ))
-            )
-        }
-
-        it("completes stream") {
-            entriesSubscriber.assertCompleted()
-        }
-
-        it("does not emit error") {
-            entriesSubscriber.assertNoErrors()
-        }
-
-        context("as tests") {
-
-            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
-
-            perform {
-                entries.asTests().subscribe(testsSubscriber)
-                testsSubscriber.awaitTerminalEvent(30, SECONDS)
-            }
-
-            it("emits expected tests") {
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
-                        InstrumentationTest(
-                                index = 1,
-                                total = 3,
-                                className = "com.example.test.TestClass",
-                                testName = "test1",
-                                status = Passed,
-                                durationNanos = 0L
-                        ),
-                        InstrumentationTest(
-                                index = 2,
-                                total = 3,
-                                className = "com.example.test.TestClass",
-                                testName = "test2",
-                                status = Passed,
-                                durationNanos = 0L
-                        ),
-                        InstrumentationTest(
-                                index = 3,
-                                total = 3,
-                                className = "com.example.test.TestClass",
-                                testName = "test3",
-                                status = Passed,
-                                durationNanos = 0L
-                        )
-                ))
-            }
-
-            it("completes stream") {
-                testsSubscriber.assertCompleted()
-            }
-
-            it("does not emit error") {
-                testsSubscriber.assertNoErrors()
-            }
-        }
-    }
-
     context("read output with ignored test") {
 
         val entries by memoized { readInstrumentationOutput(fileFromJarResources<InstrumentationSpec>("instrumentation-output-ignored-test.txt")) }
@@ -497,8 +376,8 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
 
         it("emits expected entries") {
             // We have no control over system time in tests.
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
-                    InstrumentationEntry(
+            entriesSubscriber.assertValuesWithZeroedTimestamps(listOf(
+                    InstrumentationEntry.Status(
                             numTests = 2,
                             stream = "com.example.test.TestClass:",
                             id = "AndroidJUnitRunner",
@@ -509,7 +388,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 2,
                             stream = ".",
                             id = "AndroidJUnitRunner",
@@ -520,7 +399,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Ok,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 2,
                             stream = "",
                             id = "AndroidJUnitRunner",
@@ -531,7 +410,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 2,
                             stream = "",
                             id = "AndroidJUnitRunner",
@@ -541,8 +420,12 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
                             stack = "",
                             statusCode = StatusCode.Ignored,
                             timestampNanos = 0
-                    ))
-            )
+                    ),
+                    InstrumentationEntry.Result(
+                            message = "Time: 10.073\n\nOK (2 tests)",
+                            timestampNanos = 0
+                    )
+            ))
         }
 
         it("completes stream") {
@@ -563,7 +446,7 @@ at android.app.Instrumentation.InstrumentationThread.run(Instrumentation.java:19
             }
 
             it("emits expected tests") {
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                testsSubscriber.assertValuesWithZeroedDurations(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 2,
@@ -629,8 +512,8 @@ at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.jav
 at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)"""
             stacktrace = normalizeLinefeed(stacktrace)
 
-            assertThat(entriesSubscriber.onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(listOf(
-                    InstrumentationEntry(
+            entriesSubscriber.assertValuesWithZeroedTimestamps(listOf(
+                    InstrumentationEntry.Status(
                             numTests = 1,
                             stream = "com.example.test.TestClass:",
                             id = "AndroidJUnitRunner",
@@ -641,7 +524,7 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
                             statusCode = StatusCode.Start,
                             timestampNanos = 0
                     ),
-                    InstrumentationEntry(
+                    InstrumentationEntry.Status(
                             numTests = 1,
                             stream = "com.example.test.TestClass:",
                             id = "AndroidJUnitRunner",
@@ -650,6 +533,10 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
                             current = 1,
                             stack = stacktrace,
                             statusCode = StatusCode.AssumptionFailure,
+                            timestampNanos = 0
+                    ),
+                    InstrumentationEntry.Result(
+                            message = "Time: ٠٫٠١٥\n\nOK (1 test)",
                             timestampNanos = 0
                     )
             ))
@@ -704,7 +591,7 @@ at android.support.test.internal.runner.TestExecutor.execute(TestExecutor.java:5
 at android.support.test.runner.AndroidJUnitRunner.onStart(AndroidJUnitRunner.java:375)
 at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.java:2074)"""
                 stacktrace = normalizeLinefeed(stacktrace)
-                assertThat(testsSubscriber.onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(listOf(
+                testsSubscriber.assertValuesWithZeroedDurations(listOf(
                         InstrumentationTest(
                                 index = 1,
                                 total = 1,
@@ -750,10 +637,67 @@ at android.app.Instrumentation${'$'}InstrumentationThread.run(Instrumentation.ja
             entriesSubscriber.awaitTerminalEvent(30, SECONDS)
         }
 
-        it("emits exception describing issue") {
-            assertThat(entriesSubscriber.onErrorEvents.first()).hasMessage(
-                    "Application process crashed. Check Logcat output for more details."
-            )
+        it("emits expected entries") {
+            entriesSubscriber.assertValuesWithZeroedTimestamps(listOf(
+                InstrumentationEntry.Status(
+                    numTests = 1,
+                    stream = "com.example.test.TestClass:",
+                    id = "AndroidJUnitRunner",
+                    test = "crashTest",
+                    clazz = "com.example.test.TestClass",
+                    current = 1,
+                    stack = "",
+                    statusCode = StatusCode.Start,
+                    timestampNanos = 0
+                ),
+                InstrumentationEntry.Result(
+                    message = "Process crashed.",
+                    timestampNanos = 0
+                )
+            ))
+        }
+
+        it("completes stream") {
+            entriesSubscriber.assertCompleted()
+        }
+
+        it("does not emit error") {
+            entriesSubscriber.assertNoErrors()
+        }
+
+        context("as tests") {
+            val testsSubscriber by memoized { TestSubscriber<InstrumentationTest>() }
+
+            perform {
+                entries.asTests().subscribe(testsSubscriber)
+                testsSubscriber.awaitTerminalEvent(30, SECONDS)
+            }
+
+            it("emits expected tests") {
+                testsSubscriber.assertValuesWithZeroedDurations(listOf(
+                    InstrumentationTest(
+                        index = 1,
+                        total = 1,
+                        className = "com.example.test.TestClass",
+                        testName = "crashTest",
+                        status = Failed(stacktrace = "Process crashed."),
+                        durationNanos = 0L
+                    )
+                ))
+            }
         }
     }
 })
+
+private fun TestSubscriber<InstrumentationTest>.assertValuesWithZeroedDurations(
+    expectedValues: List<InstrumentationTest>
+) = assertThat(onNextEvents.map { it.copy(durationNanos = 0) }).isEqualTo(expectedValues)
+
+private fun TestSubscriber<InstrumentationEntry>.assertValuesWithZeroedTimestamps(
+    expectedValues: List<InstrumentationEntry>
+) = assertThat(onNextEvents.map { it.copy(timestampNanos = 0) }).isEqualTo(expectedValues)
+
+private fun InstrumentationEntry.copy(timestampNanos: Long) = when (this) {
+    is InstrumentationEntry.Status -> copy(timestampNanos = timestampNanos)
+    is InstrumentationEntry.Result -> copy(timestampNanos = timestampNanos)
+}
